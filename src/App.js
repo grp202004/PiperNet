@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import classnames from "classnames";
+import {
+    Button,
+    Classes,
+    FocusStyleManager,
+    NonIdealState,
+} from "@blueprintjs/core";
+import Navbar from "./components/Navbar";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    return (
+        <div
+            className={classnames({
+                "app-wrapper": true,
+                [Classes.DARK]: true,
+            })}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+            <Navbar />
+            {/* <main className="main">
+        {appState.graph.hasGraph ? <ThreeJSVis /> : <WorkspaceView />}
+      </main>
+      {appState.graph.hasGraph && <FloatingCards />}
+      <Dialogs /> */}
+        </div>
+    );
 }
 
 export default App;
