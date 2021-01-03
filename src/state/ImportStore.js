@@ -2,18 +2,16 @@ import { observable } from "mobx";
 
 export default class ImportStore {
     @observable graphFile = "";
-    @observable stateFile = "";
+    @observable nodeFile = "";
 
     @observable importCSVDialogOpen = false;
     @observable importGEXFDialogOpen = false;
-
-    @observable loading = false;
 
     // specific: File object selected via the file input.
     @observable selectedEdgeFileFromInput = null;
     @observable selectedNodeFileFromInput = null;
 
-    @observable selectedGexfFileFromInput = null;
+    @observable selectedGEXFFileFromInput = null;
 
     @observable importConfig = {
         nodeFile: {

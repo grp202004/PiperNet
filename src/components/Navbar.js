@@ -14,6 +14,8 @@ import {
 } from "@blueprintjs/core";
 import logo from "../images/logo.png";
 
+import State from "../state/index";
+
 import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS } from "../constants";
 
 class Navbar extends React.Component {
@@ -61,22 +63,22 @@ class Navbar extends React.Component {
                                 <MenuItem
                                     iconName="import"
                                     text="Import from CSV..."
-                                    onClick={() =>
-                                        (appState.import.dialogOpen = true)
-                                    }
+                                    onClick={() => {
+                                        State.import.importCSVDialogOpen = true;
+                                    }}
                                 />
                                 <MenuItem
                                     iconName="import"
                                     text="Import from GEXF..."
-                                    onClick={() =>
-                                        (appState.import.gexfDialogOpen = true)
-                                    }
+                                    onClick={() => {
+                                        State.import.importGEXFDialogOpen = true;
+                                    }}
                                 />
                                 <MenuItem
                                     iconName="pt-icon-document-open"
                                     text="Open Snapshot"
                                     onClick={() => {
-                                        appState.preferences.openSnapshotDialogOpen = true;
+                                        State.preferences.preferenceDialogOpen = true;
                                     }}
                                 />
                                 <MenuDivider />
@@ -84,15 +86,7 @@ class Navbar extends React.Component {
                                     iconName="download"
                                     text="Save Snapshot"
                                     onClick={() => {
-                                        appState.project.stringCopyOfSnapshot = appState.graph.saveImmediateStates();
-                                        appState.project.isSaveSnapshotDialogOpen = true;
-                                    }}
-                                />
-                                <MenuItem
-                                    iconName="pt-icon-document-share"
-                                    text="Publish and Share Snapshot"
-                                    onClick={() => {
-                                        appState.preferences.shareDialogOpen = true;
+                                        State.project.saveSnapshotDialogOpen = true;
                                     }}
                                 />
                             </Menu>
@@ -116,8 +110,8 @@ class Navbar extends React.Component {
                                     text="Data Sheet"
                                     iconName="pt-icon-database"
                                     onClick={() => {
-                                        appState.graph.frame.pauseLayout();
-                                        appState.preferences.dataSheetDialogOpen = true;
+                                        // State.graph.frame.pauseLayout();
+                                        State.preferences.dataSheetDialogOpen = true;
                                         this.forceUpdate();
                                     }}
                                 />
@@ -125,103 +119,9 @@ class Navbar extends React.Component {
                                     text="Statistics"
                                     iconName="pt-icon-timeline-bar-chart"
                                     onClick={() => {
-                                        appState.preferences.statisticsDialogOpen = true;
+                                        State.preferences.statisticsDialogOpen = true;
                                     }}
                                 />
-                                <MenuItem text="Filters" iconName="graph">
-                                    <MenuItem
-                                        text="Show All Nodes"
-                                        onClick={() => {
-                                            appState.graph.showNodes(
-                                                appState.graph.rawGraph.nodes.map(
-                                                    (n) => n.id
-                                                )
-                                            );
-                                        }}
-                                    />
-                                    <MenuItem
-                                        text="Show only nodes with top 5 PageRank"
-                                        onClick={() => {
-                                            appState.graph.hideNodes(
-                                                appState.graph.rawGraph.nodes.map(
-                                                    (n) => n.id
-                                                )
-                                            );
-                                            const sortedNodeList = [
-                                                ...appState.graph.rawGraph
-                                                    .nodes,
-                                            ];
-                                            sortedNodeList.sort((n1, n2) => {
-                                                if (
-                                                    n1["pagerank"] &&
-                                                    n2["pagerank"]
-                                                ) {
-                                                    return (
-                                                        n2["pagerank"] -
-                                                        n1["pagerank"]
-                                                    );
-                                                }
-                                                return 0;
-                                            });
-                                            const ids = [];
-                                            for (
-                                                let i = 0;
-                                                i < 5 &&
-                                                i < sortedNodeList.length;
-                                                i++
-                                            ) {
-                                                ids.push(sortedNodeList[i].id);
-                                            }
-                                            appState.graph.showNodes(ids);
-                                        }}
-                                    />
-                                    <MenuItem
-                                        text="Show only nodes with top 5 Degree"
-                                        onClick={() => {
-                                            appState.graph.hideNodes(
-                                                appState.graph.rawGraph.nodes.map(
-                                                    (n) => n.id
-                                                )
-                                            );
-                                            const sortedNodeList = [
-                                                ...appState.graph.rawGraph
-                                                    .nodes,
-                                            ];
-                                            sortedNodeList.sort((n1, n2) => {
-                                                if (
-                                                    n1["degree"] &&
-                                                    n2["degree"]
-                                                ) {
-                                                    return (
-                                                        n2["degree"] -
-                                                        n1["degree"]
-                                                    );
-                                                }
-                                                return 0;
-                                            });
-                                            const ids = [];
-                                            for (
-                                                let i = 0;
-                                                i < 5 &&
-                                                i < sortedNodeList.length;
-                                                i++
-                                            ) {
-                                                ids.push(sortedNodeList[i].id);
-                                            }
-                                            appState.graph.showNodes(ids);
-                                        }}
-                                    />
-                                    <MenuItem
-                                        text="Hide All Nodes"
-                                        onClick={() => {
-                                            appState.graph.hideNodes(
-                                                appState.graph.rawGraph.nodes.map(
-                                                    (n) => n.id
-                                                )
-                                            );
-                                        }}
-                                    />
-                                </MenuItem>
                             </Menu>
                         }
                         position={Position.BOTTOM}
@@ -237,7 +137,7 @@ class Navbar extends React.Component {
                         </Button>
                     </Popover>
                 </div>
-                <div
+                {/* <div
                     className={classnames([
                         Classes.NAVBAR_GROUP,
                         Classes.ALIGN_LEFT,
@@ -282,7 +182,7 @@ class Navbar extends React.Component {
                             </Tooltip>
                         </div>
                     )}
-                </div>
+                </div> */}
                 <div
                     className={classnames([
                         Classes.NAVBAR_GROUP,
@@ -296,11 +196,10 @@ class Navbar extends React.Component {
                         ])}
                         iconName="graph"
                         onClick={() => {
-                            appState.project.isRenameSnapshotDialogOpen = true;
+                            State.project.renameSnapshotDialogOpen = true;
                         }}
                     >
-                        {appState.graph.metadata.snapshotName ||
-                            "Untitled Graph"}
+                        {State.graph.metadata.snapshotName}
                     </Button>
                     <span className={Classes.NAVBAR_DIVIDER} />
                     <Button
@@ -310,7 +209,7 @@ class Navbar extends React.Component {
                         ])}
                         iconName="cog"
                         onClick={() => {
-                            appState.preferences.dialogOpen = true;
+                            State.preferences.dialogOpen = true;
                         }}
                     />
                     <Button
@@ -320,17 +219,7 @@ class Navbar extends React.Component {
                         ])}
                         iconName="help"
                         onClick={() => {
-                            appState.preferences.helpDialogOpen = true;
-                        }}
-                    />
-                    <Button
-                        className={classnames([
-                            Classes.BUTTON,
-                            Classes.MINIMAL,
-                        ])}
-                        iconName="minimize"
-                        onClick={() => {
-                            appState.preferences.turnOnMinimalMode();
+                            State.preferences.helpDialogOpen = true;
                         }}
                     />
                     <span className={Classes.NAVBAR_DIVIDER} />
@@ -338,7 +227,7 @@ class Navbar extends React.Component {
                         href={GITHUB_URL}
                         target="_blank"
                         style={{
-                            color: appState.preferences.darkMode
+                            color: State.preferences.darkMode
                                 ? "white"
                                 : "black",
                             fontSize: "120%",
