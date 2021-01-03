@@ -13,6 +13,8 @@ import {
     MenuDivider,
 } from "@blueprintjs/core";
 import logo from "../images/logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import State from "../state/index";
 
