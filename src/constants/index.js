@@ -6,3 +6,6 @@ export const SAMPLE_GRAPH_SNAPSHOTS = [
     ["Les Miserables", Les_Miserable],
     // ["CORD-19 Citation Graph 06-02", "4bf882d3-8966-4f41-a590-acafeb998d2a"],
 ];
+
+export const NODE_AND_EDGE_FILE = "both nodes and edges file";
+export const ONLY_EDGE_FILE = "only edges file";

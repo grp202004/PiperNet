@@ -15,11 +15,18 @@ export default class ImportStore {
 
     @observable importConfig = {
         nodeFile: {
+            hasNodeFile: false,
+
+            // the file is successfully parsed and ready for display
+            isReady: false,
+            canImport: false,
             path: "",
 
             // has header at the top
             hasHeader: true,
 
+            // Get top 20 lines. Or if there's less than 10 line, get all the lines.
+            topN: [],
             //names for the columns of this csv
             columns: [],
             mapping: {
@@ -29,9 +36,15 @@ export default class ImportStore {
             delimiter: ",",
         },
         edgeFile: {
+            isReady: false,
+            canImport: false,
+
             // should save the csv to temp for further change the cluster attribute
             path: "",
             hasHeader: true,
+
+            // array of objects storing the
+            topN: [],
             columns: [],
             mapping: {
                 fromId: "<UNK>",

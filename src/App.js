@@ -7,6 +7,7 @@ import {
     NonIdealState,
 } from "@blueprintjs/core";
 import Navbar from "./components/Navbar";
+import Dialogs from "./components/Dialogs";
 
 function App() {
     return (
@@ -20,8 +21,8 @@ function App() {
             {/* <main className="main">
         {appState.graph.hasGraph ? <ThreeJSVis /> : <WorkspaceView />}
       </main>
-      {appState.graph.hasGraph && <FloatingCards />}
-      <Dialogs /> */}
+      {appState.graph.hasGraph && <FloatingCards />} */}
+            <Dialogs />
         </div>
     );
 }

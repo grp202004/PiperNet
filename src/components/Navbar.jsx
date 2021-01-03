@@ -45,14 +45,14 @@ class Navbar extends React.Component {
                     <Popover
                         content={
                             <Menu>
-                                <MenuItem text="Load Sample" iconName="graph">
+                                <MenuItem text="Load Sample" icon="graph">
                                     {SAMPLE_GRAPH_SNAPSHOTS.map((sample) => {
                                         const sampleSnapshotTitle = sample[0];
                                         const sampleSnapshotRawJson = sample[1];
 
                                         return (
                                             <MenuItem
-                                                iconName="graph"
+                                                icon="graph"
                                                 text={sampleSnapshotTitle}
                                                 onClick={() => {
                                                     //TODO: add sample graphs for demo
@@ -63,21 +63,21 @@ class Navbar extends React.Component {
                                 </MenuItem>
                                 <MenuDivider />
                                 <MenuItem
-                                    iconName="import"
+                                    icon="import"
                                     text="Import from CSV..."
                                     onClick={() => {
                                         State.import.importCSVDialogOpen = true;
                                     }}
                                 />
                                 <MenuItem
-                                    iconName="import"
+                                    icon="import"
                                     text="Import from GEXF..."
                                     onClick={() => {
                                         State.import.importGEXFDialogOpen = true;
                                     }}
                                 />
                                 <MenuItem
-                                    iconName="pt-icon-document-open"
+                                    icon="document-open"
                                     text="Open Snapshot"
                                     onClick={() => {
                                         State.preferences.preferenceDialogOpen = true;
@@ -85,7 +85,7 @@ class Navbar extends React.Component {
                                 />
                                 <MenuDivider />
                                 <MenuItem
-                                    iconName="download"
+                                    icon="download"
                                     text="Save Snapshot"
                                     onClick={() => {
                                         State.project.saveSnapshotDialogOpen = true;
@@ -100,7 +100,7 @@ class Navbar extends React.Component {
                                 Classes.BUTTON,
                                 Classes.MINIMAL,
                             ])}
-                            iconName="document"
+                            icon="document"
                         >
                             Graph
                         </Button>
@@ -110,7 +110,7 @@ class Navbar extends React.Component {
                             <Menu>
                                 <MenuItem
                                     text="Data Sheet"
-                                    iconName="pt-icon-database"
+                                    icon="database"
                                     onClick={() => {
                                         // State.graph.frame.pauseLayout();
                                         State.preferences.dataSheetDialogOpen = true;
@@ -119,7 +119,7 @@ class Navbar extends React.Component {
                                 />
                                 <MenuItem
                                     text="Statistics"
-                                    iconName="pt-icon-timeline-bar-chart"
+                                    icon="timeline-bar-chart"
                                     onClick={() => {
                                         State.preferences.statisticsDialogOpen = true;
                                     }}
@@ -133,7 +133,7 @@ class Navbar extends React.Component {
                                 Classes.BUTTON,
                                 Classes.MINIMAL,
                             ])}
-                            iconName="pt-icon-wrench"
+                            icon="wrench"
                         >
                             Tools
                         </Button>
@@ -161,7 +161,7 @@ class Navbar extends React.Component {
                                         Classes.BUTTON,
                                         Classes.MINIMAL,
                                     ])}
-                                    iconName={
+                                    icon={
                                         appState.graph.frame.paused
                                             ? "play"
                                             : "pause"
@@ -196,7 +196,7 @@ class Navbar extends React.Component {
                             Classes.BUTTON,
                             Classes.MINIMAL,
                         ])}
-                        iconName="graph"
+                        icon="graph"
                         onClick={() => {
                             State.project.renameSnapshotDialogOpen = true;
                         }}
@@ -209,7 +209,7 @@ class Navbar extends React.Component {
                             Classes.BUTTON,
                             Classes.MINIMAL,
                         ])}
-                        iconName="cog"
+                        icon="cog"
                         onClick={() => {
                             State.preferences.dialogOpen = true;
                         }}
@@ -219,7 +219,7 @@ class Navbar extends React.Component {
                             Classes.BUTTON,
                             Classes.MINIMAL,
                         ])}
-                        iconName="help"
+                        icon="help"
                         onClick={() => {
                             State.preferences.helpDialogOpen = true;
                         }}
