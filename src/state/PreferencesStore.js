@@ -1,13 +1,13 @@
 import { observable, action } from "mobx";
 
 export default class PreferencesStore {
-    @observable preferenceDialogOpen = false;
+    preferenceDialogOpen = false;
 
-    @observable darkMode = true;
-    @observable minimapShowing = true;
+    darkMode = true;
+    minimapShowing = true;
 
-    @observable statisticsDialogOpen = false;
-    @observable helpDialogOpen = false;
-    @observable neighborDialogOpen = false;
-    @observable dataSheetDialogOpen = false;
+    statisticsDialogOpen = false;
+    helpDialogOpen = false;
+    neighborDialogOpen = false;
+    dataSheetDialogOpen = false;
 }

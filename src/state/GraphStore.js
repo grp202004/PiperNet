@@ -25,33 +25,31 @@ export default class GraphStore {
         },
     };
 
-    @observable nodes = this.initialGlobalConfig.nodes;
-    @observable edges = this.initialGlobalConfig.edges;
+    nodes = this.initialGlobalConfig.nodes;
+    edges = this.initialGlobalConfig.edges;
 
-    @observable enableDegree = true;
-    @observable enableDensity = true;
-    @observable enableDiameter = false;
-    @observable enableCoefficient = true;
-    @observable enableComponent = true;
+    enableDegree = true;
+    enableDensity = true;
+    enableDiameter = false;
+    enableCoefficient = true;
+    enableComponent = true;
 
     // Updated by frame event
-    @observable selectedNodes = [];
+    selectedNodes = [];
 
     // Currently hovered node
-    @observable currentlyHovered = undefined;
+    currentlyHovered = undefined;
 
     // Cache the single node that's been selected last time
     // and will not update unless exactly one node is selected again
     // useful for NeighborDialog
     _lastSelectedSingleNode = null;
 
-    @observable
     rawGraph = {
         nodes: [],
         edges: [],
     };
 
-    @observable
     metadata = {
         numNodes: 0,
         numEdges: 0,

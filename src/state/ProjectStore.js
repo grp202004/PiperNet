@@ -1,8 +1,8 @@
 import { observable } from "mobx";
 
 export default class ProjectStore {
-    @observable currentSnapshotName = "Untitled";
+    currentSnapshotName = "Untitled";
 
-    @observable saveSnapshotDialogOpen = false;
-    @observable renameSnapshotDialogOpen = false;
+    saveSnapshotDialogOpen = false;
+    renameSnapshotDialogOpen = false;
 }

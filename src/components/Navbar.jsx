@@ -21,127 +21,133 @@ import State from "../state/index";
 
 import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS } from "../constants";
 
-@observer
-class Navbar extends React.Component {
-    render() {
-        return (
-            <nav className={classnames([Classes.NAVBAR])}>
-                <div
-                    className={classnames([
-                        Classes.NAVBAR_GROUP,
-                        Classes.ALIGN_LEFT,
-                    ])}
-                >
-                    <img
-                        title="PiperNet"
-                        id="PiperNet Logo"
-                        src={logo}
-                        width="35"
-                        height="35"
-                    ></img>
-                    <div className={classnames([Classes.NAVBAR_HEADING])}>
-                        {" "}
-                        PiperNet{" "}
+export default observer(
+    class Navbar extends React.Component {
+        render() {
+            return (
+                <nav className={classnames([Classes.NAVBAR])}>
+                    <div
+                        className={classnames([
+                            Classes.NAVBAR_GROUP,
+                            Classes.ALIGN_LEFT,
+                        ])}
+                    >
+                        <img
+                            title="PiperNet"
+                            id="PiperNet Logo"
+                            src={logo}
+                            width="35"
+                            height="35"
+                        ></img>
+                        <div className={classnames([Classes.NAVBAR_HEADING])}>
+                            {" "}
+                            PiperNet{" "}
+                        </div>
+
+                        <Popover
+                            content={
+                                <Menu>
+                                    <MenuItem text="Load Sample" icon="graph">
+                                        {SAMPLE_GRAPH_SNAPSHOTS.map(
+                                            (sample) => {
+                                                const sampleSnapshotTitle =
+                                                    sample[0];
+                                                const sampleSnapshotRawJson =
+                                                    sample[1];
+
+                                                return (
+                                                    <MenuItem
+                                                        icon="graph"
+                                                        text={
+                                                            sampleSnapshotTitle
+                                                        }
+                                                        onClick={() => {
+                                                            //TODO: add sample graphs for demo
+                                                        }}
+                                                    />
+                                                );
+                                            }
+                                        )}
+                                    </MenuItem>
+                                    <MenuDivider />
+                                    <MenuItem
+                                        icon="import"
+                                        text="Import from CSV..."
+                                        onClick={() => {
+                                            State.import.importCSVDialogOpen = true;
+                                        }}
+                                    />
+                                    <MenuItem
+                                        icon="import"
+                                        text="Import from GEXF..."
+                                        onClick={() => {
+                                            State.import.importGEXFDialogOpen = true;
+                                        }}
+                                    />
+                                    <MenuItem
+                                        icon="document-open"
+                                        text="Open Snapshot"
+                                        onClick={() => {
+                                            State.preferences.preferenceDialogOpen = true;
+                                        }}
+                                    />
+                                    <MenuDivider />
+                                    <MenuItem
+                                        icon="download"
+                                        text="Save Snapshot"
+                                        onClick={() => {
+                                            State.project.saveSnapshotDialogOpen = true;
+                                        }}
+                                    />
+                                </Menu>
+                            }
+                            position={Position.BOTTOM}
+                        >
+                            <Button
+                                className={classnames([
+                                    Classes.BUTTON,
+                                    Classes.MINIMAL,
+                                ])}
+                                icon="document"
+                            >
+                                Graph
+                            </Button>
+                        </Popover>
+                        <Popover
+                            content={
+                                <Menu>
+                                    <MenuItem
+                                        text="Data Sheet"
+                                        icon="database"
+                                        onClick={() => {
+                                            // State.graph.frame.pauseLayout();
+                                            State.preferences.dataSheetDialogOpen = true;
+                                            this.forceUpdate();
+                                        }}
+                                    />
+                                    <MenuItem
+                                        text="Statistics"
+                                        icon="timeline-bar-chart"
+                                        onClick={() => {
+                                            State.preferences.statisticsDialogOpen = true;
+                                        }}
+                                    />
+                                </Menu>
+                            }
+                            position={Position.BOTTOM}
+                        >
+                            <Button
+                                className={classnames([
+                                    Classes.BUTTON,
+                                    Classes.MINIMAL,
+                                ])}
+                                icon="wrench"
+                            >
+                                Tools
+                            </Button>
+                        </Popover>
                     </div>
-
-                    <Popover
-                        content={
-                            <Menu>
-                                <MenuItem text="Load Sample" icon="graph">
-                                    {SAMPLE_GRAPH_SNAPSHOTS.map((sample) => {
-                                        const sampleSnapshotTitle = sample[0];
-                                        const sampleSnapshotRawJson = sample[1];
-
-                                        return (
-                                            <MenuItem
-                                                icon="graph"
-                                                text={sampleSnapshotTitle}
-                                                onClick={() => {
-                                                    //TODO: add sample graphs for demo
-                                                }}
-                                            />
-                                        );
-                                    })}
-                                </MenuItem>
-                                <MenuDivider />
-                                <MenuItem
-                                    icon="import"
-                                    text="Import from CSV..."
-                                    onClick={() => {
-                                        State.import.importCSVDialogOpen = true;
-                                    }}
-                                />
-                                <MenuItem
-                                    icon="import"
-                                    text="Import from GEXF..."
-                                    onClick={() => {
-                                        State.import.importGEXFDialogOpen = true;
-                                    }}
-                                />
-                                <MenuItem
-                                    icon="document-open"
-                                    text="Open Snapshot"
-                                    onClick={() => {
-                                        State.preferences.preferenceDialogOpen = true;
-                                    }}
-                                />
-                                <MenuDivider />
-                                <MenuItem
-                                    icon="download"
-                                    text="Save Snapshot"
-                                    onClick={() => {
-                                        State.project.saveSnapshotDialogOpen = true;
-                                    }}
-                                />
-                            </Menu>
-                        }
-                        position={Position.BOTTOM}
-                    >
-                        <Button
-                            className={classnames([
-                                Classes.BUTTON,
-                                Classes.MINIMAL,
-                            ])}
-                            icon="document"
-                        >
-                            Graph
-                        </Button>
-                    </Popover>
-                    <Popover
-                        content={
-                            <Menu>
-                                <MenuItem
-                                    text="Data Sheet"
-                                    icon="database"
-                                    onClick={() => {
-                                        // State.graph.frame.pauseLayout();
-                                        State.preferences.dataSheetDialogOpen = true;
-                                        this.forceUpdate();
-                                    }}
-                                />
-                                <MenuItem
-                                    text="Statistics"
-                                    icon="timeline-bar-chart"
-                                    onClick={() => {
-                                        State.preferences.statisticsDialogOpen = true;
-                                    }}
-                                />
-                            </Menu>
-                        }
-                        position={Position.BOTTOM}
-                    >
-                        <Button
-                            className={classnames([
-                                Classes.BUTTON,
-                                Classes.MINIMAL,
-                            ])}
-                            icon="wrench"
-                        >
-                            Tools
-                        </Button>
-                    </Popover>
-                </div>
-                {/* <div
+                    {/* <div
                     className={classnames([
                         Classes.NAVBAR_GROUP,
                         Classes.ALIGN_LEFT,
@@ -187,63 +193,62 @@ class Navbar extends React.Component {
                         </div>
                     )}
                 </div> */}
-                <div
-                    className={classnames([
-                        Classes.NAVBAR_GROUP,
-                        Classes.ALIGN_RIGHT,
-                    ])}
-                >
-                    <Button
+                    <div
                         className={classnames([
-                            Classes.BUTTON,
-                            Classes.MINIMAL,
+                            Classes.NAVBAR_GROUP,
+                            Classes.ALIGN_RIGHT,
                         ])}
-                        icon="graph"
-                        onClick={() => {
-                            State.project.renameSnapshotDialogOpen = true;
-                        }}
                     >
-                        {State.graph.metadata.snapshotName}
-                    </Button>
-                    <span className={Classes.NAVBAR_DIVIDER} />
-                    <Button
-                        className={classnames([
-                            Classes.BUTTON,
-                            Classes.MINIMAL,
-                        ])}
-                        icon="cog"
-                        onClick={() => {
-                            State.preferences.dialogOpen = true;
-                        }}
-                    />
-                    <Button
-                        className={classnames([
-                            Classes.BUTTON,
-                            Classes.MINIMAL,
-                        ])}
-                        icon="help"
-                        onClick={() => {
-                            State.preferences.helpDialogOpen = true;
-                        }}
-                    />
-                    <span className={Classes.NAVBAR_DIVIDER} />
-                    <a
-                        href={GITHUB_URL}
-                        target="_blank"
-                        style={{
-                            color: State.preferences.darkMode
-                                ? "white"
-                                : "black",
-                            fontSize: "120%",
-                            textDecoration: "none",
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faGithub} />
-                    </a>
-                </div>
-            </nav>
-        );
+                        <Button
+                            className={classnames([
+                                Classes.BUTTON,
+                                Classes.MINIMAL,
+                            ])}
+                            icon="graph"
+                            onClick={() => {
+                                State.project.renameSnapshotDialogOpen = true;
+                            }}
+                        >
+                            {State.graph.metadata.snapshotName}
+                        </Button>
+                        <span className={Classes.NAVBAR_DIVIDER} />
+                        <Button
+                            className={classnames([
+                                Classes.BUTTON,
+                                Classes.MINIMAL,
+                            ])}
+                            icon="cog"
+                            onClick={() => {
+                                State.preferences.dialogOpen = true;
+                            }}
+                        />
+                        <Button
+                            className={classnames([
+                                Classes.BUTTON,
+                                Classes.MINIMAL,
+                            ])}
+                            icon="help"
+                            onClick={() => {
+                                State.preferences.helpDialogOpen = true;
+                            }}
+                        />
+                        <span className={Classes.NAVBAR_DIVIDER} />
+                        <a
+                            href={GITHUB_URL}
+                            target="_blank"
+                            style={{
+                                color: State.preferences.darkMode
+                                    ? "white"
+                                    : "black",
+                                fontSize: "120%",
+                                textDecoration: "none",
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faGithub} />
+                        </a>
+                    </div>
+                </nav>
+            );
+        }
     }
-}
-
-export default Navbar;
+);

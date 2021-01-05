@@ -1,19 +1,22 @@
-import { observable } from "mobx";
+import { observable, makeObservable } from "mobx";
 
 export default class ImportStore {
-    @observable graphFile = "";
-    @observable nodeFile = "";
+    //name of the edge file
+    edgeFileName = "Choose Edge File ...";
 
-    @observable importCSVDialogOpen = false;
-    @observable importGEXFDialogOpen = false;
+    //name of the node file
+    nodeFileName = "Choose Node File ...";
+
+    importCSVDialogOpen = false;
+    importGEXFDialogOpen = false;
 
     // specific: File object selected via the file input.
-    @observable selectedEdgeFileFromInput = null;
-    @observable selectedNodeFileFromInput = null;
+    selectedEdgeFileFromInput = null;
+    selectedNodeFileFromInput = null;
 
-    @observable selectedGEXFFileFromInput = null;
+    selectedGEXFFileFromInput = null;
 
-    @observable importConfig = {
+    importConfig = {
         nodeFile: {
             hasNodeFile: false,
 
@@ -53,4 +56,17 @@ export default class ImportStore {
             delimiter: ",",
         },
     };
+
+    constructor() {
+        makeObservable(this, {
+            edgeFileName: observable,
+            nodeFileName: observable,
+            importCSVDialogOpen: observable,
+            importGEXFDialogOpen: observable,
+            selectedEdgeFileFromInput: observable,
+            selectedNodeFileFromInput: observable,
+            selectedGEXFFileFromInput: observable,
+            importConfig: observable,
+        });
+    }
 }
