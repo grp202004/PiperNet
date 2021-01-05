@@ -1,4 +1,5 @@
 import React from "react";
+import { observer, inject } from "mobx-react";
 import classnames from "classnames";
 import {
     Button,
@@ -20,6 +21,7 @@ import State from "../state/index";
 
 import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS } from "../constants";
 
+@observer
 class Navbar extends React.Component {
     render() {
         return (

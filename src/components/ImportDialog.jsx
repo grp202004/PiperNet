@@ -6,6 +6,8 @@ import {
     Intent,
     Spinner,
     Switch,
+    Divider,
+    FileInput,
 } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
@@ -19,7 +21,7 @@ import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../constants/index";
 @observer
 class PreviewTable extends React.Component {
     render() {
-        const file = this.props.file;
+        const file = State.file;
         return (
             <Table
                 className="import-preview-table"
@@ -42,12 +44,17 @@ class PreviewTable extends React.Component {
 
 @observer
 class ImportDialog extends React.Component {
-    state = {
-        available: ONLY_EDGE_FILE,
-        nodesOpen: true,
-        edgesOpen: true,
-        delimiter: ",",
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            available: ONLY_EDGE_FILE,
+            nodesOpen: true,
+            edgesOpen: true,
+            nodeFileName: "Choose Node File ...",
+            edgeFileName: "Choose Edge File ...",
+            delimiter: ",",
+        };
+    }
 
     // determine if this state is importable
     canImport = () => {
@@ -78,6 +85,7 @@ class ImportDialog extends React.Component {
                     this.setState({ nodesOpen: !this.state.nodesOpen })
                 }
             >
+                <br />
                 <div className={classnames(Classes.CONTROL_GROUP)}>
                     <div
                         className={classnames(
@@ -85,14 +93,15 @@ class ImportDialog extends React.Component {
                             Classes.FILL
                         )}
                     >
-                        <input
-                            type="file"
-                            className={classnames(Classes.DISABLED)}
-                            onChange={(event) => {
+                        <FileInput
+                            text={this.state.nodeFileName}
+                            onInputChange={(event) => {
                                 if (event.target.files.length < 1) {
                                     return;
                                 }
-
+                                this.setState({
+                                    nodeFileName: event.target.files[0].name,
+                                });
                                 // after setting the selectedNodeFileFromInput, other attributes will update automatically
                                 State.import.selectedNodeFileFromInput =
                                     event.target.files[0];
@@ -100,6 +109,7 @@ class ImportDialog extends React.Component {
                         />
                     </div>
                 </div>
+                <br />
                 <Switch
                     label="Has Headers"
                     checked={nodeFile.hasHeader}
@@ -137,6 +147,7 @@ class ImportDialog extends React.Component {
                     this.setState({ edgesOpen: !this.state.edgesOpen })
                 }
             >
+                <br />
                 <div className={classnames(Classes.CONTROL_GROUP)}>
                     <div
                         className={classnames(
@@ -144,19 +155,22 @@ class ImportDialog extends React.Component {
                             Classes.FILL
                         )}
                     >
-                        <input
-                            type="file"
-                            className={classnames(Classes.DISABLED)}
-                            onChange={(event) => {
+                        <FileInput
+                            text={this.state.edgeFileName}
+                            onInputChange={(event) => {
                                 if (event.target.files.length < 1) {
                                     return;
                                 }
+                                this.setState({
+                                    edgeFileName: event.target.files[0].name,
+                                });
                                 State.import.selectedEdgeFileFromInput =
                                     event.target.files[0];
                             }}
                         />
                     </div>
                 </div>
+                <br />
                 <Switch
                     label="Has Headers"
                     checked={edgeFile.hasHeader}
@@ -189,7 +203,7 @@ class ImportDialog extends React.Component {
             <div className="column-selection">
                 Selected Delimiter
                 <SimpleSelect
-                    items={[",", "\\t", ";", " "]}
+                    items={[",", "\\t", ";", "[SPACE]"]}
                     value={this.state.delimiter}
                     onSelect={(newDelimiter) => {
                         this.setState({ delimiter: newDelimiter });
@@ -213,7 +227,7 @@ class ImportDialog extends React.Component {
                 className={classnames({
                     [Classes.DARK]: State.preferences.darkMode,
                 })}
-                isOpen={true}
+                isOpen={State.import.importCSVDialogOpen}
                 onClose={() => {
                     State.import.importCSVDialogOpen = false;
                 }}
@@ -238,10 +252,12 @@ class ImportDialog extends React.Component {
                                 this.setState({ available: targetValue });
                             }}
                         />
+                        <Divider />
                         {this.renderNodesSelection()}
+                        <br />
                         {this.renderEdgesSelection()}
+                        <br />
                         {this.renderDelimiterSelection()}
-                        <hr />
                     </div>
                     <div className={Classes.DIALOG_FOOTER}>
                         <div className={Classes.DIALOG_FOOTER_ACTIONS}>

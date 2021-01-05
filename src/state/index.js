@@ -1,4 +1,4 @@
-import { autorun, runInAction } from "mobx";
+import { autorun, runInAction, trace, observable, makeObservable } from "mobx";
 import { Intent, Position, Toaster } from "@blueprintjs/core";
 
 import parse from "csv-parse/lib/sync";
@@ -25,9 +25,10 @@ window.state = State;
 // extract CSV from selected edge File object and update related fields.
 // will auto run if selectedEdgeFileFromInput or delimiter or anything is changed.
 autorun(() => {
-    const file = State.import.selectedEdgeFileFromInput;
-    const hasHeader = State.import.importConfig.edgeFile.hasHeader;
-    const delimiter = State.import.importConfig.edgeFile.delimiter;
+    trace();
+    let file = State.import.selectedEdgeFileFromInput;
+    let hasHeader = State.import.importConfig.edgeFile.hasHeader;
+    let delimiter = State.import.importConfig.edgeFile.delimiter;
 
     if (!file) {
         return;
@@ -77,7 +78,7 @@ autorun(() => {
                     State.import.importConfig.edgeFile.columns[0];
                 State.import.importConfig.edgeFile.mapping.toId =
                     State.import.importConfig.edgeFile.columns[1];
-                State.import.importConfig.edgeFile.ready = true;
+                State.import.importConfig.edgeFile.isReady = true;
             });
         } catch {
             Toaster.create({
@@ -156,7 +157,7 @@ autorun(() => {
                     State.import.importConfig.nodeFile.columns[0];
                 State.import.importConfig.nodeFile.mapping.cluster =
                     State.import.importConfig.nodeFile.columns[1];
-                State.import.importConfig.nodeFile.ready = true;
+                State.import.importConfig.nodeFile.isReady = true;
             });
         } catch {
             Toaster.create({
