@@ -9,6 +9,8 @@ import {
 } from "@blueprintjs/core";
 import Navbar from "./components/Navbar";
 import Dialogs from "./components/Dialogs";
+import ThreeJSVis from "./components/visualize/visualizer";
+import State from "./state/index";
 
 function App() {
     return (
@@ -19,10 +21,10 @@ function App() {
             })}
         >
             <Navbar />
-            {/* <main className="main">
-        {appState.graph.hasGraph ? <ThreeJSVis /> : <WorkspaceView />}
-      </main>
-      {appState.graph.hasGraph && <FloatingCards />} */}
+            <main className="main">
+                <ThreeJSVis />
+            </main>
+            {/* {State.graph.hasGraph && <FloatingCards />} */}
             <Dialogs />
         </div>
     );

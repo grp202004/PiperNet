@@ -33,8 +33,8 @@ export default class ImportStore {
             //names for the columns of this csv
             columns: [],
             mapping: {
-                id: "<UNK>",
-                cluster: "<UNK>",
+                id: "Unknown",
+                cluster: "Unknown",
             },
             delimiter: ",",
         },
@@ -50,8 +50,8 @@ export default class ImportStore {
             topN: [],
             columns: [],
             mapping: {
-                fromId: "<UNK>",
-                toId: "<UNK>",
+                fromId: "Unknown",
+                toId: "Unknown",
             },
             delimiter: ",",
         },

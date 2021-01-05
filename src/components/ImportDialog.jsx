@@ -18,14 +18,14 @@ import Collapsable from "./utils/Collapsable";
 import SimpleSelect from "./utils/SimpleSelect";
 import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../constants/index";
 
-observer(
+let PreviewTable = observer(
     class PreviewTable extends React.Component {
         render() {
-            const file = State.file;
+            const file = this.props.file;
             return (
                 <Table
                     className="import-preview-table"
-                    numRows={file.topN.length}
+                    numRows={20}
                     selectedRegions={Object.values(file.mapping)
                         .map((it) => file.columns.indexOf(it))
                         .map((it) => ({ rows: null, cols: [it, it] }))}
@@ -34,7 +34,9 @@ observer(
                         <Column
                             key={it}
                             name={it}
-                            renderCell={(i) => <Cell>{file.topN[i][it]}</Cell>}
+                            cellRenderer={(i) => (
+                                <Cell>{file.topN[i][it]}</Cell>
+                            )}
                         />
                     ))}
                 </Table>
@@ -118,6 +120,7 @@ export default observer(
                     {nodeFile.isReady && (
                         <div className="column-selection">
                             <PreviewTable file={nodeFile} />
+                            <br />
                             Column for Node ID:
                             <SimpleSelect
                                 items={nodeFile.columns}
@@ -179,9 +182,10 @@ export default observer(
                             (edgeFile.hasHeader = !edgeFile.hasHeader)
                         }
                     />
-                    {edgeFile.ready && (
+                    {edgeFile.isReady && (
                         <div className="column-selection">
                             <PreviewTable file={edgeFile} />
+                            <br />
                             Column for Source ID:
                             <SimpleSelect
                                 items={edgeFile.columns}

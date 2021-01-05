@@ -1,4 +1,5 @@
-import { observable, computed, action, runInAction } from "mobx";
+import { observable, computed, makeObservable } from "mobx";
+import createGraph from "ngraph.graph";
 
 export default class GraphStore {
     initialGlobalConfig = {
@@ -50,6 +51,10 @@ export default class GraphStore {
         edges: [],
     };
 
+    get hasGraph() {
+        return this.rawGraph.edges.size != 0 && this.rawGraph.nodes.size != 0;
+    }
+
     metadata = {
         numNodes: 0,
         numEdges: 0,
@@ -58,4 +63,64 @@ export default class GraphStore {
         nodeProperties: [],
         edgeProperties: [],
     };
+
+    // Triggers autorun in stores/index.js to sent computedGraph to graph-frontend.
+    get computedGraph() {
+        const graph = createGraph();
+        this.rawGraph.nodes.forEach((n) => {
+            // If isHidden flag is defined and true, ignore the node in graph-frontend.
+            if (n.isHidden) {
+                return;
+            }
+            const override = this.overrides.get(n.id.toString());
+            graph.addNode(n.id.toString(), {
+                label:
+                    (override && override.get("label")) ||
+                    n[this.nodes.labelBy],
+                size:
+                    (override && override.get("size")) ||
+                    this.nodeSizeScale(n[this.nodes.sizeBy]),
+                color:
+                    (override && override.get("color")) ||
+                    this.nodeColorScale(n[this.nodes.colorBy]),
+                shape:
+                    (override && override.get("shape")) || n[this.nodes.shape],
+                ref: n,
+            });
+        });
+
+        this.rawGraph.edges.forEach((e) => {
+            // If isHidden flag is defined and true on an associated node,
+            // leave out its related edges.
+            if (
+                graph.hasNode(e.source_id.toString()) &&
+                graph.hasNode(e.target_id.toString())
+            ) {
+                graph.addLink(e.source_id.toString(), e.target_id.toString());
+            }
+        });
+
+        return graph;
+    }
+
+    constructor() {
+        makeObservable(this, {
+            initialGlobalConfig: observable,
+            hasGraph: computed,
+            nodes: observable,
+            edges: observable,
+            computedGraph: computed,
+            enableDegree: observable,
+            enableDensity: observable,
+            enableDiameter: observable,
+            enableCoefficient: observable,
+            enableComponent: observable,
+            selectedNodes: observable,
+            currentlyHovered: observable,
+            _lastSelectedSingleNode: observable,
+            rawGraph: observable,
+            metadata: observable,
+            _lastSelectedSingleNode: observable,
+        });
+    }
 }
