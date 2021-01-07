@@ -178,87 +178,86 @@ autorun(() => {
     };
 });
 
+// // importGraphFromCSV
+// autorun(() => {
+//     // Since the CSV lib we use uses int index when there's not header/column names specified
+//     // but the frontend selector always convert int to string values, we need to
+//     // manually convert the user-selected fromId and toId values back to int.
+//     // Note that this should only be done when there's no header provided on the CSV (hasColumns == false).
+//     const fromIdColumn = State.import.importConfig.edgeFile.columns.findIndex(State.import.importConfig.edgeFile.mapping.fromId);
+//     const toIdColumn = State.import.importConfig.edgeFile.mapping.fromId;
 
-// importGraphFromCSV
-autorun(() => {
-    // Since the CSV lib we use uses int index when there's not header/column names specified
-    // but the frontend selector always convert int to string values, we need to
-    // manually convert the user-selected fromId and toId values back to int.
-    // Note that this should only be done when there's no header provided on the CSV (hasColumns == false).
-    const fromIdColumn = State.import.importConfig.edgeFile.columns.findIndex(State.import.importConfig.edgeFile.mapping.fromId);
-    const toIdColumn = State.import.importConfig.edgeFile.mapping.fromId;
-  
-    // Create temporary data structures.
-    let nodesArr = [];
-    const graph = createGraph();
-    const degreeDict = {};
-    if (config.hasNodeFile) {
-      nodesArr = await readCSV(appState.import.selectedNodeFileFromInput, config.nodes.hasColumns, config.delimiter);
-      nodesArr.forEach(node => graph.addNode(node[config.nodes.mapping.id].toString(),
-        { id: node[config.nodes.mapping.id].toString(), degree: 0, ...node }));
-      nodesArr =
-        nodesArr.map(
-          n => ({ ...n, id: n[config.nodes.mapping.id].toString(), degree: 0, pagerank: 0 }));
-      nodesArr.forEach(n => degreeDict[n.id] = 0);
-    }
-    const edges = await readCSV(appState.import.selectedEdgeFileFromInput, config.edges.hasColumns, config.delimiter);
-    if (config.edges.createMissing) {
-      edges.forEach((it) => {
-        const from = it[fromId].toString();
-        const to = it[toId].toString();
-        if (!graph.hasNode(from)) {
-          graph.addNode(from, { id: from, degree: 0 });
-          nodesArr.push({ id: from, degree: 0, pagerank: 0 });
-          degreeDict[from] = 0;
-        }
-        if (!graph.hasNode(to)) {
-          graph.addNode(to, { id: to, degree: 0 });
-          nodesArr.push({ id: to, degree: 0, pagerank: 0 });
-          degreeDict[to] = 0;
-        }
-      });
-    }
-  
-    const edgesSet = new Set();
-    
-    const edgesArr = [];
-  
-    const addEdge = (from, to) => {
-      const edgeKey = `${from}👉${to}`;
-      if (edgesSet.has(edgeKey)) {
-        return;
-      }
-      edgesSet.add(edgeKey);
-      graph.addLink(from, to);
-      degreeDict[from] += 1;
-      degreeDict[to] += 1;
-      edgesArr.push({
-        source_id: from,
-        target_id: to,
-      });
-    };
-    
-    edges.forEach(it => {
-      const from = it[fromId].toString();
-      const to = it[toId].toString();
-      // Argo currently works with undirected graph
-      addEdge(from, to);
-      // addEdge(to, from);
-    });
-  
-    const rank = pageRank(graph);
-    nodesArr = nodesArr.map(n => ({ ...n, node_id: n.id, pagerank: rank[n.id], degree: degreeDict[n.id] }));
-    return {
-      rawGraph: { nodes: nodesArr, edges: edgesArr },
-      metadata: {
-        snapshotName: 'Untitled Graph',
-        fullNodes: nodesArr.length,
-        fullEdges: edgesArr.length, //Math.floor(edgesArr.length / 2), // Counting undirected edges
-        nodeProperties: Object.keys(nodesArr[0]),
-        nodeComputed: ['pagerank', 'degree'],
-        edgeProperties: ['source_id', 'target_id'],
-      },
-    }
-});
+//     // Create temporary data structures.
+//     let nodesArr = [];
+//     const graph = createGraph();
+//     const degreeDict = {};
+//     if (config.hasNodeFile) {
+//       nodesArr = await readCSV(appState.import.selectedNodeFileFromInput, config.nodes.hasColumns, config.delimiter);
+//       nodesArr.forEach(node => graph.addNode(node[config.nodes.mapping.id].toString(),
+//         { id: node[config.nodes.mapping.id].toString(), degree: 0, ...node }));
+//       nodesArr =
+//         nodesArr.map(
+//           n => ({ ...n, id: n[config.nodes.mapping.id].toString(), degree: 0, pagerank: 0 }));
+//       nodesArr.forEach(n => degreeDict[n.id] = 0);
+//     }
+//     const edges = await readCSV(appState.import.selectedEdgeFileFromInput, config.edges.hasColumns, config.delimiter);
+//     if (config.edges.createMissing) {
+//       edges.forEach((it) => {
+//         const from = it[fromId].toString();
+//         const to = it[toId].toString();
+//         if (!graph.hasNode(from)) {
+//           graph.addNode(from, { id: from, degree: 0 });
+//           nodesArr.push({ id: from, degree: 0, pagerank: 0 });
+//           degreeDict[from] = 0;
+//         }
+//         if (!graph.hasNode(to)) {
+//           graph.addNode(to, { id: to, degree: 0 });
+//           nodesArr.push({ id: to, degree: 0, pagerank: 0 });
+//           degreeDict[to] = 0;
+//         }
+//       });
+//     }
+
+//     const edgesSet = new Set();
+
+//     const edgesArr = [];
+
+//     const addEdge = (from, to) => {
+//       const edgeKey = `${from}👉${to}`;
+//       if (edgesSet.has(edgeKey)) {
+//         return;
+//       }
+//       edgesSet.add(edgeKey);
+//       graph.addLink(from, to);
+//       degreeDict[from] += 1;
+//       degreeDict[to] += 1;
+//       edgesArr.push({
+//         source_id: from,
+//         target_id: to,
+//       });
+//     };
+
+//     edges.forEach(it => {
+//       const from = it[fromId].toString();
+//       const to = it[toId].toString();
+//       // Argo currently works with undirected graph
+//       addEdge(from, to);
+//       // addEdge(to, from);
+//     });
+
+//     const rank = pageRank(graph);
+//     nodesArr = nodesArr.map(n => ({ ...n, node_id: n.id, pagerank: rank[n.id], degree: degreeDict[n.id] }));
+//     return {
+//       rawGraph: { nodes: nodesArr, edges: edgesArr },
+//       metadata: {
+//         snapshotName: 'Untitled Graph',
+//         fullNodes: nodesArr.length,
+//         fullEdges: edgesArr.length, //Math.floor(edgesArr.length / 2), // Counting undirected edges
+//         nodeProperties: Object.keys(nodesArr[0]),
+//         nodeComputed: ['pagerank', 'degree'],
+//         edgeProperties: ['source_id', 'target_id'],
+//       },
+//     }
+// });
 
 export default State;

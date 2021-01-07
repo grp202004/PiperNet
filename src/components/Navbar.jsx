@@ -14,8 +14,6 @@ import {
     MenuDivider,
 } from "@blueprintjs/core";
 import logo from "../images/logo.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import State from "../state/index";
 
@@ -232,20 +230,6 @@ export default observer(
                                 State.preferences.helpDialogOpen = true;
                             }}
                         />
-                        <span className={Classes.NAVBAR_DIVIDER} />
-                        <a
-                            href={GITHUB_URL}
-                            target="_blank"
-                            style={{
-                                color: State.preferences.darkMode
-                                    ? "white"
-                                    : "black",
-                                fontSize: "120%",
-                                textDecoration: "none",
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faGithub} />
-                        </a>
                     </div>
                 </nav>
             );
