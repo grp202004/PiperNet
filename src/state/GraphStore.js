@@ -26,6 +26,35 @@ export default class GraphStore {
         },
     };
 
+    originalGraph = null;
+
+    get adapterGraph() {
+        let tempGraph = {
+            nodes: [],
+            links: [],
+        };
+
+        if (this.originalGraph == null) {
+            return tempGraph;
+        }
+
+        this.originalGraph.forEachNode((node) => {
+            tempGraph.nodes.push({
+                id: node.id,
+                name: node.id,
+                val: 1,
+            });
+        });
+
+        this.originalGraph.forEachLink((link) => {
+            tempGraph.links.push({
+                source: link.fromId,
+                target: link.toId,
+            });
+        });
+        return tempGraph;
+    }
+
     nodes = this.initialGlobalConfig.nodes;
     edges = this.initialGlobalConfig.edges;
 
@@ -105,6 +134,8 @@ export default class GraphStore {
 
     constructor() {
         makeObservable(this, {
+            originalGraph: observable,
+            adapterGraph: computed,
             initialGlobalConfig: observable,
             hasGraph: computed,
             nodes: observable,
