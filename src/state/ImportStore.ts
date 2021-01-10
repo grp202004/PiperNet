@@ -2,7 +2,7 @@ import { Toaster, Position, Intent } from "@blueprintjs/core";
 import { observable, makeObservable } from "mobx";
 import createGraph from "ngraph.graph";
 import parse from "csv-parse/lib/sync";
-import { IRawGraph, INode } from "./GraphStore";
+import { IRawGraph, INode, IEdge } from "./GraphStore";
 
 export default class ImportStore {
     // whether the graph is in importing
@@ -74,7 +74,7 @@ export default class ImportStore {
         });
     }
 
-    async readCSV(
+    private async readCSV(
         fileObject: File,
         hasHeader: boolean,
         delimiter: string
@@ -127,7 +127,7 @@ export default class ImportStore {
         });
     }
 
-    readEdgeCSV(): Promise<string[]> {
+    public readEdgeCSV(): Promise<string[]> {
         return this.readCSV(
             this.selectedEdgeFileFromInput,
             this.importConfig.edgeFile.hasHeader,
@@ -135,7 +135,7 @@ export default class ImportStore {
         );
     }
 
-    readNodeCSV(): Promise<string[]> {
+    public readNodeCSV(): Promise<string[]> {
         return this.readCSV(
             this.selectedNodeFileFromInput,
             this.importConfig.nodeFile.hasHeader,
@@ -143,7 +143,23 @@ export default class ImportStore {
         );
     }
 
-    async importGraphFromCSV() {
+    private createNode(_id: string, _data: any, cluster: string): INode {
+        let tempNode: INode;
+        tempNode.Id = _id;
+        tempNode.data = _data;
+        tempNode.data._cluster = cluster;
+        return tempNode;
+    }
+
+    private createEdge(_fromId: string, _toId: string, _value: any) {
+        let tempEdge: IEdge;
+        tempEdge.fromId = _fromId;
+        tempEdge.toId = _toId;
+        tempEdge.value = _value;
+        return tempEdge;
+    }
+
+    public async importGraphFromCSV() {
         const config = this.importConfig;
 
         // the CSV lib we use uses int index when there's not header/column names specified
@@ -156,52 +172,68 @@ export default class ImportStore {
 
         let rawGraph: IRawGraph;
 
-        let nodesArr = rawGraph.nodes;
-        let edgesArr = rawGraph.edges;
+        let tempNodes = [];
+        let tempEdges = [];
+
+        let nodes: INode[];
+        let edges: IEdge[];
+
         const graph = createGraph();
 
         // parse Node file and store into the Graph DS
         if (config.hasNodeFile) {
-            nodesArr = await this.readNodeCSV();
-            nodesArr.forEach((node) => {
-                graph.addNode(node[config.nodeFile.mapping.id].toString(), {
-                    cluster: node[config.nodeFile.mapping.cluster].toString(),
-                    id: node[config.nodeFile.mapping.id].toString(),
-                    ...node,
-                });
+            tempNodes = await this.readNodeCSV();
+            tempNodes.forEach((node) => {
+                let thisNode: INode = this.createNode(
+                    node[config.nodeFile.mapping.id].toString(),
+                    node[config.nodeFile.mapping.cluster].toString(),
+                    node[config.nodeFile.mapping.cluster].toString()
+                );
+                graph.addNode(thisNode.Id, thisNode.data);
+                nodes.push(thisNode);
             });
         }
 
         // parse Edge file and store into the Graph DS
-        const edges = await this.readEdgeCSV();
-        edges.forEach((it) => {
-            const from = it[fromId].toString();
-            const to = it[toId].toString();
-            if (!graph.hasNode(from)) {
-                nodesArr.push({ id: from });
-                graph.addNode(from, { id: from });
+        tempEdges = await this.readEdgeCSV();
+        tempEdges.forEach((edge) => {
+            let thisEdge: IEdge = this.createEdge(
+                edge[fromId].toString(),
+                edge[toId].toString(),
+                0
+            );
+            if (!graph.hasNode(thisEdge.fromId)) {
+                let missingNode: INode = this.createNode(
+                    thisEdge.fromId,
+                    { id: thisEdge.fromId },
+                    null
+                );
+                graph.addNode(missingNode.Id, missingNode.data);
+                nodes.push(missingNode);
             }
-            if (!graph.hasNode(to)) {
-                nodesArr.push({ id: to });
-                graph.addNode(to, { id: to });
+            if (!graph.hasNode(thisEdge.toId)) {
+                let missingNode: INode = this.createNode(
+                    thisEdge.toId,
+                    { id: thisEdge.toId },
+                    null
+                );
+                graph.addNode(missingNode.Id, missingNode.data);
+                nodes.push(missingNode);
             }
-            graph.addLink(from, to);
-            edgesArr.push({
-                source_id: from,
-                target_id: to,
-            });
+            graph.addLink(thisEdge.fromId, thisEdge.toId);
+            edges.push(thisEdge);
         });
 
         config.edgeFile.isReady = true;
 
         return {
             graph: graph,
-            rawGraph: { nodes: nodesArr, edges: edgesArr },
+            rawGraph: { nodes: nodes, edges: edges },
             metadata: {
                 snapshotName: "Untitled",
-                fullNodes: nodesArr.length,
-                fullEdges: edgesArr.length,
-                nodeProperties: Object.keys(nodesArr[0]),
+                fullNodes: nodes.length,
+                fullEdges: edges.length,
+                nodeProperties: Object.keys(nodes[0]),
                 clusterProperties: config.hasNodeFile
                     ? null
                     : config.nodeFile.mapping.cluster,
