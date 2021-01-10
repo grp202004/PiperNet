@@ -8,6 +8,7 @@ import {
     Switch,
     Divider,
     FileInput,
+    Alert,
 } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
@@ -61,11 +62,11 @@ export default observer(
         canImport = () => {
             if (this.state.available === NODE_AND_EDGE_FILE) {
                 return (
-                    State.import.importConfig.edgeFile.canImport &&
-                    State.import.importConfig.nodeFile.canImport
+                    State.import.importConfig.edgeFile.isReady &&
+                    State.import.importConfig.nodeFile.isReady
                 );
             } else if (this.state.available === ONLY_EDGE_FILE) {
-                return State.import.importConfig.edgeFile.canImport;
+                return State.import.importConfig.edgeFile.isReady;
             }
             return false;
         };
@@ -219,6 +220,8 @@ export default observer(
 
                             if (newDelimiter == "\\t") {
                                 newDelimiter = "\t";
+                            } else if (newDelimiter == "[SPACE]") {
+                                newDelimiter = " ";
                             }
 
                             State.import.importConfig.edgeFile.delimiter = newDelimiter;
@@ -291,6 +294,11 @@ export default observer(
                                                 .then((graph) => {
                                                     State.graph.originalGraph =
                                                         graph.graph;
+                                                    State.graph.rawGraph =
+                                                        graph.rawGraph;
+                                                    State.graph.metadata =
+                                                        graph.metadata;
+
                                                     // runInAction(
                                                     //     "load imported graph",
                                                     //     () => {

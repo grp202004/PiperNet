@@ -1,6 +1,23 @@
 import { observable, computed, makeObservable } from "mobx";
 import createGraph from "ngraph.graph";
 
+export interface IRawGraph {
+    nodes: INode[];
+    edges: [];
+}
+
+export interface INode {
+    Id: string;
+    cluster: string;
+    data: any;
+}
+
+export interface IEdge {
+    fromId: string;
+    toId: string;
+    value: number;
+}
+
 export default class GraphStore {
     initialGlobalConfig = {
         nodes: {
@@ -85,6 +102,7 @@ export default class GraphStore {
     }
 
     metadata = {
+        snapshotName: String,
         numNodes: 0,
         numEdges: 0,
 

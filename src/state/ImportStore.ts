@@ -2,6 +2,7 @@ import { Toaster, Position, Intent } from "@blueprintjs/core";
 import { observable, makeObservable } from "mobx";
 import createGraph from "ngraph.graph";
 import parse from "csv-parse/lib/sync";
+import { IRawGraph, INode } from "./GraphStore";
 
 export default class ImportStore {
     // whether the graph is in importing
@@ -26,7 +27,6 @@ export default class ImportStore {
         nodeFile: {
             // the file is successfully parsed and ready for display
             isReady: false,
-            canImport: false,
             path: "",
 
             // has header at the top
@@ -44,7 +44,6 @@ export default class ImportStore {
         },
         edgeFile: {
             isReady: false,
-            canImport: false,
 
             // should save the csv to temp for further change the cluster attribute
             path: "",
@@ -75,13 +74,17 @@ export default class ImportStore {
         });
     }
 
-    async readCSV(fileObject, hasHeader, delimiter) {
+    async readCSV(
+        fileObject: File,
+        hasHeader: boolean,
+        delimiter: string
+    ): Promise<string[]> {
         const file = fileObject;
         const reader = new FileReader();
         reader.readAsText(file);
         return new Promise((resolve, reject) => {
             reader.onload = () => {
-                const content = reader.result;
+                let content: any = reader.result;
                 try {
                     if (hasHeader) {
                         resolve(
@@ -124,7 +127,7 @@ export default class ImportStore {
         });
     }
 
-    readEdgeCSV() {
+    readEdgeCSV(): Promise<string[]> {
         return this.readCSV(
             this.selectedEdgeFileFromInput,
             this.importConfig.edgeFile.hasHeader,
@@ -132,7 +135,7 @@ export default class ImportStore {
         );
     }
 
-    readNodeCSV() {
+    readNodeCSV(): Promise<string[]> {
         return this.readCSV(
             this.selectedNodeFileFromInput,
             this.importConfig.nodeFile.hasHeader,
@@ -151,8 +154,10 @@ export default class ImportStore {
             ? config.edgeFile.mapping.toId
             : parseInt(config.edgeFile.mapping.toId);
 
-        let nodesArr = [];
-        let edgesArr = [];
+        let rawGraph: IRawGraph;
+
+        let nodesArr = rawGraph.nodes;
+        let edgesArr = rawGraph.edges;
         const graph = createGraph();
 
         // parse Node file and store into the Graph DS
@@ -160,8 +165,8 @@ export default class ImportStore {
             nodesArr = await this.readNodeCSV();
             nodesArr.forEach((node) => {
                 graph.addNode(node[config.nodeFile.mapping.id].toString(), {
-                    _cluster: node[config.nodeFile.mapping.cluster].toString(),
-                    id: node[config.nodes.mapping.id].toString(),
+                    cluster: node[config.nodeFile.mapping.cluster].toString(),
+                    id: node[config.nodeFile.mapping.id].toString(),
                     ...node,
                 });
             });
@@ -187,7 +192,7 @@ export default class ImportStore {
             });
         });
 
-        config.edgeFile.canImport = true;
+        config.edgeFile.isReady = true;
 
         return {
             graph: graph,
