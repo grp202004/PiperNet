@@ -8,6 +8,7 @@ import {
     Switch,
     Divider,
     FileInput,
+    Alert,
 } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
@@ -61,11 +62,11 @@ export default observer(
         canImport = () => {
             if (this.state.available === NODE_AND_EDGE_FILE) {
                 return (
-                    State.import.importConfig.edgeFile.canImport &&
-                    State.import.importConfig.nodeFile.canImport
+                    State.import.importConfig.edgeFile.isReady &&
+                    State.import.importConfig.nodeFile.isReady
                 );
             } else if (this.state.available === ONLY_EDGE_FILE) {
-                return State.import.importConfig.edgeFile.canImport;
+                return State.import.importConfig.edgeFile.isReady;
             }
             return false;
         };
@@ -219,6 +220,8 @@ export default observer(
 
                             if (newDelimiter == "\\t") {
                                 newDelimiter = "\t";
+                            } else if (newDelimiter == "[SPACE]") {
+                                newDelimiter = " ";
                             }
 
                             State.import.importConfig.edgeFile.delimiter = newDelimiter;
@@ -242,62 +245,88 @@ export default observer(
                     }}
                     title="Import CSV"
                 >
-                    {" "}
-                    <div>
-                        <div
-                            className={classnames(
-                                Classes.DIALOG_BODY,
-                                "import-dialog"
-                            )}
-                        >
-                            I have:
-                            <SimpleSelect
-                                items={[ONLY_EDGE_FILE, NODE_AND_EDGE_FILE]}
-                                value={this.state.available}
-                                onSelect={(targetValue) => {
-                                    State.import.importConfig.nodeFile.hasNodeFile = !(
-                                        targetValue === ONLY_EDGE_FILE
-                                    );
-                                    this.setState({ available: targetValue });
-                                }}
-                            />
-                            <Divider />
-                            {this.renderNodesSelection()}
-                            <br />
-                            {this.renderEdgesSelection()}
-                            <br />
-                            {this.renderDelimiterSelection()}
-                        </div>
-                        <div className={Classes.DIALOG_FOOTER}>
-                            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                                <Button
-                                    className={classnames({
-                                        [Classes.DISABLED]: !this.canImport(),
-                                    })}
-                                    intent={Intent.PRIMARY}
-                                    onClick={() => {
-                                        // // TODO: this might be unsafe, check if there's racing condition
-                                        // requestCreateNewProject({
-                                        //     name: State.project.newProjectName,
-                                        //     createdDate: new Date().toLocaleString(),
-                                        // });
-                                        // requestImportGraphFromCSV(
-                                        //     //edgefile.delimiter and nodefile.delimiter are the same
-                                        //     this.state.available ===
-                                        //         NODE_AND_EDGE_FILE,
-                                        //     State.import.importConfig.edgeFile
-                                        //         .delimiter,
-                                        //     State.project.newProjectName
-                                        // );
-                                        // // Importing a graph means no label would be shown by default,
-                                        // // thus turn off label CSSRenderer for better performance.
-                                        // State.graph.frame.turnOffLabelCSSRenderer();
+                    {/* if is loading, then show Spinner */}
+                    {State.import.isLoading ? (
+                        <Spinner />
+                    ) : (
+                        <div>
+                            <div
+                                className={classnames(
+                                    Classes.DIALOG_BODY,
+                                    "import-dialog"
+                                )}
+                            >
+                                I have:
+                                <SimpleSelect
+                                    items={[ONLY_EDGE_FILE, NODE_AND_EDGE_FILE]}
+                                    value={this.state.available}
+                                    onSelect={(targetValue) => {
+                                        State.import.importConfig.hasNodeFile = !(
+                                            targetValue === ONLY_EDGE_FILE
+                                        );
+                                        this.setState({
+                                            available: targetValue,
+                                        });
                                     }}
-                                    text="Import"
                                 />
+                                <Divider />
+                                {this.renderNodesSelection()}
+                                <br />
+                                {this.renderEdgesSelection()}
+                                <br />
+                                {this.renderDelimiterSelection()}
+                            </div>
+                            <div className={Classes.DIALOG_FOOTER}>
+                                <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                                    <Button
+                                        className={classnames({
+                                            [Classes.DISABLED]: !this.canImport(),
+                                        })}
+                                        intent={Intent.PRIMARY}
+                                        onClick={() => {
+                                            // requestCreateNewProject({
+                                            //     name: State.project.newProjectName,
+                                            //     createdDate: new Date().toLocaleString(),
+                                            // });
+                                            State.import.isLoading = true;
+                                            State.import
+                                                .importGraphFromCSV()
+                                                .then((graph) => {
+                                                    State.graph.originalGraph =
+                                                        graph.graph;
+                                                    State.graph.rawGraph =
+                                                        graph.rawGraph;
+                                                    State.graph.metadata =
+                                                        graph.metadata;
+
+                                                    // runInAction(
+                                                    //     "load imported graph",
+                                                    //     () => {
+                                                    //         appState.graph.rawGraph =
+                                                    //             graph.rawGraph;
+                                                    //         appState.graph.metadata =
+                                                    //             graph.metadata;
+                                                    //         appState.graph.setUpFrame();
+                                                    //     }
+                                                    // );
+                                                    // // Reinitialize global configs
+                                                    // appState.graph.nodes =
+                                                    //     appState.graph.initialGlobalConfig.nodes;
+                                                    // appState.graph.overrides = new Map();
+
+                                                    State.import.isLoading = false;
+                                                    State.import.importCSVDialogOpen = false;
+
+                                                    // // Newly imported graph shouldn't have label showing
+                                                    // appState.graph.frame.turnOffLabelCSSRenderer();
+                                                });
+                                        }}
+                                        text="Import"
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </Dialog>
             );
         }
