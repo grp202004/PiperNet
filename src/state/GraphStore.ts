@@ -1,22 +1,19 @@
 import { observable, computed, makeObservable } from "mobx";
+import { Graph } from "ngraph.graph";
 import createGraph from "ngraph.graph";
 
-export interface IRawGraph {
-    nodes: INode[];
-    edges: [];
-}
+// interface Edge<Data = any> {
+//     id: LinkId,
+//     fromId: NodeId,
+//     toId: NodeId,
+//     data: Data
+// }
 
-export interface INode {
-    Id: string;
-    data: any;
-    // data has _cluster attribute to define the cluster
-}
-
-export interface IEdge {
-    fromId: string;
-    toId: string;
-    value: number;
-}
+// interface Node<Data = any> {
+//     id: NodeId,
+//     links: Link[],
+//     data: Data
+// }
 
 export default class GraphStore {
     initialGlobalConfig = {
@@ -43,24 +40,40 @@ export default class GraphStore {
         },
     };
 
-    originalGraph = null;
+    originalGraph: Graph = createGraph();
 
     get adapterGraph() {
+        interface Node {
+            id: string | number;
+            name: string | number;
+            val: number;
+        }
+
+        interface Edge {
+            source?: string | number;
+            target?: string | number;
+        }
+
+        let nodes: Node[] = [];
+        let links: Edge[] = [];
+
         let tempGraph = {
-            nodes: [],
-            links: [],
+            nodes: nodes,
+            links: links,
         };
 
+        // this time the graph has not been imported yet
         if (this.originalGraph == null) {
             return tempGraph;
         }
 
         this.originalGraph.forEachNode((node) => {
-            tempGraph.nodes.push({
+            let thisNode: Node = {
                 id: node.id,
                 name: node.id,
                 val: 1,
-            });
+            };
+            tempGraph.nodes.push(thisNode);
         });
 
         this.originalGraph.forEachLink((link) => {

@@ -11,12 +11,7 @@ import State from "../../state/index";
 export default observer(
     class ThreeJSVis extends React.Component {
         render() {
-            return (
-                <ForceGraph3D
-                    graphData={State.graph.adapterGraph}
-                    backgroundColor="white"
-                />
-            );
+            return <ForceGraph3D graphData={State.graph.adapterGraph} />;
         }
     }
 );

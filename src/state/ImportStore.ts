@@ -2,7 +2,7 @@ import { Toaster, Position, Intent } from "@blueprintjs/core";
 import { observable, makeObservable } from "mobx";
 import createGraph from "ngraph.graph";
 import parse from "csv-parse/lib/sync";
-import { IRawGraph, INode, IEdge } from "./GraphStore";
+import { Link as Edge, Node, Graph } from "ngraph.graph";
 
 export default class ImportStore {
     // whether the graph is in importing
@@ -17,10 +17,10 @@ export default class ImportStore {
     importGEXFDialogOpen = false;
 
     // specific: File object selected via the file input.
-    selectedEdgeFileFromInput = null;
-    selectedNodeFileFromInput = null;
+    selectedEdgeFileFromInput!: File;
+    selectedNodeFileFromInput!: File;
 
-    selectedGEXFFileFromInput = null;
+    selectedGEXFFileFromInput!: File;
 
     importConfig = {
         hasNodeFile: false,
@@ -78,7 +78,7 @@ export default class ImportStore {
         fileObject: File,
         hasHeader: boolean,
         delimiter: string
-    ): Promise<string[]> {
+    ): Promise<any[]> {
         const file = fileObject;
         const reader = new FileReader();
         reader.readAsText(file);
@@ -127,7 +127,7 @@ export default class ImportStore {
         });
     }
 
-    public readEdgeCSV(): Promise<string[]> {
+    public readEdgeCSV(): Promise<any[]> {
         return this.readCSV(
             this.selectedEdgeFileFromInput,
             this.importConfig.edgeFile.hasHeader,
@@ -135,7 +135,7 @@ export default class ImportStore {
         );
     }
 
-    public readNodeCSV(): Promise<string[]> {
+    public readNodeCSV(): Promise<any[]> {
         return this.readCSV(
             this.selectedNodeFileFromInput,
             this.importConfig.nodeFile.hasHeader,
@@ -143,40 +143,23 @@ export default class ImportStore {
         );
     }
 
-    private createNode(_id: string, _data: any, cluster: string): INode {
-        let tempNode: INode;
-        tempNode.Id = _id;
-        tempNode.data = _data;
-        tempNode.data._cluster = cluster;
-        return tempNode;
-    }
-
-    private createEdge(_fromId: string, _toId: string, _value: any) {
-        let tempEdge: IEdge;
-        tempEdge.fromId = _fromId;
-        tempEdge.toId = _toId;
-        tempEdge.value = _value;
-        return tempEdge;
+    private getProperties(raw: any[]): string[] | null {
+        return raw.length == 0 ? null : Object.keys(raw[0]);
     }
 
     public async importGraphFromCSV() {
         const config = this.importConfig;
 
         // the CSV lib we use uses int index when there's not header/column names specified
-        const fromId = config.edgeFile.hasHeader
+        const fromColumn = config.edgeFile.hasHeader
             ? config.edgeFile.mapping.fromId
             : parseInt(config.edgeFile.mapping.fromId);
-        const toId = config.edgeFile.hasHeader
+        const toColumn = config.edgeFile.hasHeader
             ? config.edgeFile.mapping.toId
             : parseInt(config.edgeFile.mapping.toId);
 
-        let rawGraph: IRawGraph;
-
-        let tempNodes = [];
-        let tempEdges = [];
-
-        let nodes: INode[];
-        let edges: IEdge[];
+        let tempNodes: any[] = [];
+        let tempEdges: any[] = [];
 
         const graph = createGraph();
 
@@ -184,56 +167,42 @@ export default class ImportStore {
         if (config.hasNodeFile) {
             tempNodes = await this.readNodeCSV();
             tempNodes.forEach((node) => {
-                let thisNode: INode = this.createNode(
+                let data: any = node;
+                data._cluster = node[
+                    config.nodeFile.mapping.cluster
+                ].toString();
+
+                graph.addNode(
                     node[config.nodeFile.mapping.id].toString(),
-                    node[config.nodeFile.mapping.cluster].toString(),
-                    node[config.nodeFile.mapping.cluster].toString()
+                    data
                 );
-                graph.addNode(thisNode.Id, thisNode.data);
-                nodes.push(thisNode);
             });
         }
 
         // parse Edge file and store into the Graph DS
         tempEdges = await this.readEdgeCSV();
         tempEdges.forEach((edge) => {
-            let thisEdge: IEdge = this.createEdge(
-                edge[fromId].toString(),
-                edge[toId].toString(),
-                0
-            );
-            if (!graph.hasNode(thisEdge.fromId)) {
-                let missingNode: INode = this.createNode(
-                    thisEdge.fromId,
-                    { id: thisEdge.fromId },
-                    null
-                );
-                graph.addNode(missingNode.Id, missingNode.data);
-                nodes.push(missingNode);
+            let fromId = edge[fromColumn].toString();
+            let toId = edge[toColumn].toString();
+
+            if (!graph.hasNode(fromId)) {
+                let data = { id: fromId, _cluster: null };
+                graph.addNode(fromId, data);
             }
-            if (!graph.hasNode(thisEdge.toId)) {
-                let missingNode: INode = this.createNode(
-                    thisEdge.toId,
-                    { id: thisEdge.toId },
-                    null
-                );
-                graph.addNode(missingNode.Id, missingNode.data);
-                nodes.push(missingNode);
+            if (!graph.hasNode(toId)) {
+                let data = { id: toId, _cluster: null };
+                graph.addNode(toId, data);
             }
-            graph.addLink(thisEdge.fromId, thisEdge.toId);
-            edges.push(thisEdge);
+            graph.addLink(fromId, toId);
         });
 
         config.edgeFile.isReady = true;
 
         return {
             graph: graph,
-            rawGraph: { nodes: nodes, edges: edges },
             metadata: {
                 snapshotName: "Untitled",
-                fullNodes: nodes.length,
-                fullEdges: edges.length,
-                nodeProperties: Object.keys(nodes[0]),
+                nodeProperties: this.getProperties(tempNodes),
                 clusterProperties: config.hasNodeFile
                     ? null
                     : config.nodeFile.mapping.cluster,
