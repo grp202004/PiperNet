@@ -9,6 +9,7 @@ import {
     Divider,
     FileInput,
     Alert,
+    Callout,
 } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
@@ -21,27 +22,37 @@ import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../constants/index";
 
 let PreviewTable = observer(
     class PreviewTable extends React.Component {
-        render() {
-            const file = this.props.file;
-            return (
+        file = this.props.file;
+
+        renderWrapper = () => {
+            return this.file.parseError ? (
+                <Callout title={"Error Parsing File"} intent="warning">
+                    Try with other options of <code>Delimiter</code> or review
+                    the file for import to find possible problems.
+                </Callout>
+            ) : (
                 <Table
                     className="import-preview-table"
-                    numRows={20}
-                    selectedRegions={Object.values(file.mapping)
-                        .map((it) => file.columns.indexOf(it))
+                    numRows={this.file.topN.length}
+                    selectedRegions={Object.values(this.file.mapping)
+                        .map((it) => this.file.columns.indexOf(it))
                         .map((it) => ({ rows: null, cols: [it, it] }))}
                 >
-                    {file.columns.map((it) => (
+                    {this.file.columns.map((it) => (
                         <Column
                             key={it}
                             name={it}
                             cellRenderer={(i) => (
-                                <Cell>{file.topN[i][it]}</Cell>
+                                <Cell>{this.file.topN[i][it]}</Cell>
                             )}
                         />
                     ))}
                 </Table>
             );
+        };
+
+        render() {
+            return this.renderWrapper();
         }
     }
 );

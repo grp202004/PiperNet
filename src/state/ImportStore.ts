@@ -1,5 +1,5 @@
 import { Toaster, Position, Intent } from "@blueprintjs/core";
-import { observable, makeObservable } from "mobx";
+import { observable, makeObservable, trace } from "mobx";
 import createGraph from "ngraph.graph";
 import parse from "csv-parse/lib/sync";
 import { Link as Edge, Node, Graph } from "ngraph.graph";
@@ -27,6 +27,7 @@ export default class ImportStore {
         nodeFile: {
             // the file is successfully parsed and ready for display
             isReady: false,
+            parseError: false,
             path: "",
 
             // has header at the top
@@ -44,6 +45,7 @@ export default class ImportStore {
         },
         edgeFile: {
             isReady: false,
+            parseError: false,
 
             // should save the csv to temp for further change the cluster attribute
             path: "",
@@ -208,6 +210,220 @@ export default class ImportStore {
                     : config.nodeFile.mapping.cluster,
                 edgeProperties: ["source_id", "target_id"],
             },
+        };
+    }
+
+    public renderImportEdgePreview(): void {
+        trace();
+        let file = this.selectedEdgeFileFromInput;
+        let edgeFileConfig = this.importConfig.edgeFile;
+        let hasHeader = edgeFileConfig.hasHeader;
+        let delimiter = edgeFileConfig.delimiter;
+
+        edgeFileConfig.parseError = false;
+
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onload = () => {
+            // Read entire CSV into memory as string
+            let fileAsString = <string>reader.result;
+
+            // if the file is not regularly formatted, replace the EOL character
+            fileAsString = fileAsString.replace(/\r\n/g, "\n");
+            fileAsString = fileAsString.replace(/\r/g, "\n");
+
+            // Get top 10ß lines. Or if there's less than 10 line, get all the lines.
+            const lines = fileAsString.split("\n");
+            const topLinesAsString = lines
+                .map((l) => l.trim())
+                // l is the value and i is the index value
+                .slice(0, lines.length < 10 ? lines.length : 10)
+                .join("\n");
+            console.log(topLinesAsString);
+
+            // Parse the top lines
+            try {
+                const it = hasHeader
+                    ? parse(topLinesAsString, {
+                          comment: "#",
+                          trim: true,
+                          auto_parse: true,
+                          skip_empty_lines: true,
+                          columns: hasHeader,
+                          delimiter: delimiter,
+                      })
+                    : parse(topLinesAsString, {
+                          comment: "#",
+                          trim: true,
+                          auto_parse: true,
+                          skip_empty_lines: true,
+                          columns: undefined,
+                          delimiter: delimiter,
+                      });
+                edgeFileConfig.topN = it;
+                edgeFileConfig.columns = <any>(
+                    Object.keys(it[0]).map((key) => `${key}`)
+                );
+
+                // if there exists two or more columns in the parsed edge file
+                if (edgeFileConfig.columns.length >= 2) {
+                    edgeFileConfig.mapping.fromId = edgeFileConfig.columns[0];
+                    edgeFileConfig.mapping.toId = edgeFileConfig.columns[1];
+                    edgeFileConfig.isReady = true;
+                } else if (edgeFileConfig.columns.length == 1) {
+                    edgeFileConfig.mapping.fromId = edgeFileConfig.mapping.toId =
+                        edgeFileConfig.columns[0];
+                    edgeFileConfig.isReady = true;
+                } else {
+                    Toaster.create({
+                        position: Position.TOP,
+                    }).show({
+                        message: "Error: Fails to parse file",
+                        intent: Intent.DANGER,
+                        timeout: -1,
+                    });
+                    edgeFileConfig.parseError = true;
+                }
+            } catch {
+                Toaster.create({
+                    position: Position.TOP,
+                }).show({
+                    action: {
+                        onClick: () => window.location.reload(),
+                        text: "Refresh Page",
+                    },
+                    message: "Error: Fails to parse file",
+                    intent: Intent.DANGER,
+                    timeout: -1,
+                });
+                edgeFileConfig.parseError = true;
+            }
+        };
+
+        reader.onerror = () => {
+            console.error(reader.error);
+            Toaster.create({
+                position: Position.TOP,
+            }).show({
+                action: {
+                    onClick: () => window.location.reload(),
+                    text: "Refresh Page",
+                },
+                message: "Error: Fails to open file",
+                intent: Intent.DANGER,
+                timeout: -1,
+            });
+        };
+    }
+
+    public renderImportNodePreview(): void {
+        trace();
+        let file = this.selectedNodeFileFromInput;
+        let nodeFileConfig = this.importConfig.nodeFile;
+        let hasHeader = nodeFileConfig.hasHeader;
+        let delimiter = nodeFileConfig.delimiter;
+
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onload = () => {
+            // Read entire CSV into memory as string
+            let fileAsString = <string>reader.result;
+
+            // if the file is not regularly formatted, replace the EOL character
+            fileAsString = fileAsString.replace(/\r\n/g, "\n");
+            fileAsString = fileAsString.replace(/\r/g, "\n");
+
+            // Get top 10 lines. Or if there's less than 10 line, get all the lines.
+            const lines = fileAsString.split("\n");
+            const lineNumber = lines.length;
+            const topLinesAsString = lines
+                .map((l) => l.trim())
+                .slice(0, lines.length < 10 ? lines.length : 10)
+                .join("\n");
+            console.log(topLinesAsString);
+
+            // Parse the top lines
+            try {
+                const it = hasHeader
+                    ? parse(topLinesAsString, {
+                          comment: "#",
+                          trim: true,
+                          auto_parse: true,
+                          skip_empty_lines: true,
+                          columns: hasHeader,
+                          delimiter,
+                      })
+                    : parse(topLinesAsString, {
+                          comment: "#",
+                          trim: true,
+                          auto_parse: true,
+                          skip_empty_lines: true,
+                          columns: undefined,
+                          delimiter,
+                      });
+                nodeFileConfig.topN = it;
+                nodeFileConfig.columns = <any>(
+                    Object.keys(it[0]).map((key) => `${key}`)
+                );
+
+                // if there exists two or more columns in the parsed edge file
+                if (nodeFileConfig.columns.length >= 2) {
+                    nodeFileConfig.mapping.id = nodeFileConfig.columns[0];
+                    nodeFileConfig.mapping.cluster = nodeFileConfig.columns[1];
+                    nodeFileConfig.isReady = true;
+                } else if (nodeFileConfig.columns.length == 1) {
+                    nodeFileConfig.mapping.id = nodeFileConfig.mapping.cluster =
+                        nodeFileConfig.columns[0];
+                    nodeFileConfig.isReady = true;
+                } else {
+                    Toaster.create({
+                        position: Position.TOP,
+                    }).show({
+                        action: {
+                            onClick: () => window.location.reload(),
+                            text: "Refresh Page",
+                        },
+                        message: "Error: Fails to parse file",
+                        intent: Intent.DANGER,
+                        timeout: -1,
+                    });
+                }
+            } catch {
+                Toaster.create({
+                    position: Position.TOP,
+                }).show({
+                    action: {
+                        onClick: () => window.location.reload(),
+                        text: "Refresh Page",
+                    },
+                    message: "Error: Fails to parse file",
+                    intent: Intent.DANGER,
+                    timeout: -1,
+                });
+            }
+        };
+
+        reader.onerror = () => {
+            console.error(reader.error);
+            Toaster.create({
+                position: Position.TOP,
+            }).show({
+                action: {
+                    onClick: () => window.location.reload(),
+                    text: "Refresh Page",
+                },
+                message: "Error: Fails to open file",
+                intent: Intent.DANGER,
+                timeout: -1,
+            });
         };
     }
 }
