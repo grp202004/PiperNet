@@ -240,7 +240,6 @@ export default class ImportStore {
             const lines = fileAsString.split("\n");
             const topLinesAsString = lines
                 .map((l) => l.trim())
-                // l is the value and i is the index value
                 .slice(0, lines.length < 10 ? lines.length : 10)
                 .join("\n");
             console.log(topLinesAsString);
@@ -292,10 +291,6 @@ export default class ImportStore {
                 Toaster.create({
                     position: Position.TOP,
                 }).show({
-                    action: {
-                        onClick: () => window.location.reload(),
-                        text: "Refresh Page",
-                    },
                     message: "Error: Fails to parse file",
                     intent: Intent.DANGER,
                     timeout: -1,
@@ -327,6 +322,8 @@ export default class ImportStore {
         let hasHeader = nodeFileConfig.hasHeader;
         let delimiter = nodeFileConfig.delimiter;
 
+        nodeFileConfig.parseError = false;
+
         if (!file) {
             return;
         }
@@ -343,7 +340,6 @@ export default class ImportStore {
 
             // Get top 10 lines. Or if there's less than 10 line, get all the lines.
             const lines = fileAsString.split("\n");
-            const lineNumber = lines.length;
             const topLinesAsString = lines
                 .map((l) => l.trim())
                 .slice(0, lines.length < 10 ? lines.length : 10)
@@ -387,27 +383,21 @@ export default class ImportStore {
                     Toaster.create({
                         position: Position.TOP,
                     }).show({
-                        action: {
-                            onClick: () => window.location.reload(),
-                            text: "Refresh Page",
-                        },
                         message: "Error: Fails to parse file",
                         intent: Intent.DANGER,
                         timeout: -1,
                     });
+                    nodeFileConfig.parseError = true;
                 }
             } catch {
                 Toaster.create({
                     position: Position.TOP,
                 }).show({
-                    action: {
-                        onClick: () => window.location.reload(),
-                        text: "Refresh Page",
-                    },
                     message: "Error: Fails to parse file",
                     intent: Intent.DANGER,
                     timeout: -1,
                 });
+                nodeFileConfig.parseError = true;
             }
         };
 
