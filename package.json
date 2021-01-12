@@ -8,6 +8,8 @@
         "@blueprintjs/table": "^3.8.18",
         "classnames": "^2.2.6",
         "csv-parse": "^4.14.2",
+        "dotenv": "8.2.0",
+        "dotenv-expand": "5.1.0",
         "mobx": "^6.0.4",
         "mobx-react": "^7.0.5",
         "ngraph.graph": "^19.1.0",
@@ -15,6 +17,7 @@
         "react-dom": "^16.14.0",
         "react-force-graph": "^1.37.1",
         "react-scripts": "4.0.1",
+        "@vx/vx": "^0.0.199",
         "web-vitals": "^0.2.4"
     },
     "scripts": {
