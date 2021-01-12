@@ -10,9 +10,9 @@ import {
 import Navbar from "./components/Navbar";
 import Dialogs from "./components/Dialogs";
 import ThreeJSVis from "./components/visualize/visualizer";
-import NodeDetail from "./components/panels/NodeDetailPanel";
+// import NodeDetail from "./components/panels/NodeDetailPanel";
 import State from "./state/index";
-import FloatingCards from "./components/FloatingCards";
+// import FloatingCards from "./components/FloatingCards";
 
 function App() {
     return (
@@ -27,8 +27,6 @@ function App() {
                 <ThreeJSVis />
             </main>
             {/* {State.graph.hasGraph && <FloatingCards />} */}
-            {/* <NodeDetail/> */}
-            <FloatingCards />
             <Dialogs />
         </div>
     );
