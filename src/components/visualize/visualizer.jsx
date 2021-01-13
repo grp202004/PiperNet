@@ -26,7 +26,6 @@ export default observer(
                         dagMode={"td"}
                         // dagLevelDistance={300}
                         backgroundColor="#101020"
-                        linkColor={() => "rgba(255,255,255,0.2)"}
                         nodeRelSize={1}
                         // nodeId="path"
                         // nodeVal={(node) => 100 / (node.level + 1)}

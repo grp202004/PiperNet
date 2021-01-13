@@ -1,7 +1,4 @@
 import { autorun, runInAction, trace, observable, makeObservable } from "mobx";
-import { Intent, Position, Toaster } from "@blueprintjs/core";
-
-import parse from "csv-parse/lib/sync";
 
 import PreferencesStore from "./PreferencesStore";
 import GraphStore from "./GraphStore";
@@ -17,10 +14,15 @@ class AppState {
         this.search = new SearchStore();
         this.project = new ProjectStore();
     }
+
+    preferences: PreferencesStore;
+    graph: GraphStore;
+    import: ImportStore;
+    search: SearchStore;
+    project: ProjectStore;
 }
 
 const State = new AppState();
-window.state = State;
 
 // extract CSV from selected edge File object and update related fields.
 // will auto run if selectedEdgeFileFromInput or delimiter or anything is changed.

@@ -303,10 +303,8 @@ export default observer(
                                             State.import
                                                 .importGraphFromCSV()
                                                 .then((graph) => {
-                                                    State.graph.originalGraph =
-                                                        graph.graph;
                                                     State.graph.rawGraph =
-                                                        graph.rawGraph;
+                                                        graph.graph;
                                                     State.graph.metadata =
                                                         graph.metadata;
 

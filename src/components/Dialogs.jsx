@@ -12,7 +12,7 @@ import ImportDialog from "./ImportDialog";
 // import StatisticsDialog from './StatisticsDialog';
 // import HelpDialog from './HelpDialog';
 // import NeighborDialog from './NeighborDialog';
-// import DataSheetDialog from './DataSheetDialog';
+import DataSheetDialog from "./DataSheetDialog";
 
 export default class Dialogs extends React.Component {
     render() {
@@ -30,8 +30,8 @@ export default class Dialogs extends React.Component {
                 <ShareDialog />
                 <StatisticsDialog />
                 <HelpDialog />
-                <NeighborDialog />
-                <DataSheetDialog /> */}
+                <NeighborDialog /> */}
+                <DataSheetDialog />
             </div>
         );
     }

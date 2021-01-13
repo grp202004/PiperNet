@@ -120,7 +120,6 @@ export default observer(
                                         onClick={() => {
                                             // State.graph.frame.pauseLayout();
                                             State.preferences.dataSheetDialogOpen = true;
-                                            this.forceUpdate();
                                         }}
                                     />
                                     <MenuItem

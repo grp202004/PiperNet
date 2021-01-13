@@ -15,6 +15,11 @@ import createGraph from "ngraph.graph";
 //     data: Data
 // }
 
+export interface IHiddenOptions {
+    show: boolean;
+    cluster: string | null;
+}
+
 export default class GraphStore {
     initialGlobalConfig = {
         nodes: {
@@ -40,7 +45,7 @@ export default class GraphStore {
         },
     };
 
-    originalGraph: Graph = createGraph();
+    rawGraph: Graph = createGraph();
 
     get adapterGraph() {
         interface Node {
@@ -63,11 +68,11 @@ export default class GraphStore {
         };
 
         // this time the graph has not been imported yet
-        if (this.originalGraph == null) {
+        if (this.rawGraph == null) {
             return tempGraph;
         }
 
-        this.originalGraph.forEachNode((node) => {
+        this.rawGraph.forEachNode((node) => {
             let thisNode: Node = {
                 id: node.id,
                 name: node.id,
@@ -76,7 +81,7 @@ export default class GraphStore {
             tempGraph.nodes.push(thisNode);
         });
 
-        this.originalGraph.forEachLink((link) => {
+        this.rawGraph.forEachLink((link) => {
             tempGraph.links.push({
                 source: link.fromId,
                 target: link.toId,
@@ -105,14 +110,10 @@ export default class GraphStore {
     // useful for NeighborDialog
     _lastSelectedSingleNode = null;
 
-    rawGraph = {
-        nodes: [],
-        edges: [],
-    };
-
     get hasGraph() {
         return (
-            this.rawGraph.edges.length != 0 && this.rawGraph.nodes.length != 0
+            this.rawGraph.getNodesCount() != 0 &&
+            this.rawGraph.getLinksCount() != 0
         );
     }
 
@@ -125,6 +126,24 @@ export default class GraphStore {
         nodeProperties: [],
         edgeProperties: [],
     };
+
+    public showNodes(ids: string[]) {
+        ids.map((nodeId: string) => {
+            let thisNode;
+            if ((thisNode = this.rawGraph.getNode(nodeId))) {
+                thisNode.data._options.show = true;
+            }
+        });
+    }
+
+    public hideNodes(ids: string[]) {
+        ids.map((nodeId: string) => {
+            let thisNode;
+            if ((thisNode = this.rawGraph.getNode(nodeId))) {
+                thisNode.data._options.show = false;
+            }
+        });
+    }
 
     // // Triggers autorun in stores/index.js to sent computedGraph to graph-frontend.
     // get computedGraph() {
@@ -167,7 +186,7 @@ export default class GraphStore {
 
     constructor() {
         makeObservable(this, {
-            originalGraph: observable,
+            rawGraph: observable,
             adapterGraph: computed,
             initialGlobalConfig: observable,
             hasGraph: computed,
@@ -182,7 +201,6 @@ export default class GraphStore {
             selectedNodes: observable,
             currentlyHovered: observable,
             _lastSelectedSingleNode: observable,
-            rawGraph: observable,
             metadata: observable,
             // _lastSelectedSingleNode: observable,
         });

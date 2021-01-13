@@ -3,6 +3,7 @@ import { observable, makeObservable, trace } from "mobx";
 import createGraph from "ngraph.graph";
 import parse from "csv-parse/lib/sync";
 import { Link as Edge, Node, Graph } from "ngraph.graph";
+import { IHiddenOptions } from "./GraphStore";
 
 export default class ImportStore {
     // whether the graph is in importing
@@ -87,6 +88,8 @@ export default class ImportStore {
         return new Promise((resolve, reject) => {
             reader.onload = () => {
                 let content: any = reader.result;
+                content = content.replace(/\r\n/g, "\n");
+                content = content.replace(/\r/g, "\n");
                 try {
                     if (hasHeader) {
                         resolve(
@@ -169,14 +172,14 @@ export default class ImportStore {
         if (config.hasNodeFile) {
             tempNodes = await this.readNodeCSV();
             tempNodes.forEach((node) => {
-                let data: any = node;
-                data._cluster = node[
-                    config.nodeFile.mapping.cluster
-                ].toString();
-
+                let options: IHiddenOptions = {
+                    show: true,
+                    cluster: node[config.nodeFile.mapping.cluster].toString(),
+                };
+                node._options = options;
                 graph.addNode(
                     node[config.nodeFile.mapping.id].toString(),
-                    data
+                    node
                 );
             });
         }
@@ -188,11 +191,19 @@ export default class ImportStore {
             let toId = edge[toColumn].toString();
 
             if (!graph.hasNode(fromId)) {
-                let data = { id: fromId, _cluster: null };
+                let options: IHiddenOptions = {
+                    show: true,
+                    cluster: null,
+                };
+                let data = { id: fromId, _options: options };
                 graph.addNode(fromId, data);
             }
             if (!graph.hasNode(toId)) {
-                let data = { id: toId, _cluster: null };
+                let options: IHiddenOptions = {
+                    show: true,
+                    cluster: null,
+                };
+                let data = { id: toId, _options: options };
                 graph.addNode(toId, data);
             }
             graph.addLink(fromId, toId);
