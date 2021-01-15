@@ -15,24 +15,30 @@ import State from "./state/index";
 import PopoverExample from "./components/test";
 import EdgesPanel from "./components/panels/EdgesPanel";
 import LabelsPanel from "./components/panels/LabelsPanel";
-// import FloatingCards from "./components/FloatingCards";
+import SelectionPanel from "./components/panels/SelectionPanel";
+import GlobalPanel from "./components/panels/GlobalPanel";
+// import NodesPanel from "./components/panels/NodesPanel";
+import FloatingCards from "./components/FloatingCards";
 
 function App() {
     return (
         <div
-            // className={classnames({
-            //     "app-wrapper": true,
-            //     [Classes.DARK]: true,
-            // })}
+            className={classnames({
+                "app-wrapper": true,
+                [Classes.DARK]: true,
+            })}
         >
-            {/* <Navbar /> */}
-            {/* <main className="main"> */}
-                {/* <ThreeJSVis /> */}
-            {/* </main> */}
+            <Navbar />
+            {/* <main className="main">
+                <ThreeJSVis />
+            </main> */}
             {/* {State.graph.hasGraph && <FloatingCards />} */}
+            <FloatingCards />
+            {/* //FloatingCards test */}
+            
             {/* <Dialogs /> */}
-            {/* <PopoverExample/> */}
-            <LabelsPanel/>
+          
+            {/* <NodesPanel/> */}
         </div>
 
     );

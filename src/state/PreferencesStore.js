@@ -10,4 +10,6 @@ export default class PreferencesStore {
     helpDialogOpen = false;
     neighborDialogOpen = false;
     dataSheetDialogOpen = false;
+    isRenderOptionsCardHidden=true;
 }
+
