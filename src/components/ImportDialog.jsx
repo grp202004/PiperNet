@@ -246,6 +246,7 @@ export default observer(
         render() {
             return (
                 <Dialog
+                    style={{ minWidth: "80vw" }}
                     iconName="import"
                     className={classnames({
                         [Classes.DARK]: State.preferences.darkMode,
@@ -302,11 +303,11 @@ export default observer(
                                             State.import.isLoading = true;
                                             State.import
                                                 .importGraphFromCSV()
-                                                .then((graph) => {
+                                                .then((res) => {
                                                     State.graph.rawGraph =
-                                                        graph.graph;
+                                                        res.graph;
                                                     State.graph.metadata =
-                                                        graph.metadata;
+                                                        res.metadata;
 
                                                     // runInAction(
                                                     //     "load imported graph",

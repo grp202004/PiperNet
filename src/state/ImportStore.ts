@@ -148,10 +148,6 @@ export default class ImportStore {
         );
     }
 
-    private getProperties(raw: any[]): string[] | null {
-        return raw.length == 0 ? null : Object.keys(raw[0]);
-    }
-
     public async importGraphFromCSV() {
         const config = this.importConfig;
 
@@ -179,7 +175,7 @@ export default class ImportStore {
                 node._options = options;
                 graph.addNode(
                     node[config.nodeFile.mapping.id].toString(),
-                    node
+                    ...node
                 );
             });
         }
@@ -211,11 +207,15 @@ export default class ImportStore {
 
         config.edgeFile.isReady = true;
 
+        let nodeProperties = config.hasNodeFile
+            ? Object.keys(tempNodes[0])
+            : ["id"];
+
         return {
             graph: graph,
             metadata: {
                 snapshotName: "Untitled",
-                nodeProperties: this.getProperties(tempNodes),
+                nodeProperties: nodeProperties,
                 clusterProperties: config.hasNodeFile
                     ? null
                     : config.nodeFile.mapping.cluster,

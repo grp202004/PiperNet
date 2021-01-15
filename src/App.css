@@ -94,6 +94,12 @@ html {
     pointer-events: all;
 }
 
+.overlay-button {
+    position: absolute;
+    left: 30px;
+    top: 30px;
+}
+
 .left-cards {
     position: absolute;
     border-top: 4px;

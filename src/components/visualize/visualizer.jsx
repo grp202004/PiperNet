@@ -18,21 +18,26 @@ export default observer(
 
         renderGraph = () => {
             if (this.state.view === "3D") {
-                return <ForceGraph3D graphData={State.graph.adapterGraph} />;
+                return (
+                    <ForceGraph3D
+                        graphData={State.graph.adapterGraph}
+                        nodeResolution={20}
+                    />
+                );
             } else {
                 return (
                     <ForceGraph2D
                         graphData={State.graph.adapterGraph}
                         dagMode={"td"}
                         // dagLevelDistance={300}
-                        backgroundColor="#101020"
+                        // backgroundColor="#101020"
                         nodeRelSize={1}
                         // nodeId="path"
                         // nodeVal={(node) => 100 / (node.level + 1)}
                         // nodeLabel="path"
                         // nodeAutoColorBy="module"
-                        linkDirectionalParticles={2}
-                        linkDirectionalParticleWidth={2}
+                        // linkDirectionalParticles={2}
+                        // linkDirectionalParticleWidth={2}
                         d3VelocityDecay={0.3}
                     />
                 );
@@ -43,7 +48,7 @@ export default observer(
             return (
                 <div>
                     <SimpleSelect
-                        className="floating-overlay"
+                        class="overlay-button"
                         items={this.state.viewOptions}
                         value={this.state.view}
                         onSelect={(it) => this.setState({ view: it })}

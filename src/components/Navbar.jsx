@@ -50,7 +50,7 @@ export default observer(
                                             (sample) => {
                                                 const sampleSnapshotTitle =
                                                     sample[0];
-                                                const sampleSnapshotRawJson =
+                                                const sampleSnapshotString =
                                                     sample[1];
 
                                                 return (
@@ -60,7 +60,24 @@ export default observer(
                                                             sampleSnapshotTitle
                                                         }
                                                         onClick={() => {
-                                                            //TODO: add sample graphs for demo
+                                                            State.import.importConfig.edgeFile.mapping.fromId =
+                                                                "source";
+                                                            State.import.importConfig.edgeFile.mapping.toId =
+                                                                "target";
+                                                            State.import.selectedEdgeFileFromInput = new Blob(
+                                                                [
+                                                                    sampleSnapshotString,
+                                                                ],
+                                                                {
+                                                                    type:
+                                                                        "text/csv",
+                                                                }
+                                                            );
+                                                            let graph = State.import.importGraphFromCSV();
+                                                            State.graph.rawGraph =
+                                                                graph.graph;
+                                                            State.graph.metadata =
+                                                                graph.metadata;
                                                         }}
                                                     />
                                                 );

@@ -5,8 +5,8 @@ import reportWebVitals from "./reportWebVitals";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/table/lib/css/table.css";
 import "@blueprintjs/select/lib/css/blueprint-select.css";
-import "./App.css";
 import "normalize.css";
+import "./App.css";
 
 ReactDOM.render(
     <React.StrictMode>

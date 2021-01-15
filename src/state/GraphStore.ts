@@ -1,5 +1,5 @@
 import { observable, computed, makeObservable } from "mobx";
-import { Graph } from "ngraph.graph";
+import { Graph, Node } from "ngraph.graph";
 import createGraph from "ngraph.graph";
 
 // interface Edge<Data = any> {
@@ -90,6 +90,16 @@ export default class GraphStore {
         return tempGraph;
     }
 
+    get rawTable() {
+        let tempRawTable: Node[] = [];
+
+        this.rawGraph.forEachNode((node) => {
+            tempRawTable.push(node);
+        });
+
+        return tempRawTable;
+    }
+
     nodes = this.initialGlobalConfig.nodes;
     edges = this.initialGlobalConfig.edges;
 
@@ -126,24 +136,6 @@ export default class GraphStore {
         nodeProperties: [],
         edgeProperties: [],
     };
-
-    public showNodes(ids: string[]) {
-        ids.map((nodeId: string) => {
-            let thisNode;
-            if ((thisNode = this.rawGraph.getNode(nodeId))) {
-                thisNode.data._options.show = true;
-            }
-        });
-    }
-
-    public hideNodes(ids: string[]) {
-        ids.map((nodeId: string) => {
-            let thisNode;
-            if ((thisNode = this.rawGraph.getNode(nodeId))) {
-                thisNode.data._options.show = false;
-            }
-        });
-    }
 
     // // Triggers autorun in stores/index.js to sent computedGraph to graph-frontend.
     // get computedGraph() {
@@ -188,6 +180,7 @@ export default class GraphStore {
         makeObservable(this, {
             rawGraph: observable,
             adapterGraph: computed,
+            rawTable: computed,
             initialGlobalConfig: observable,
             hasGraph: computed,
             nodes: observable,
