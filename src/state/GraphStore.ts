@@ -1,6 +1,6 @@
 import { observable, computed, makeObservable } from "mobx";
-import { Graph, Node } from "ngraph.graph";
-import createGraph from "ngraph.graph";
+import Graph from "graphology";
+import * as graphology from "graphology-types";
 
 // interface Edge<Data = any> {
 //     id: LinkId,
@@ -45,9 +45,14 @@ export default class GraphStore {
         },
     };
 
-    rawGraph: Graph = createGraph();
+    rawGraph: Graph = new Graph({
+        allowSelfLoops: true,
+        multi: false,
+        type: "undirected",
+    });
 
     get adapterGraph() {
+        //interface from react-force-graph
         interface Node {
             id: string | number;
             name: string | number;
@@ -67,37 +72,25 @@ export default class GraphStore {
             links: links,
         };
 
-        // this time the graph has not been imported yet
-        if (this.rawGraph == null) {
-            return tempGraph;
-        }
-
-        this.rawGraph.forEachNode((node) => {
+        let exportedGraph = this.rawGraph.export();
+        exportedGraph.nodes.forEach((node: graphology.SerializedNode) => {
+            if (!node.attributes?._option.show) return;
             let thisNode: Node = {
-                id: node.id,
-                name: node.id,
+                id: node.key,
+                name: node.key,
+
+                // need be changed next
                 val: 1,
             };
             tempGraph.nodes.push(thisNode);
         });
 
-        this.rawGraph.forEachLink((link) => {
-            tempGraph.links.push({
-                source: link.fromId,
-                target: link.toId,
-            });
-        });
+        tempGraph.links = exportedGraph.edges;
         return tempGraph;
     }
 
-    get rawTable() {
-        let tempRawTable: Node[] = [];
-
-        this.rawGraph.forEachNode((node) => {
-            tempRawTable.push(node);
-        });
-
-        return tempRawTable;
+    get rawTable(): graphology.SerializedNode[] {
+        return this.rawGraph.export().nodes;
     }
 
     nodes = this.initialGlobalConfig.nodes;
@@ -121,10 +114,7 @@ export default class GraphStore {
     _lastSelectedSingleNode = null;
 
     get hasGraph() {
-        return (
-            this.rawGraph.getNodesCount() != 0 &&
-            this.rawGraph.getLinksCount() != 0
-        );
+        return this.rawGraph.order && this.rawGraph.size != 0;
     }
 
     metadata = {

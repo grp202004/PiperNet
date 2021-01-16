@@ -1,8 +1,9 @@
 import { Toaster, Position, Intent } from "@blueprintjs/core";
 import { observable, makeObservable, trace } from "mobx";
-import createGraph from "ngraph.graph";
+import Graph from "graphology";
+import * as graphology from "graphology-types";
+import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
-import { Link as Edge, Node, Graph } from "ngraph.graph";
 import { IHiddenOptions } from "./GraphStore";
 
 export default class ImportStore {
@@ -13,6 +14,9 @@ export default class ImportStore {
 
     //name of the node file
     nodeFileName = "Choose Node File ...";
+
+    //name of the GEXF file
+    gexfFileName = "Choose GEXF File ...";
 
     importCSVDialogOpen = false;
     importGEXFDialogOpen = false;
@@ -68,6 +72,7 @@ export default class ImportStore {
             isLoading: observable,
             edgeFileName: observable,
             nodeFileName: observable,
+            gexfFileName: observable,
             importCSVDialogOpen: observable,
             importGEXFDialogOpen: observable,
             selectedEdgeFileFromInput: observable,
@@ -162,7 +167,11 @@ export default class ImportStore {
         let tempNodes: any[] = [];
         let tempEdges: any[] = [];
 
-        const graph = createGraph();
+        const graph = new Graph({
+            allowSelfLoops: true,
+            multi: false,
+            type: "undirected",
+        });
 
         // parse Node file and store into the Graph DS
         if (config.hasNodeFile) {
@@ -175,7 +184,7 @@ export default class ImportStore {
                 node._options = options;
                 graph.addNode(
                     node[config.nodeFile.mapping.id].toString(),
-                    ...node
+                    node
                 );
             });
         }
@@ -202,7 +211,7 @@ export default class ImportStore {
                 let data = { id: toId, _options: options };
                 graph.addNode(toId, data);
             }
-            graph.addLink(fromId, toId);
+            graph.addEdge(fromId, toId);
         });
 
         config.edgeFile.isReady = true;
@@ -223,6 +232,49 @@ export default class ImportStore {
             },
         };
     }
+
+    //TODO:import 里的id和cluster， source target还没设置
+    public async importGraphFromGEXF() {
+        const reader = new FileReader();
+        reader.readAsText(this.selectedGEXFFileFromInput);
+        return new Promise((resolve, reject) => {
+            reader.onload = () => {
+                let graph: Graph = gexf.parse(Graph, <string>reader.result);
+
+                // add _options to Graph, if missing
+                graph.forEachNode((key: string, attribute: object) => {
+                    if (attribute.hasOwnProperty("_options")) {
+                        return;
+                    }
+                    let options: IHiddenOptions = {
+                        show: true,
+                        cluster: null,
+                    };
+                    graph.setNodeAttribute(key, "_options", options);
+                });
+
+                let nodeProperties: string[] = [];
+
+                for (const [key, value] of Object.entries(
+                    graph.getNodeAttributes(graph.nodes()[0])
+                )) {
+                    nodeProperties.push(key);
+                }
+
+                return {
+                    graph: graph,
+                    metadata: {
+                        snapshotName: "Untitled",
+                        nodeProperties: nodeProperties,
+                        clusterProperties: null,
+                        edgeProperties: ["source_id", "target_id"],
+                    },
+                };
+            };
+        });
+    }
+
+    public renderImportGEXFPreview(): void {}
 
     public renderImportEdgePreview(): void {
         trace();

@@ -32,9 +32,10 @@ export default observer(
             return (
                 <Cell>
                     <Switch
-                        checked={node.data._options.show}
+                        checked={node.attributes._options.show}
                         onChange={() => {
-                            node.data._options.show = !node.data._options.show;
+                            node.attributes._options.show = !node.attributes
+                                ._options.show;
                             this.forceUpdate();
                         }}
                     />
@@ -42,37 +43,9 @@ export default observer(
             );
         };
 
-        renderLine = (node) => {
-            return (
-                <tr key={node.id}>
-                    <td>
-                        <Switch
-                            checked={node.data._options.show}
-                            onChange={() => {
-                                if (node.data._options.show) {
-                                    State.graph.showNodes([node.id]);
-                                } else {
-                                    State.graph.hideNodes([node.id]);
-                                }
-                            }}
-                        />
-                    </td>
-                    <td>
-                        {node.id}
-                        {console.log(node.id, node.data)}
-                    </td>
-                    {this.nodeProperties.map((it, i) => {
-                        if (it !== "id") {
-                            return <td key={`${it}-${i}`}>{node.data[it]}</td>;
-                        }
-                    })}
-                </tr>
-            );
-        };
-
         dataRenderer = (rowIndex, columnIndex) => {
             let attribute = this.nodeProperties[columnIndex - 1];
-            let cell = this.rawTable[rowIndex].data[attribute];
+            let cell = this.rawTable[rowIndex].attributes[attribute];
             return <Cell>{cell}</Cell>;
         };
 
@@ -85,7 +58,6 @@ export default observer(
         render() {
             return (
                 <div className="argo-table-container">
-                    Node Count: {this.rawGraph.getNodesCount()}
                     <Card interactive={false} elevation={Elevation.ONE}>
                         Sort By
                         <SimpleSelect
@@ -105,7 +77,7 @@ export default observer(
                     </Card>
                     <Table
                         className="pt-bordered pt-striped"
-                        numRows={this.rawGraph.getNodesCount()}
+                        numRows={this.rawGraph.order}
                     >
                         {/* first column is the Show switch */}
                         <Column
@@ -117,7 +89,7 @@ export default observer(
                             name="id(Designated)"
                             intent={Intent.SUCCESS}
                             cellRenderer={(rowIndex) => {
-                                let id = this.rawTable[rowIndex].id;
+                                let id = this.rawTable[rowIndex].key;
                                 return <Cell>{id}</Cell>;
                             }}
                         />
