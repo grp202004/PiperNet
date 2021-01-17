@@ -19,6 +19,7 @@ export default observer(
                 timeOutRef: null,
                 sizeOptionOpen: false,
                 thicknessOptionOpen: false,
+                colorOptionOpen: false,
             };
         }
 

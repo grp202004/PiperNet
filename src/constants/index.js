@@ -1,4 +1,5 @@
 import Les_Miserable from "../samples/lesmiserables-edges.csv";
+// import * as scale from "d3-scale";
 
 export const GITHUB_URL = "";
 
@@ -9,3 +10,10 @@ export const SAMPLE_GRAPH_SNAPSHOTS = [
 
 export const NODE_AND_EDGE_FILE = "both nodes and edges file";
 export const ONLY_EDGE_FILE = "only edges file";
+
+// export const SCALE_LINEAR = "Linear Scale";
+// export const SCALE_LOG = "Log Scale";
+// export const scales = {
+//     [SCALE_LINEAR]: scale.scaleLinear,
+//     [SCALE_LOG]: scale.scaleLog
+//   };

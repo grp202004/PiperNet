@@ -6,4 +6,5 @@ export default class SearchStore {
     searchStr = "";
     candidates = [];
     numCandidates = 0;
+    panelOpen=true;//test for ui panels
 }
