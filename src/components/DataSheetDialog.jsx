@@ -10,7 +10,7 @@ import {
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../state/index";
-import GraphTable from "./GraphTable";
+import GraphDataTable from "./GraphDataTable";
 import SimpleSelect from "./utils/SimpleSelect";
 
 export default observer(
@@ -35,7 +35,7 @@ export default observer(
                     style={{ minWidth: "80vw" }}
                 >
                     <div className={classnames(Classes.DIALOG_BODY)}>
-                        <GraphTable />
+                        <GraphDataTable />
                     </div>
 
                     <div className={Classes.DIALOG_FOOTER}>

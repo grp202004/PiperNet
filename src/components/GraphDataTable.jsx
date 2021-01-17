@@ -18,7 +18,7 @@ import SimpleSelect from "./utils/SimpleSelect";
 export default observer(
     class GraphTable extends React.Component {
         state = {
-            sortBy: "",
+            sortBy: "None",
             sortOrder: "Descending", // or 'Ascending'
         };
 
@@ -34,8 +34,9 @@ export default observer(
                     <Switch
                         checked={node.attributes._options.show}
                         onChange={() => {
-                            node.attributes._options.show = !node.attributes
-                                ._options.show;
+                            node.attributes._options.show
+                                ? State.graph.hideNode(node.key)
+                                : State.graph.showNode(node.key);
                             this.forceUpdate();
                         }}
                     />
@@ -43,15 +44,27 @@ export default observer(
             );
         };
 
-        dataRenderer = (rowIndex, columnIndex) => {
-            let attribute = this.nodeProperties[columnIndex - 1];
-            let cell = this.rawTable[rowIndex].attributes[attribute];
-            return <Cell>{cell}</Cell>;
-        };
-
         renderColumns = () => {
-            return this.nodeProperties.map((it, i) => {
-                return <Column name={it} cellRenderer={this.dataRenderer} />;
+            const columns = this.nodeProperties.map((it, i) => {
+                if (it != "_options") {
+                    return (
+                        <Column
+                            name={it}
+                            cellRenderer={(rowIndex, columnIndex) => {
+                                let attribute = this.nodeProperties[
+                                    columnIndex - 2
+                                ];
+                                let cellAttributes = this.rawTable[rowIndex]
+                                    .attributes;
+                                let cell = cellAttributes[attribute];
+                                return <Cell>{cell}</Cell>;
+                            }}
+                        />
+                    );
+                }
+            });
+            return columns.filter((element) => {
+                return element != undefined;
             });
         };
 

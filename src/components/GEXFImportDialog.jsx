@@ -36,7 +36,7 @@ export default observer(
                                         State.graph.metadata = res.metadata;
 
                                         State.import.isLoading = false;
-                                        State.import.importCSVDialogOpen = false;
+                                        State.import.importGEXFDialogOpen = false;
                                     });
                             }}
                             text="Import"

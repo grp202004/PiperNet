@@ -119,16 +119,31 @@ export default class ImportStore {
                         })
                     );
                 } catch (err) {
-                    let msg = err.message;
-                    let mismatch = msg.indexOf("Invalid Record Length:") == 0;
-                    if (mismatch) {
-                        msg = msg.replace("is", "set to");
-                        msg = msg.replace("got", "but detected");
-                    }
                     Toaster.create({
                         position: Position.TOP,
                     }).show({
-                        message: "Error: " + msg,
+                        message: "Error: " + err.message,
+                        intent: Intent.DANGER,
+                        timeout: -1,
+                    });
+                }
+            };
+        });
+    }
+
+    private async readGEXF(): Promise<Graph> {
+        const file = this.selectedGEXFFileFromInput;
+        const reader = new FileReader();
+        reader.readAsText(file);
+        return new Promise((resolve, reject) => {
+            reader.onload = () => {
+                try {
+                    resolve(gexf.parse(Graph, <string>reader.result));
+                } catch (err) {
+                    Toaster.create({
+                        position: Position.TOP,
+                    }).show({
+                        message: "Error: " + err.message,
                         intent: Intent.DANGER,
                         timeout: -1,
                     });
@@ -235,43 +250,36 @@ export default class ImportStore {
 
     //TODO:import 里的id和cluster， source target还没设置
     public async importGraphFromGEXF() {
-        const reader = new FileReader();
-        reader.readAsText(this.selectedGEXFFileFromInput);
-        return new Promise((resolve, reject) => {
-            reader.onload = () => {
-                let graph: Graph = gexf.parse(Graph, <string>reader.result);
-
-                // add _options to Graph, if missing
-                graph.forEachNode((key: string, attribute: object) => {
-                    if (attribute.hasOwnProperty("_options")) {
-                        return;
-                    }
-                    let options: IHiddenOptions = {
-                        show: true,
-                        cluster: null,
-                    };
-                    graph.setNodeAttribute(key, "_options", options);
-                });
-
-                let nodeProperties: string[] = [];
-
-                for (const [key, value] of Object.entries(
-                    graph.getNodeAttributes(graph.nodes()[0])
-                )) {
-                    nodeProperties.push(key);
-                }
-
-                return {
-                    graph: graph,
-                    metadata: {
-                        snapshotName: "Untitled",
-                        nodeProperties: nodeProperties,
-                        clusterProperties: null,
-                        edgeProperties: ["source_id", "target_id"],
-                    },
-                };
+        let graph = await this.readGEXF();
+        // add _options to Graph, if missing
+        graph.forEachNode((key: string, attribute: object) => {
+            if (attribute.hasOwnProperty("_options")) {
+                return;
+            }
+            let options: IHiddenOptions = {
+                show: true,
+                cluster: null,
             };
+            graph.setNodeAttribute(key, "_options", options);
         });
+
+        let nodeProperties: string[] = [];
+
+        for (const [key, value] of Object.entries(
+            graph.getNodeAttributes(graph.nodes()[0])
+        )) {
+            nodeProperties.push(key);
+        }
+
+        return {
+            graph: graph,
+            metadata: {
+                snapshotName: "Untitled",
+                nodeProperties: nodeProperties,
+                clusterProperties: null,
+                edgeProperties: ["source_id", "target_id"],
+            },
+        };
     }
 
     public renderImportGEXFPreview(): void {}

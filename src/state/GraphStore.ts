@@ -74,7 +74,7 @@ export default class GraphStore {
 
         let exportedGraph = this.rawGraph.export();
         exportedGraph.nodes.forEach((node: graphology.SerializedNode) => {
-            if (!node.attributes?._option.show) return;
+            if (!node.attributes?._options.show) return;
             let thisNode: Node = {
                 id: node.key,
                 name: node.key,
@@ -91,6 +91,30 @@ export default class GraphStore {
 
     get rawTable(): graphology.SerializedNode[] {
         return this.rawGraph.export().nodes;
+    }
+
+    public hideNode(key: string) {
+        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
+            key,
+            "_options"
+        );
+        let newOptions: IHiddenOptions = {
+            ...originalOptions,
+            show: false,
+        };
+        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
+    }
+
+    public showNode(key: string) {
+        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
+            key,
+            "_options"
+        );
+        let newOptions: IHiddenOptions = {
+            ...originalOptions,
+            show: true,
+        };
+        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
     }
 
     nodes = this.initialGlobalConfig.nodes;
