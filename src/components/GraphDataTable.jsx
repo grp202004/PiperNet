@@ -12,7 +12,7 @@ import {
 import { Column, Table, Cell } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state/index";
+import State from "../state";
 import SimpleSelect from "./utils/SimpleSelect";
 
 export default observer(

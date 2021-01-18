@@ -10,7 +10,7 @@ import {
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state/index";
+import State from "../state";
 
 export default observer(
     class GEXFImportDialog extends React.Component {

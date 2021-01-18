@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar";
 import Dialogs from "./components/Dialogs";
 import ThreeJSVis from "./components/visualize/visualizer";
 // import NodeDetail from "./components/panels/NodeDetailPanel";
-import State from "./state/index";
+import State from "./state";
 import EdgesPanel from "./components/panels/EdgesPanel";
 import LabelsPanel from "./components/panels/LabelsPanel";
 import SelectionPanel from "./components/panels/SelectionPanel";
@@ -28,16 +28,11 @@ function App() {
             })}
         >
             <Navbar />
-            {/* <main className="main">
+            <main className="main">
                 <ThreeJSVis />
-            </main> */}
-            {/* {State.graph.hasGraph && <FloatingCards />} */}
+            </main>
             <FloatingCards />
-            {/* //FloatingCards test */}
-
-            {/* <Dialogs /> */}
-
-            {/* <NodesPanel/> */}
+            <Dialogs />
         </div>
     );
 }
