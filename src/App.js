@@ -12,7 +12,6 @@ import Dialogs from "./components/Dialogs";
 import ThreeJSVis from "./components/visualize/visualizer";
 // import NodeDetail from "./components/panels/NodeDetailPanel";
 import State from "./state/index";
-import PopoverExample from "./components/test";
 import EdgesPanel from "./components/panels/EdgesPanel";
 import LabelsPanel from "./components/panels/LabelsPanel";
 import SelectionPanel from "./components/panels/SelectionPanel";
@@ -35,12 +34,11 @@ function App() {
             {/* {State.graph.hasGraph && <FloatingCards />} */}
             <FloatingCards />
             {/* //FloatingCards test */}
-            
+
             {/* <Dialogs /> */}
-          
+
             {/* <NodesPanel/> */}
         </div>
-
     );
 }
 

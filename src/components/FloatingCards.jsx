@@ -1,5 +1,5 @@
 import React from "react";
-import { Classes, Tab, Tabs } from "@blueprintjs/core";
+import { Classes, Tab, Tabs, Button } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
@@ -16,73 +16,104 @@ import LabelsPanel from "./panels/LabelsPanel";
 // TODO: migrate to simple select
 
 let RenderOptionsCard = observer(
-  class RenderOptionsCard extends React.Component {
-    render() {
-      return (
-        <div>
-          <h4>Graph Options</h4>
-          <Tabs animate id="graph-options">
-            <Tab id="nodes" title="Nodes" panel={<NodesPanel />} />
-            <Tab id="edges" title="Edges" panel={<EdgesPanel />} />
-            <Tab id="labels" title="Labels" panel={<LabelsPanel />} />
-            {/* <Tab2 id="layout" title="Layout" panel={<LayoutPanel />} /> */}
-            <Tabs.Expander />
-          </Tabs>
-        </div>
-      );
+    class RenderOptionsCard extends React.Component {
+        render() {
+            return (
+                <div>
+                    <h2>Graph Options</h2>
+                    <Tabs animate={true}>
+                        <Tab id="nodes" title="Nodes" panel={<NodesPanel />} />
+                        <Tab id="edges" title="Edges" panel={<EdgesPanel />} />
+                        <Tab
+                            id="labels"
+                            title="Labels"
+                            panel={<LabelsPanel />}
+                        />
+                        {/* <Tab2 id="layout" title="Layout" panel={<LayoutPanel />} /> */}
+                        <Tabs.Expander />
+                    </Tabs>
+                </div>
+            );
+        }
     }
-  }
 );
 //
 
 export default observer(
-  class FloatingCards extends React.Component {
-    optionsVisible = {
-      left: '0em'
-    }
-    optionsInvisible = {
-      left: '-2200em'
-    }
-    sideButtonVis = {
-      marginLeft: '50px'
-    }
-    sideButtonInv = {
-      marginLeft: '-15px'
-    }
-    toggleOptions = () => {
-      State.preferences.isRenderOptionsCardHidden = !State.preferences.isRenderOptionsCardHidden;
-      console.log(State.preferences.isRenderOptionsCardHidden);
-    };
-    render() {
-      return (
-        <div className="floating-overlay">
-          <div className="left-cards">
+    class FloatingCards extends React.Component {
+        optionsVisible = {
+            left: "0em",
+        };
+        optionsInvisible = {
+            left: "-2200em",
+        };
+        sideButtonVis = {
+            marginLeft: "50px",
+        };
+        sideButtonInv = {
+            marginLeft: "-15px",
+        };
+        toggleOptions = () => {
+            State.preferences.isRenderOptionsCardHidden = !State.preferences
+                .isRenderOptionsCardHidden;
+        };
+        render() {
+            return (
+                <div className="floating-overlay">
+                    <div className="left-cards">
+                        <div
+                            className={classnames(
+                                Classes.CARD,
+                                Classes.ELEVATION_2,
+                                "overlay-card",
+                                "left-overlay-card",
+                                "transparent-frame",
+                                "left-cards"
+                            )}
+                            style={
+                                State.preferences.isRenderOptionsCardHidden
+                                    ? this.optionsInvisible
+                                    : this.optionsVisible
+                            }
+                        >
+                            <br />
+                            <Button
+                                className="openbtn2"
+                                icon="chevron-left"
+                                onClick={this.toggleOptions}
+                            ></Button>
+                            <br />
+                            <RenderOptionsCard />
+                        </div>
+                        <div
+                            className={classnames(
+                                Classes.CARD,
+                                Classes.ELEVATION_2,
+                                "overlay-card",
+                                "transparent-frame"
+                            )}
+                            style={{
+                                width: "1em",
+                                paddingTop: "1em",
+                                paddingRight: "0.7em",
+                                paddingBottom: "0.5em",
+                                marginLeft: "-5.4em",
+                            }}
+                        >
+                            <Button
+                                icon="more"
+                                className="openbtn"
+                                onClick={this.toggleOptions}
+                                style={
+                                    State.preferences.isRenderOptionsCardHidden
+                                        ? this.sideButtonVis
+                                        : this.sideButtonInv
+                                }
+                            ></Button>
+                        </div>
+                    </div>
 
-            <div
-              className={classnames(
-                Classes.CARD,
-                Classes.ELEVATION_2,
-                "overlay-card",
-                "left-overlay-card",
-                "transparent-frame",
-                "left-cards"
-              )}
-              style={State.preferences.isRenderOptionsCardHidden ? this.optionsInvisible : this.optionsVisible}
-            >
-              <button className="openbtn2" onClick={this.toggleOptions}> &#8249;
-            </button>
-              <br />
-              <RenderOptionsCard />
-            </div>
-            <div className={classnames(Classes.CARD, Classes.ELEVATION_2, "overlay-card",
-              "transparent-frame")} style={{ width: "1em", paddingTop: "1em", paddingRight: "0.7em", paddingBottom: "0.5em", marginLeft: "-5.4em" }}>
-              <button className="openbtn" onClick={this.toggleOptions} style={State.preferences.isRenderOptionsCardHidden ? this.sideButtonVis : this.sideButtonInv}>
-                &#9776;
-              </button>
-            </div>
-          </div>
-
-          {/* {State.graph.selectedNodes.length === 1 && (
+                    {/* {State.graph.selectedNodes.length === 1 && (
             <NodeDetail node={State.graph.selectedNodes[0].data.ref} />
           )}
 
@@ -90,15 +121,15 @@ export default observer(
             <NodeDetail node={State.graph.currentlyHovered.data.ref} />
           )} */}
 
-          {/* <Legends />
+                    {/* <Legends />
           <StatusBar /> */}
-          {/* {// This menu only shows when there are nodes selected
+                    {/* {// This menu only shows when there are nodes selected
             State.graph.selectedNodes.length > 0 && !State.preferences.isNavbarInMinimalMode && <SelectionActionPanel />
           } */}
-        </div>
-      );
+                </div>
+            );
+        }
     }
-  }
 );
 
 // export default FloatingCards;
