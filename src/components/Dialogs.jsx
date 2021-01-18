@@ -1,7 +1,7 @@
 import React from "react";
 // import PreferencesDialog from "./PreferencesDialog";
 import ImportDialog from "./ImportDialog";
-// import GEXFImportDialog from "./GEXFImportDialog"
+import GEXFImportDialog from "./GEXFImportDialog";
 // import OpenDialog from "./OpenDialog";
 // import NewProjectDialog from "./NewProjectDialog";
 // import ProjectDetailDialog from "./ProjectDetailDialog";
@@ -12,7 +12,7 @@ import ImportDialog from "./ImportDialog";
 // import StatisticsDialog from './StatisticsDialog';
 // import HelpDialog from './HelpDialog';
 // import NeighborDialog from './NeighborDialog';
-// import DataSheetDialog from './DataSheetDialog';
+import DataSheetDialog from "./DataSheetDialog";
 
 export default class Dialogs extends React.Component {
     render() {
@@ -20,8 +20,8 @@ export default class Dialogs extends React.Component {
             <div style={{ display: "none" }}>
                 {/* <PreferencesDialog /> */}
                 <ImportDialog />
-                {/* <GEXFImportDialog />
-                <OpenDialog />
+                <GEXFImportDialog />
+                {/*<OpenDialog />
                 <OpenSnapshotDialog />
                 <NewProjectDialog />
                 <ProjectDetailDialog />
@@ -30,8 +30,8 @@ export default class Dialogs extends React.Component {
                 <ShareDialog />
                 <StatisticsDialog />
                 <HelpDialog />
-                <NeighborDialog />
-                <DataSheetDialog /> */}
+                <NeighborDialog /> */}
+                <DataSheetDialog />
             </div>
         );
     }

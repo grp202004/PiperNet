@@ -1,6 +1,6 @@
 import { observable, computed, makeObservable } from "mobx";
-import { Graph } from "ngraph.graph";
-import createGraph from "ngraph.graph";
+import Graph from "graphology";
+import * as graphology from "graphology-types";
 
 // interface Edge<Data = any> {
 //     id: LinkId,
@@ -14,6 +14,11 @@ import createGraph from "ngraph.graph";
 //     links: Link[],
 //     data: Data
 // }
+
+export interface IHiddenOptions {
+    show: boolean;
+    cluster: string | null;
+}
 
 export default class GraphStore {
     initialGlobalConfig = {
@@ -40,9 +45,14 @@ export default class GraphStore {
         },
     };
 
-    originalGraph: Graph = createGraph();
+    rawGraph: Graph = new Graph({
+        allowSelfLoops: true,
+        multi: false,
+        type: "undirected",
+    });
 
     get adapterGraph() {
+        //interface from react-force-graph
         interface Node {
             id: string | number;
             name: string | number;
@@ -62,27 +72,49 @@ export default class GraphStore {
             links: links,
         };
 
-        // this time the graph has not been imported yet
-        if (this.originalGraph == null) {
-            return tempGraph;
-        }
-
-        this.originalGraph.forEachNode((node) => {
+        let exportedGraph = this.rawGraph.export();
+        exportedGraph.nodes.forEach((node: graphology.SerializedNode) => {
+            if (!node.attributes?._options.show) return;
             let thisNode: Node = {
-                id: node.id,
-                name: node.id,
+                id: node.key,
+                name: node.key,
+
+                // need be changed next
                 val: 1,
             };
             tempGraph.nodes.push(thisNode);
         });
 
-        this.originalGraph.forEachLink((link) => {
-            tempGraph.links.push({
-                source: link.fromId,
-                target: link.toId,
-            });
-        });
+        tempGraph.links = exportedGraph.edges;
         return tempGraph;
+    }
+
+    get rawTable(): graphology.SerializedNode[] {
+        return this.rawGraph.export().nodes;
+    }
+
+    public hideNode(key: string) {
+        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
+            key,
+            "_options"
+        );
+        let newOptions: IHiddenOptions = {
+            ...originalOptions,
+            show: false,
+        };
+        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
+    }
+
+    public showNode(key: string) {
+        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
+            key,
+            "_options"
+        );
+        let newOptions: IHiddenOptions = {
+            ...originalOptions,
+            show: true,
+        };
+        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
     }
 
     nodes = this.initialGlobalConfig.nodes;
@@ -105,15 +137,8 @@ export default class GraphStore {
     // useful for NeighborDialog
     _lastSelectedSingleNode = null;
 
-    rawGraph = {
-        nodes: [],
-        edges: [],
-    };
-
     get hasGraph() {
-        return (
-            this.rawGraph.edges.length != 0 && this.rawGraph.nodes.length != 0
-        );
+        return this.rawGraph.order && this.rawGraph.size != 0;
     }
 
     metadata = {
@@ -167,8 +192,9 @@ export default class GraphStore {
 
     constructor() {
         makeObservable(this, {
-            originalGraph: observable,
+            rawGraph: observable,
             adapterGraph: computed,
+            rawTable: computed,
             initialGlobalConfig: observable,
             hasGraph: computed,
             nodes: observable,
@@ -182,7 +208,6 @@ export default class GraphStore {
             selectedNodes: observable,
             currentlyHovered: observable,
             _lastSelectedSingleNode: observable,
-            rawGraph: observable,
             metadata: observable,
             // _lastSelectedSingleNode: observable,
         });
