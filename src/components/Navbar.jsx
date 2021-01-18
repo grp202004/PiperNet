@@ -13,9 +13,9 @@ import {
     MenuItem,
     MenuDivider,
 } from "@blueprintjs/core";
+import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
-
-import State from "../state/index";
+import State from "../state";
 
 import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS } from "../constants";
 
@@ -207,6 +207,12 @@ export default observer(
                         </div>
                     )}
                 </div> */}
+                    <SimpleSelect
+                        className={classnames([Classes.ALERT_CONTENTS])}
+                        items={["3D", "2D"]}
+                        value={State.preferences.view}
+                        onSelect={(it) => (State.preferences.view = it)}
+                    />
                     <div
                         className={classnames([
                             Classes.NAVBAR_GROUP,

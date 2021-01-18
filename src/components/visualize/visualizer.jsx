@@ -6,18 +6,12 @@ import {
     ForceGraphVR,
     ForceGraphAR,
 } from "react-force-graph";
-import SimpleSelect from "../utils/SimpleSelect";
-import State from "../../state/index";
+import State from "../../state";
 
 export default observer(
     class ThreeJSVis extends React.Component {
-        state = {
-            viewOptions: ["3D", "2D"],
-            view: "3D",
-        };
-
         renderGraph = () => {
-            if (this.state.view === "3D") {
+            if (State.preferences.view === "3D") {
                 return (
                     <ForceGraph3D
                         graphData={State.graph.adapterGraph}
@@ -45,17 +39,7 @@ export default observer(
         };
 
         render() {
-            return (
-                <div>
-                    <SimpleSelect
-                        class="overlay-button"
-                        items={this.state.viewOptions}
-                        value={this.state.view}
-                        onSelect={(it) => this.setState({ view: it })}
-                    />
-                    {this.renderGraph()}
-                </div>
-            );
+            return <div>{this.renderGraph()}</div>;
         }
     }
 );

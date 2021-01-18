@@ -10,6 +10,10 @@ export default class PreferencesStore {
     neighborDialogOpen = false;
     dataSheetDialogOpen = false;
 
+    isRenderOptionsCardHidden = true;
+
+    view = "3D";
+
     constructor() {
         makeObservable(this, {
             preferenceDialogOpen: observable,
@@ -18,6 +22,8 @@ export default class PreferencesStore {
             helpDialogOpen: observable,
             neighborDialogOpen: observable,
             dataSheetDialogOpen: observable,
+            isRenderOptionsCardHidden: observable,
+            view: observable,
         });
     }
 }

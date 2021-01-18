@@ -14,7 +14,7 @@ import {
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
 import { observer } from "mobx-react";
-import State from "../state/index";
+import State from "../state";
 
 import Collapsable from "./utils/Collapsable";
 import SimpleSelect from "./utils/SimpleSelect";

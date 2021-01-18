@@ -9,7 +9,7 @@ import {
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state/index";
+import State from "../state";
 import GraphDataTable from "./GraphDataTable";
 import SimpleSelect from "./utils/SimpleSelect";
 
