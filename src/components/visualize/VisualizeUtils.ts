@@ -2,11 +2,17 @@ import State from "../../state";
 import * as THREE from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 
-export function computeConvexHull(map: Map<string | number, THREE.Vector3[]>) {
+export function computeConvexHull(
+    map: Map<string | number, Set<THREE.Vector3>>
+) {
     let newMap = new Map<string | number, THREE.Object3D>();
     map.forEach(function (value, key) {
-        let convexHull = new ConvexGeometry(value);
-        newMap.set(key, createMesh(convexHull));
+        if (value.size < 4) {
+            newMap.set(key, new THREE.Object3D());
+        } else {
+            let convexHull = new ConvexGeometry(Array.from(value));
+            newMap.set(key, createMesh(convexHull));
+        }
     });
     return newMap;
 }
@@ -29,30 +35,4 @@ function createMesh(geom: ConvexGeometry): THREE.Object3D {
     ]);
 
     return mesh;
-}
-
-// 反转一下，这样在Graph里面比较好loop
-export function getClusters(attribute: string): Map<string | number, string[]> {
-    function pushKey(
-        valueKeyMap: Map<string | number, string[]>,
-        attributeValue: string | number,
-        key: string
-    ) {
-        valueKeyMap.has(attributeValue)
-            ? valueKeyMap.get(attributeValue)?.push(key)
-            : valueKeyMap.set(attributeValue, [key]);
-    }
-
-    let valueKeyMap = new Map<string | number, string[]>();
-
-    State.graph.rawGraph.forEachNode((key, attributes) => {
-        if (attributes.hasOwnProperty(attribute)) {
-            pushKey(valueKeyMap, attributes[attribute], key);
-        } else {
-            // this attribute is undefined in this node
-            pushKey(valueKeyMap, "undefined", key);
-        }
-    });
-
-    return valueKeyMap;
 }

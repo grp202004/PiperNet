@@ -194,7 +194,7 @@ export default class ImportStore {
             tempNodes.forEach((node) => {
                 let options: IHiddenOptions = {
                     show: true,
-                    cluster: node[config.nodeFile.mapping.cluster].toString(),
+                    isClusterNode: false,
                 };
                 node._options = options;
                 graph.addNode(
@@ -213,7 +213,7 @@ export default class ImportStore {
             if (!graph.hasNode(fromId)) {
                 let options: IHiddenOptions = {
                     show: true,
-                    cluster: null,
+                    isClusterNode: false,
                 };
                 let data = { id: fromId, _options: options };
                 graph.addNode(fromId, data);
@@ -221,7 +221,7 @@ export default class ImportStore {
             if (!graph.hasNode(toId)) {
                 let options: IHiddenOptions = {
                     show: true,
-                    cluster: null,
+                    isClusterNode: false,
                 };
                 let data = { id: toId, _options: options };
                 graph.addNode(toId, data);
@@ -258,7 +258,7 @@ export default class ImportStore {
             }
             let options: IHiddenOptions = {
                 show: true,
-                cluster: null,
+                isClusterNode: false,
             };
             graph.setNodeAttribute(key, "_options", options);
         });

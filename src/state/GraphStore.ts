@@ -17,12 +17,24 @@ import * as graphology from "graphology-types";
 
 export interface IHiddenOptions {
     show: boolean;
-    cluster: string | null;
+    isClusterNode: boolean;
+}
+
+interface GraphNode {
+    id: string | number;
+    name: string | number;
+    val: number;
+}
+
+interface GraphEdge {
+    source?: string | number;
+    target?: string | number;
 }
 
 export default class GraphStore {
-    initialGlobalConfig = {
+    globalConfig = {
         nodes: {
+            clusterBy: "publish_time",
             colorBy: "pagerank",
             color: {
                 scale: "Linear Scale",
@@ -51,21 +63,30 @@ export default class GraphStore {
         type: "undirected",
     });
 
+    get clusterDelegateNode(): GraphNode[] {
+        let clusters = Array.from(
+            this.getKeyAttribute(this.globalConfig.nodes.clusterBy).values()
+        );
+        let nodes: GraphNode[] = [];
+
+        clusters.forEach((cluster) => {
+            nodes.push({
+                id: "CLUSTER" + cluster,
+                name: "CLUSTER" + cluster,
+
+                // need be changed next
+                val: 100,
+            });
+        });
+
+        return nodes;
+    }
+
     get adapterGraph() {
         //interface from react-force-graph
-        interface Node {
-            id: string | number;
-            name: string | number;
-            val: number;
-        }
 
-        interface Edge {
-            source?: string | number;
-            target?: string | number;
-        }
-
-        let nodes: Node[] = [];
-        let links: Edge[] = [];
+        let nodes: GraphNode[] = [];
+        let links: GraphEdge[] = [];
 
         let tempGraph = {
             nodes: nodes,
@@ -75,7 +96,7 @@ export default class GraphStore {
         let exportedGraph = this.rawGraph.export();
         exportedGraph.nodes.forEach((node: graphology.SerializedNode) => {
             if (!node.attributes?._options.show) return;
-            let thisNode: Node = {
+            let thisNode: GraphNode = {
                 id: node.key,
                 name: node.key,
 
@@ -84,6 +105,8 @@ export default class GraphStore {
             };
             tempGraph.nodes.push(thisNode);
         });
+
+        tempGraph.nodes.concat(this.clusterDelegateNode);
 
         tempGraph.links = exportedGraph.edges;
         return tempGraph;
@@ -117,8 +140,24 @@ export default class GraphStore {
         this.rawGraph.setNodeAttribute(key, "_options", newOptions);
     }
 
-    nodes = this.initialGlobalConfig.nodes;
-    edges = this.initialGlobalConfig.edges;
+    public getKeyAttribute(attribute: string): Map<string, string | number> {
+        // key -> value in this attribute
+        const keyValueMap = new Map<string, string | number>();
+
+        this.rawGraph.forEachNode((key, attributes) => {
+            // if this attribute is defined
+            if (attributes.hasOwnProperty(attribute)) {
+                keyValueMap.set(key, attributes[attribute]);
+            } else {
+                // this attribute is undefined in this node
+                keyValueMap.set(key, "undefined");
+            }
+        });
+        return keyValueMap;
+    }
+
+    nodes = this.globalConfig.nodes;
+    edges = this.globalConfig.edges;
 
     enableDegree = true;
     enableDensity = true;
@@ -156,8 +195,9 @@ export default class GraphStore {
             rawGraph: observable,
             adapterGraph: computed,
             rawTable: computed,
-            initialGlobalConfig: observable,
+            globalConfig: observable,
             hasGraph: computed,
+            clusterDelegateNode: computed,
             nodes: observable,
             edges: observable,
             // computedGraph: computed,

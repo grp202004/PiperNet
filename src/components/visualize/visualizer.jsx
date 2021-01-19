@@ -15,8 +15,9 @@ export default observer(
     class ThreeJSVis extends React.Component {
         graphRef = React.createRef();
 
-        clusterKeys = new Map(); // Map<string | number, string[]>
-        clusterConvexHullPoints = new Map(); // Map<string | number, THREE.Vector3[]>
+        clusterKey_AttributeMap = new Map(); // Map<string, string | number>
+        clusterAttributesSet = new Set(); // Set<string | number>
+        clusterAttribute_PointsMap = new Map(); // Map<string | number, THREE.Vector3[]>
         clusterConvexHullObjects = new Map(); // Map<string | number, THREE.Object3D>
 
         renderGraph = () => {
@@ -26,21 +27,63 @@ export default observer(
                         ref={this.graphRef}
                         graphData={State.graph.adapterGraph}
                         nodeResolution={20}
-                        onBackgroundRightClick={() => {
-                            this.clusterKeys = Util.getClusters("publish_time");
+                        onNodeDragEnd={(node) => {
+                            node.fx = node.x;
+                            node.fy = node.y;
+                            node.fz = node.z;
                         }}
-                        nodeThreeObject={(nodeObject) => {
-                            this.clusterKeys.forEach((value, key));
-                            // this.nodeArray.push(
-                            //     new THREE.Vector3(
-                            //         nodeObject.x,
-                            //         nodeObject.y,
-                            //         nodeObject.z
-                            //     )
-                            // );
-                            console.log(nodeObject);
-                            return false;
-                        }}
+                        // onBackgroundRightClick={() => {
+                        //     this.clusterKey_AttributeMap = Util.getClusters(
+                        //         "publish_time"
+                        //     );
+                        //     console.log(this.clusterKey_AttributeMap);
+                        //     this.clusterAttributesSet = new Set(
+                        //         Array.from(
+                        //             this.clusterKey_AttributeMap.values()
+                        //         )
+                        //     );
+                        //     this.clusterAttribute_PointsMap = new Map();
+                        //     for (let attribute of this.clusterAttributesSet) {
+                        //         // 遍历Map
+                        //         this.clusterAttribute_PointsMap.set(
+                        //             attribute,
+                        //             new Set()
+                        //         );
+                        //     }
+                        //     this.graphRef.current.refresh();
+                        //     this.graphRef.current.pauseAnimation();
+                        // }}
+                        // onBackgroundClick={() => {
+                        //     let clusterObjects = Util.computeConvexHull(
+                        //         this.clusterAttribute_PointsMap
+                        //     );
+                        //     clusterObjects.forEach((clusterObject) => {
+                        //         this.graphRef.current
+                        //             .scene()
+                        //             .add(clusterObject);
+                        //     });
+                        //     this.graphRef.current.refresh();
+                        // }}
+                        // nodeThreeObject={(nodeObject) => {
+                        //     console.log(nodeObject);
+                        //     for (let [key, value] of this
+                        //         .clusterKey_AttributeMap) {
+                        //         if (key == nodeObject.id) {
+                        //             this.clusterAttribute_PointsMap
+                        //                 .get(value)
+                        //                 .add(
+                        //                     new THREE.Vector3(
+                        //                         nodeObject.x,
+                        //                         nodeObject.y,
+                        //                         nodeObject.z
+                        //                     )
+                        //                 );
+                        //             break;
+                        //         }
+                        //     }
+                        //     console.log(this.clusterAttribute_PointsMap);
+                        //     return false;
+                        // }}
                     />
                 );
             } else {
