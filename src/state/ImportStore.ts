@@ -1,5 +1,5 @@
 import { Toaster, Position, Intent } from "@blueprintjs/core";
-import { observable, makeObservable, trace } from "mobx";
+import { observable, makeObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
 import gexf from "graphology-gexf";
@@ -66,21 +66,6 @@ export default class ImportStore {
             delimiter: ",",
         },
     };
-
-    constructor() {
-        makeObservable(this, {
-            isLoading: observable,
-            edgeFileName: observable,
-            nodeFileName: observable,
-            gexfFileName: observable,
-            importCSVDialogOpen: observable,
-            importGEXFDialogOpen: observable,
-            selectedEdgeFileFromInput: observable,
-            selectedNodeFileFromInput: observable,
-            selectedGEXFFileFromInput: observable,
-            importConfig: observable,
-        });
-    }
 
     private async readCSV(
         fileObject: File,
@@ -285,7 +270,6 @@ export default class ImportStore {
     public renderImportGEXFPreview(): void {}
 
     public renderImportEdgePreview(): void {
-        trace();
         let file = this.selectedEdgeFileFromInput;
         let edgeFileConfig = this.importConfig.edgeFile;
         let hasHeader = edgeFileConfig.hasHeader;
@@ -387,7 +371,6 @@ export default class ImportStore {
     }
 
     public renderImportNodePreview(): void {
-        trace();
         let file = this.selectedNodeFileFromInput;
         let nodeFileConfig = this.importConfig.nodeFile;
         let hasHeader = nodeFileConfig.hasHeader;
@@ -486,5 +469,19 @@ export default class ImportStore {
                 timeout: -1,
             });
         };
+    }
+    constructor() {
+        makeObservable(this, {
+            isLoading: observable,
+            edgeFileName: observable,
+            nodeFileName: observable,
+            gexfFileName: observable,
+            importCSVDialogOpen: observable,
+            importGEXFDialogOpen: observable,
+            selectedEdgeFileFromInput: observable,
+            selectedNodeFileFromInput: observable,
+            selectedGEXFFileFromInput: observable,
+            importConfig: observable,
+        });
     }
 }

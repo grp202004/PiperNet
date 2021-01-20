@@ -1,6 +1,7 @@
 import { observable, computed, makeObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
+import State from ".";
 
 // interface Edge<Data = any> {
 //     id: LinkId,
@@ -34,7 +35,6 @@ interface GraphEdge {
 export default class GraphStore {
     globalConfig = {
         nodes: {
-            clusterBy: "publish_time",
             colorBy: "pagerank",
             color: {
                 scale: "Linear Scale",
@@ -64,15 +64,13 @@ export default class GraphStore {
     });
 
     get clusterDelegateNode(): GraphNode[] {
-        let clusters = Array.from(
-            this.getKeyAttribute(this.globalConfig.nodes.clusterBy).values()
-        );
+        let clusters = State.cluster.getAttributeValues;
         let nodes: GraphNode[] = [];
 
         clusters.forEach((cluster) => {
             nodes.push({
-                id: "CLUSTER" + cluster,
-                name: "CLUSTER" + cluster,
+                id: "_CLUSTER" + cluster,
+                name: "_CLUSTER" + cluster,
 
                 // need be changed next
                 val: 100,
@@ -138,22 +136,6 @@ export default class GraphStore {
             show: true,
         };
         this.rawGraph.setNodeAttribute(key, "_options", newOptions);
-    }
-
-    public getKeyAttribute(attribute: string): Map<string, string | number> {
-        // key -> value in this attribute
-        const keyValueMap = new Map<string, string | number>();
-
-        this.rawGraph.forEachNode((key, attributes) => {
-            // if this attribute is defined
-            if (attributes.hasOwnProperty(attribute)) {
-                keyValueMap.set(key, attributes[attribute]);
-            } else {
-                // this attribute is undefined in this node
-                keyValueMap.set(key, "undefined");
-            }
-        });
-        return keyValueMap;
     }
 
     nodes = this.globalConfig.nodes;

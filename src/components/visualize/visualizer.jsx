@@ -13,12 +13,7 @@ import * as Util from "./VisualizeUtils";
 
 export default observer(
     class ThreeJSVis extends React.Component {
-        graphRef = React.createRef();
-
-        clusterKey_AttributeMap = new Map(); // Map<string, string | number>
-        clusterAttributesSet = new Set(); // Set<string | number>
-        clusterAttribute_PointsMap = new Map(); // Map<string | number, THREE.Vector3[]>
-        clusterConvexHullObjects = new Map(); // Map<string | number, THREE.Object3D>
+        graphRef = React.createRef(); // Map<string | number, THREE.Object3D>
 
         renderGraph = () => {
             if (State.preferences.view === "3D") {
@@ -64,26 +59,28 @@ export default observer(
                         //     });
                         //     this.graphRef.current.refresh();
                         // }}
-                        // nodeThreeObject={(nodeObject) => {
-                        //     console.log(nodeObject);
-                        //     for (let [key, value] of this
-                        //         .clusterKey_AttributeMap) {
-                        //         if (key == nodeObject.id) {
-                        //             this.clusterAttribute_PointsMap
-                        //                 .get(value)
-                        //                 .add(
-                        //                     new THREE.Vector3(
-                        //                         nodeObject.x,
-                        //                         nodeObject.y,
-                        //                         nodeObject.z
-                        //                     )
-                        //                 );
-                        //             break;
-                        //         }
-                        //     }
-                        //     console.log(this.clusterAttribute_PointsMap);
-                        //     return false;
-                        // }}
+                        nodeThreeObject={(nodeObject) => {
+                            if (nodeObject.id.match(/^_CLUSTER.+/g)) {
+                            } else {
+                                for (let [key, value] of this
+                                    .clusterKey_AttributeMap) {
+                                    if (key == nodeObject.id) {
+                                        this.clusterAttribute_PointsMap
+                                            .get(value)
+                                            .add(
+                                                new THREE.Vector3(
+                                                    nodeObject.x,
+                                                    nodeObject.y,
+                                                    nodeObject.z
+                                                )
+                                            );
+                                        break;
+                                    }
+                                }
+                                console.log(this.clusterAttribute_PointsMap);
+                                return false;
+                            }
+                        }}
                     />
                 );
             } else {
