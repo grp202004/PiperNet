@@ -1,4 +1,5 @@
 import { observable, makeObservable, computed, autorun } from "mobx";
+import Graph from "graphology";
 import * as THREE from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import State from ".";
@@ -7,19 +8,23 @@ export default class ClassStore {
     constructor() {
         makeObservable(this, {
             clusterBy: observable,
+            rawGraph: observable.ref,
             getKeyAttribute: computed,
             getAttributeValues: computed,
             attributePoints: observable,
             convexHullObjects: observable,
+            // centerPoints: observable,
         });
     }
     clusterBy = "publish_time";
+
+    rawGraph!: Graph;
 
     get getKeyAttribute(): Map<string, string | number> {
         const attribute = this.clusterBy;
         const keyValueMap = new Map<string, string | number>();
 
-        State.graph.rawGraph.forEachNode((key, attributes) => {
+        this.rawGraph?.forEachNode((key, attributes) => {
             // if this attribute is defined
             if (attributes.hasOwnProperty(attribute)) {
                 keyValueMap.set(key, attributes[attribute]);
@@ -29,6 +34,12 @@ export default class ClassStore {
             }
         });
         return keyValueMap;
+    }
+
+    addPoints(id: string, x: number, y: number, z: number) {
+        this.attributePoints
+            .get(this.getKeyAttribute.get(id) as string | number)
+            ?.push(new THREE.Vector3(x, y, z));
     }
 
     // the possible attribute values of the attribute defined by clusterBy
@@ -47,21 +58,49 @@ export default class ClassStore {
         this.attributePoints = newAttributePointsMap;
     }
 
-    convexHullObjects = new Map<string | number, THREE.Object3D>();
+    convexHullObjects = new Map<string, THREE.Object3D>();
 
     // explicitly called when all node's position have been added to the map
     computeConvexHullObjects() {
-        let newMap = new Map<string | number, THREE.Object3D>();
+        let newMap = new Map<string, THREE.Object3D>();
         this.attributePoints.forEach((value, key) => {
+            let keyString = "_CLUSTER_";
+            if (key as string) {
+                keyString += <string>key;
+            } else {
+                keyString += (<number>key).toString();
+            }
             if (value.length < 4) {
-                newMap.set(key, new THREE.Object3D());
+                newMap.set(keyString, new THREE.Object3D());
             } else {
                 let convexHull = new ConvexGeometry(Array.from(value));
-                newMap.set(key, this.createMesh(convexHull));
+                newMap.set(keyString, this.createMesh(convexHull));
             }
         });
         this.convexHullObjects = newMap;
     }
+
+    // centerPoints = new Map<string, THREE.Vector3>();
+
+    // // explicitly called when all node's position have been added to the map
+    // computeCenterPoints() {
+    //     let newMap = new Map<string, THREE.Vector3>();
+    //     this.attributePoints.forEach((value, key) => {
+    //         let keyString = "_CLUSTER_";
+    //         if (key as string) {
+    //             keyString += <string>key;
+    //         } else {
+    //             keyString += (<number>key).toString();
+    //         }
+    //         if (value.length < 4) {
+    //             newMap.set(keyString, new THREE.Object3D());
+    //         } else {
+    //             let convexHull = new ConvexGeometry(Array.from(value));
+    //             newMap.set(keyString, this.createMesh(convexHull));
+    //         }
+    //     });
+    //     this.convexHullObjects = newMap;
+    // }
 
     private createMesh(geom: ConvexGeometry): THREE.Object3D {
         // 实例化一个绿色的半透明的材质

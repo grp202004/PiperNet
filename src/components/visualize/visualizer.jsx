@@ -7,9 +7,7 @@ import {
     ForceGraphAR,
 } from "react-force-graph";
 import State from "../../state";
-import Graph from "./Graph";
 import * as THREE from "three";
-import * as Util from "./VisualizeUtils";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -48,39 +46,48 @@ export default observer(
                         //     this.graphRef.current.refresh();
                         //     this.graphRef.current.pauseAnimation();
                         // }}
-                        // onBackgroundClick={() => {
-                        //     let clusterObjects = Util.computeConvexHull(
-                        //         this.clusterAttribute_PointsMap
-                        //     );
-                        //     clusterObjects.forEach((clusterObject) => {
-                        //         this.graphRef.current
-                        //             .scene()
-                        //             .add(clusterObject);
-                        //     });
-                        //     this.graphRef.current.refresh();
-                        // }}
+                        onBackgroundClick={() => {
+                            // this.graphRef.current.pauseAnimation();
+                            State.cluster.computeConvexHullObjects();
+                            this.graphRef.current.refresh();
+                        }}
                         nodeThreeObject={(nodeObject) => {
-                            if (nodeObject.id.match(/^_CLUSTER.+/g)) {
+                            if (nodeObject.id.includes("_CLUSTER_")) {
+                                return State.cluster.convexHullObjects.get(
+                                    nodeObject.id
+                                );
+
+                                return false;
                             } else {
-                                for (let [key, value] of this
-                                    .clusterKey_AttributeMap) {
-                                    if (key == nodeObject.id) {
-                                        this.clusterAttribute_PointsMap
-                                            .get(value)
-                                            .add(
-                                                new THREE.Vector3(
-                                                    nodeObject.x,
-                                                    nodeObject.y,
-                                                    nodeObject.z
-                                                )
-                                            );
-                                        break;
-                                    }
-                                }
-                                console.log(this.clusterAttribute_PointsMap);
+                                State.cluster.addPoints(
+                                    nodeObject.id,
+                                    nodeObject.x,
+                                    nodeObject.y,
+                                    nodeObject.z
+                                );
                                 return false;
                             }
                         }}
+                        // nodeThreeObject={(nodeObject) => {
+                        //     if (nodeObject.id.includes("_CLUSTER_")) {
+                        //         let position = State.cluster.centerPoints.get(
+                        //             nodeObject.id
+                        //         );
+                        //         nodeObject.fx = position.x;
+                        //         nodeObject.fy = position.y;
+                        //         nodeObject.fz = position.z;
+
+                        //         return false;
+                        //     } else {
+                        //         State.cluster.addPoints(
+                        //             nodeObject.id,
+                        //             nodeObject.x,
+                        //             nodeObject.y,
+                        //             nodeObject.z
+                        //         );
+                        //         return false;
+                        //     }
+                        // }}
                     />
                 );
             } else {

@@ -69,8 +69,8 @@ export default class GraphStore {
 
         clusters.forEach((cluster) => {
             nodes.push({
-                id: "_CLUSTER" + cluster,
-                name: "_CLUSTER" + cluster,
+                id: "_CLUSTER_" + cluster,
+                name: "_CLUSTER_" + cluster,
 
                 // need be changed next
                 val: 100,
@@ -104,7 +104,7 @@ export default class GraphStore {
             tempGraph.nodes.push(thisNode);
         });
 
-        tempGraph.nodes.concat(this.clusterDelegateNode);
+        tempGraph.nodes = tempGraph.nodes.concat(this.clusterDelegateNode);
 
         tempGraph.links = exportedGraph.edges;
         return tempGraph;
