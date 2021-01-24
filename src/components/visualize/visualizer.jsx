@@ -1,17 +1,16 @@
 import React from "react";
 import { observer } from "mobx-react";
-import {
-    ForceGraph2D,
-    ForceGraph3D,
-    ForceGraphVR,
-    ForceGraphAR,
-} from "react-force-graph";
+import ForceGraph3D from "react-force-graph-3d";
 import State from "../../state";
 import * as THREE from "three";
 
 export default observer(
     class ThreeJSVis extends React.Component {
-        graphRef = React.createRef(); // Map<string | number, THREE.Object3D>
+        // @ts-ignore
+        graphRef = React.createRef();
+        forceGraph = this.graphRef.current;
+
+        allAdded = false;
 
         renderGraph = () => {
             if (State.preferences.view === "3D") {
@@ -46,27 +45,55 @@ export default observer(
                         //     this.graphRef.current.refresh();
                         //     this.graphRef.current.pauseAnimation();
                         // }}
-                        onBackgroundClick={() => {
-                            // this.graphRef.current.pauseAnimation();
-                            State.cluster.computeConvexHullObjects();
-                            this.graphRef.current.refresh();
-                        }}
+                        // onBackgroundClick={() => {
+                        //     this.allAdded = true;
+                        //     // this.graphRef.current.pauseAnimation();
+                        //     State.cluster.computeConvexHullObjects();
+                        //     console.log(this.graphRef.current.graphData());
+                        //     this.graphRef.current.refresh();
+                        // }}
+                        nodeThreeObjectExtend={true}
                         nodeThreeObject={(nodeObject) => {
-                            if (nodeObject.id.includes("_CLUSTER_")) {
-                                return State.cluster.convexHullObjects.get(
-                                    nodeObject.id
-                                );
+                            let geometry = new THREE.SphereGeometry(10);
+                            var draw_object = new THREE.Mesh(
+                                geometry,
+                                new THREE.MeshPhongMaterial({
+                                    color: "#3d79ff",
+                                    //transparent: true,
+                                    opacity: 0.1,
+                                    shininess: 4,
+                                })
+                            );
+                            return draw_object;
 
-                                return false;
-                            } else {
-                                State.cluster.addPoints(
-                                    nodeObject.id,
-                                    nodeObject.x,
-                                    nodeObject.y,
-                                    nodeObject.z
-                                );
-                                return false;
-                            }
+                            // if (this.allAdded) {
+                            //     if (nodeObject.id.includes("_CLUSTER_")) {
+                            //         let thisObject = State.cluster.convexHullObjects.get(
+                            //             nodeObject.id
+                            //         );
+                            //         console.log(thisObject);
+                            //         // thisObject.position = new THREE.Vector3(
+                            //         //     2,
+                            //         //     2,
+                            //         //     2
+                            //         // );
+                            //         return thisObject;
+                            //     } else {
+                            //         return false;
+                            //     }
+                            // } else {
+                            //     if (nodeObject.id.includes("_CLUSTER_")) {
+                            //         return false;
+                            //     } else {
+                            //         State.cluster.addPoints(
+                            //             nodeObject.id,
+                            //             nodeObject.x,
+                            //             nodeObject.y,
+                            //             nodeObject.z
+                            //         );
+                            //         return false;
+                            //     }
+                            // }
                         }}
                         // nodeThreeObject={(nodeObject) => {
                         //     if (nodeObject.id.includes("_CLUSTER_")) {
@@ -90,23 +117,23 @@ export default observer(
                         // }}
                     />
                 );
-            } else {
-                return (
-                    <ForceGraph2D
-                        graphData={State.graph.adapterGraph}
-                        dagMode={"td"}
-                        // dagLevelDistance={300}
-                        // backgroundColor="#101020"
-                        nodeRelSize={1}
-                        // nodeId="path"
-                        // nodeVal={(node) => 100 / (node.level + 1)}
-                        // nodeLabel="path"
-                        // nodeAutoColorBy="module"
-                        // linkDirectionalParticles={2}
-                        // linkDirectionalParticleWidth={2}
-                        d3VelocityDecay={0.3}
-                    />
-                );
+                // } else {
+                //     return (
+                //         <ForceGraph2D
+                //             graphData={State.graph.adapterGraph}
+                //             dagMode={"td"}
+                //             // dagLevelDistance={300}
+                //             // backgroundColor="#101020"
+                //             nodeRelSize={1}
+                //             // nodeId="path"
+                //             // nodeVal={(node) => 100 / (node.level + 1)}
+                //             // nodeLabel="path"
+                //             // nodeAutoColorBy="module"
+                //             // linkDirectionalParticles={2}
+                //             // linkDirectionalParticleWidth={2}
+                //             d3VelocityDecay={0.3}
+                //         />
+                //     );
             }
         };
 
