@@ -16,6 +16,7 @@
         "mobx": "^6.0.4",
         "mobx-react": "^7.0.5",
         "pluralize": "^8.0.0",
+        "randomcolor": "^0.6.2",
         "react": "^16.14.0",
         "react-color": "^2.19.3",
         "react-dom": "^16.14.0",
@@ -48,5 +49,8 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "devDependencies": {
+        "@types/randomcolor": "^0.5.5"
     }
 }

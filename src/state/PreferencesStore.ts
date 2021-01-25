@@ -1,6 +1,10 @@
 import { makeAutoObservable } from "mobx";
 
 export default class PreferencesStore {
+    constructor() {
+        makeAutoObservable(this);
+    }
+
     preferenceDialogOpen = false;
 
     darkMode = true;
@@ -13,8 +17,4 @@ export default class PreferencesStore {
     isRenderOptionsCardHidden = true;
 
     view = "3D";
-
-    constructor() {
-        makeAutoObservable(this);
-    }
 }

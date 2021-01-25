@@ -7,6 +7,10 @@ import parse from "csv-parse/lib/sync";
 import { IHiddenOptions } from "./GraphStore";
 
 export default class ImportStore {
+    constructor() {
+        makeAutoObservable(this);
+    }
+
     // whether the graph is in importing
     isLoading = false;
     //name of the edge file
@@ -442,8 +446,5 @@ export default class ImportStore {
                 timeout: -1,
             });
         };
-    }
-    constructor() {
-        makeAutoObservable(this);
     }
 }

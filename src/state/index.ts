@@ -51,9 +51,6 @@ autorun(() => State.import.renderImportEdgePreview());
 // will auto run if selectedNodeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportNodePreview());
 
-// auto refresh the AttributePointsMap when the selected attribute cluster is changed
-autorun(() => State.cluster.autoRefreshAttributePointsMap());
-
 autorun(() => (State.cluster.rawGraph = State.graph.rawGraph));
 
 export default State;

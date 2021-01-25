@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
-import State from ".";
 import {
     ForceGraphMethods,
     NodeObject,
@@ -9,24 +8,15 @@ import {
 } from "react-force-graph-3d";
 import { CustomNodeObject } from "./GraphDelegate";
 
-// interface Edge<Data = any> {
-//     id: LinkId,
-//     fromId: NodeId,
-//     toId: NodeId,
-//     data: Data
-// }
-
-// interface Node<Data = any> {
-//     id: NodeId,
-//     links: Link[],
-//     data: Data
-// }
-
 export interface IHiddenOptions {
     show: boolean;
 }
 
 export default class GraphStore {
+    constructor() {
+        makeAutoObservable(this);
+    }
+
     globalConfig = {
         nodes: {
             colorBy: "pagerank",
@@ -60,7 +50,6 @@ export default class GraphStore {
     decorateRawGraph(_rawGraph: Graph) {
         _rawGraph.forEachNode((node, attributes) => {
             // add _options and _visualize to attributes
-            console.log(attributes);
             let options: IHiddenOptions = {
                 show: true,
             };
@@ -150,8 +139,4 @@ export default class GraphStore {
         nodeProperties: [],
         edgeProperties: [],
     };
-
-    constructor() {
-        makeAutoObservable(this);
-    }
 }

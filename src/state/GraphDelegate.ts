@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import State from ".";
@@ -7,8 +6,8 @@ import {
     NodeObject,
     LinkObject,
 } from "react-force-graph-3d";
-
-import * as graphology from "graphology-types";
+import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
+import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import * as THREE from "three";
 
 export interface CustomNodeObject extends NodeObject {
@@ -31,14 +30,52 @@ export default class GraphDelegate {
         return State.graph.rawGraph;
     }
 
-    get convexHullObjects(): Map<string, THREE.Object3D> {
-        return State.cluster.computeConvexHullObjects;
+    lastObject3D!: THREE.Object3D;
+
+    clusterDelegation() {
+        this.threeScene.remove(this.lastObject3D);
+        this.lastObject3D = new THREE.Object3D();
+        this.convexHullObjects.forEach((value, key) => {
+            this.lastObject3D.add(value);
+        });
+        this.threeScene.add(this.lastObject3D);
     }
 
-    init() {
-        this.convexHullObjects.forEach((value, key) => {
-            this.threeScene.add(value);
+    // explicitly called when all node's position have been added to the map
+    get convexHullObjects(): Map<string | number, THREE.Object3D> {
+        let newMap = new Map<string | number, THREE.Object3D>();
+        State.cluster.attributePoints.forEach((value, key) => {
+            if (value.length < 4) {
+                newMap.set(key, new THREE.Object3D());
+            } else {
+                let convexHull = new ConvexGeometry(Array.from(value));
+                newMap.set(key, this.createMesh(convexHull, key));
+            }
         });
+        return newMap;
+    }
+
+    private createMesh(
+        geom: ConvexGeometry,
+        name: string | number
+    ): THREE.Object3D {
+        // 实例化一个绿色的半透明的材质
+        var meshMaterial = new THREE.MeshBasicMaterial({
+            color: State.cluster.attributeColor.get(name),
+            transparent: true,
+            opacity: 0.2,
+        });
+        meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
+        var wireFrameMat = new THREE.MeshBasicMaterial();
+        wireFrameMat.wireframe = true; //把材质渲染成线框
+
+        // 将两种材质都赋给几何体
+        var mesh = SceneUtils.createMultiMaterialObject(geom, [
+            meshMaterial,
+            wireFrameMat,
+        ]);
+
+        return mesh;
     }
 
     // get graph(): ForceGraphMethods$2 {

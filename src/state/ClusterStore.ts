@@ -1,18 +1,20 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, observable } from "mobx";
 import Graph from "graphology";
 import * as THREE from "three";
-import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
-import State from ".";
+import randomcolor from "randomcolor";
 
-export default class ClassStore {
+export default class ClusterStore {
     constructor() {
-        makeAutoObservable(this);
+        makeAutoObservable(this, {
+            rawGraph: observable.ref,
+        });
     }
     clusterBy = "publish_time";
 
     rawGraph!: Graph;
 
-    get getKeyAttribute(): Map<string, string | number> {
+    // the map between [the id of a Node and the value of the attribute specified by $clusterBy]
+    get keyAttribute(): Map<string, string | number> {
         const attribute = this.clusterBy;
         const keyValueMap = new Map<string, string | number>();
 
@@ -28,47 +30,40 @@ export default class ClassStore {
         return keyValueMap;
     }
 
-    attributePoints = new Map<string | number, THREE.Vector3[]>();
-
-    addPoints(id: string, x: number, y: number, z: number) {
-        this.attributePoints
-            .get(this.getKeyAttribute.get(id) as string | number)
-            ?.push(new THREE.Vector3(x, y, z));
-    }
-
     // the possible attribute values of the attribute defined by clusterBy
     get getAttributeValues(): (string | number)[] {
-        return Array.from(new Set(this.getKeyAttribute.values()));
+        return Array.from(new Set(this.keyAttribute.values()));
     }
 
-    // auto called when attributes are changed
-    autoRefreshAttributePointsMap() {
-        let newAttributePointsMap = new Map<string | number, THREE.Vector3[]>();
+    get attributeColor(): Map<string | number, string> {
+        let colors = randomcolor({
+            seed: 1,
+            count: this.getAttributeValues.length,
+        });
+        let position = 0;
+        let map = new Map<string | number, string>();
+        this.getAttributeValues.map((attribute) => {
+            map.set(attribute, colors[position++]);
+        });
+        return map;
+    }
+
+    get attributePoints(): Map<string | number, THREE.Vector3[]> {
+        let map = new Map<string | number, THREE.Vector3[]>();
         this.getAttributeValues.map((attribute) => {
             let vectorList: THREE.Vector3[] = [];
-            newAttributePointsMap.set(attribute, vectorList);
+            map.set(attribute, vectorList);
         });
-        this.attributePoints = newAttributePointsMap;
-    }
-
-    // explicitly called when all node's position have been added to the map
-    get computeConvexHullObjects(): Map<string, THREE.Object3D> {
-        let newMap = new Map<string, THREE.Object3D>();
-        this.attributePoints.forEach((value, key) => {
-            let keyString = "_CLUSTER_";
-            if (key as string) {
-                keyString += <string>key;
-            } else {
-                keyString += (<number>key).toString();
-            }
-            if (value.length < 4) {
-                newMap.set(keyString, new THREE.Object3D());
-            } else {
-                let convexHull = new ConvexGeometry(Array.from(value));
-                newMap.set(keyString, this.createMesh(convexHull));
-            }
+        this.rawGraph.forEachNode((key, attributes) => {
+            map.get(this.keyAttribute.get(key) as string | number)?.push(
+                new THREE.Vector3(
+                    attributes._visualize.x,
+                    attributes._visualize.y,
+                    attributes._visualize.z
+                )
+            );
         });
-        return newMap;
+        return map;
     }
 
     // centerPoints = new Map<string, THREE.Vector3>();
@@ -92,24 +87,4 @@ export default class ClassStore {
     //     });
     //     this.convexHullObjects = newMap;
     // }
-
-    private createMesh(geom: ConvexGeometry): THREE.Object3D {
-        // 实例化一个绿色的半透明的材质
-        var meshMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-            transparent: true,
-            opacity: 0.2,
-        });
-        meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
-        var wireFrameMat = new THREE.MeshBasicMaterial();
-        wireFrameMat.wireframe = true; //把材质渲染成线框
-
-        // 将两种材质都赋给几何体
-        var mesh = THREE.SceneUtils.createMultiMaterialObject(geom, [
-            meshMaterial,
-            wireFrameMat,
-        ]);
-
-        return mesh;
-    }
 }
