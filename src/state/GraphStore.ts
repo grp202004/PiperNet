@@ -1,7 +1,13 @@
-import { observable, computed, makeObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
 import State from ".";
+import {
+    ForceGraphMethods,
+    NodeObject,
+    LinkObject,
+} from "react-force-graph-3d";
+import { CustomNodeObject } from "./GraphDelegate";
 
 // interface Edge<Data = any> {
 //     id: LinkId,
@@ -18,18 +24,6 @@ import State from ".";
 
 export interface IHiddenOptions {
     show: boolean;
-    isClusterNode: boolean;
-}
-
-interface GraphNode {
-    id: string | number;
-    name: string | number;
-    val: number;
-}
-
-interface GraphEdge {
-    source?: string | number;
-    target?: string | number;
 }
 
 export default class GraphStore {
@@ -63,50 +57,35 @@ export default class GraphStore {
         type: "undirected",
     });
 
-    get clusterDelegateNode(): GraphNode[] {
-        let clusters = State.cluster.getAttributeValues;
-        let nodes: GraphNode[] = [];
+    decorateRawGraph(_rawGraph: Graph) {
+        _rawGraph.forEachNode((node, attributes) => {
+            // add _options and _visualize to attributes
+            console.log(attributes);
+            let options: IHiddenOptions = {
+                show: true,
+            };
+            _rawGraph.setNodeAttribute(node, "_options", options);
 
-        clusters.forEach((cluster) => {
-            nodes.push({
-                id: "_CLUSTER_" + cluster,
-                name: "_CLUSTER_" + cluster,
-
-                // need be changed next
-                val: 100,
-            });
-        });
-
-        return nodes;
-    }
-
-    get adapterGraph() {
-        //interface from react-force-graph
-
-        let nodes: GraphNode[] = [];
-        let links: GraphEdge[] = [];
-
-        let tempGraph = {
-            nodes: nodes,
-            links: links,
-        };
-
-        let exportedGraph = this.rawGraph.export();
-        exportedGraph.nodes.forEach((node: graphology.SerializedNode) => {
-            if (!node.attributes?._options.show) return;
-            let thisNode: GraphNode = {
-                id: node.key,
-                name: node.key,
-
-                // need be changed next
+            let visualize: CustomNodeObject = {
+                id: node,
+                name: node,
                 val: 1,
             };
-            tempGraph.nodes.push(thisNode);
+            _rawGraph.setNodeAttribute(node, "_visualize", visualize);
+        });
+        this.rawGraph = _rawGraph;
+    }
+
+    get delegateGraph() {
+        let tempGraph = {
+            nodes: [] as CustomNodeObject[],
+            links: [] as LinkObject[],
+        };
+        this.rawGraph.forEachNode((node, attributes) => {
+            tempGraph.nodes.push(attributes["_visualize"]);
         });
 
-        tempGraph.nodes = tempGraph.nodes.concat(this.clusterDelegateNode);
-
-        tempGraph.links = exportedGraph.edges;
+        tempGraph.links = this.rawGraph.export().edges;
         return tempGraph;
     }
 
@@ -173,26 +152,6 @@ export default class GraphStore {
     };
 
     constructor() {
-        makeObservable(this, {
-            rawGraph: observable,
-            adapterGraph: computed,
-            rawTable: computed,
-            globalConfig: observable,
-            hasGraph: computed,
-            clusterDelegateNode: computed,
-            nodes: observable,
-            edges: observable,
-            // computedGraph: computed,
-            enableDegree: observable,
-            enableDensity: observable,
-            enableDiameter: observable,
-            enableCoefficient: observable,
-            enableComponent: observable,
-            selectedNodes: observable,
-            currentlyHovered: observable,
-            _lastSelectedSingleNode: observable,
-            metadata: observable,
-            // _lastSelectedSingleNode: observable,
-        });
+        makeAutoObservable(this);
     }
 }

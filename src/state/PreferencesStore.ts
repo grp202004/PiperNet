@@ -1,4 +1,4 @@
-import { observable, action, makeObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 export default class PreferencesStore {
     preferenceDialogOpen = false;
@@ -15,15 +15,6 @@ export default class PreferencesStore {
     view = "3D";
 
     constructor() {
-        makeObservable(this, {
-            preferenceDialogOpen: observable,
-            darkMode: observable,
-            statisticsDialogOpen: observable,
-            helpDialogOpen: observable,
-            neighborDialogOpen: observable,
-            dataSheetDialogOpen: observable,
-            isRenderOptionsCardHidden: observable,
-            view: observable,
-        });
+        makeAutoObservable(this);
     }
 }

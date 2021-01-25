@@ -32,7 +32,7 @@ export default observer(
                                 State.import
                                     .importGraphFromGEXF()
                                     .then((res) => {
-                                        State.graph.rawGraph = res.graph;
+                                        State.graph.decorateRawGraph(res.graph);
                                         State.graph.metadata = res.metadata;
 
                                         State.import.isLoading = false;

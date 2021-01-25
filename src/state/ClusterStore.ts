@@ -1,4 +1,4 @@
-import { observable, makeObservable, computed, autorun } from "mobx";
+import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import * as THREE from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
@@ -6,15 +6,7 @@ import State from ".";
 
 export default class ClassStore {
     constructor() {
-        makeObservable(this, {
-            clusterBy: observable,
-            rawGraph: observable.ref,
-            getKeyAttribute: computed,
-            getAttributeValues: computed,
-            attributePoints: observable,
-            convexHullObjects: observable,
-            // centerPoints: observable,
-        });
+        makeAutoObservable(this);
     }
     clusterBy = "publish_time";
 
@@ -36,6 +28,8 @@ export default class ClassStore {
         return keyValueMap;
     }
 
+    attributePoints = new Map<string | number, THREE.Vector3[]>();
+
     addPoints(id: string, x: number, y: number, z: number) {
         this.attributePoints
             .get(this.getKeyAttribute.get(id) as string | number)
@@ -47,8 +41,7 @@ export default class ClassStore {
         return Array.from(new Set(this.getKeyAttribute.values()));
     }
 
-    attributePoints = new Map<string | number, THREE.Vector3[]>();
-
+    // auto called when attributes are changed
     autoRefreshAttributePointsMap() {
         let newAttributePointsMap = new Map<string | number, THREE.Vector3[]>();
         this.getAttributeValues.map((attribute) => {
@@ -58,10 +51,8 @@ export default class ClassStore {
         this.attributePoints = newAttributePointsMap;
     }
 
-    convexHullObjects = new Map<string, THREE.Object3D>();
-
     // explicitly called when all node's position have been added to the map
-    computeConvexHullObjects() {
+    get computeConvexHullObjects(): Map<string, THREE.Object3D> {
         let newMap = new Map<string, THREE.Object3D>();
         this.attributePoints.forEach((value, key) => {
             let keyString = "_CLUSTER_";
@@ -77,7 +68,7 @@ export default class ClassStore {
                 newMap.set(keyString, this.createMesh(convexHull));
             }
         });
-        this.convexHullObjects = newMap;
+        return newMap;
     }
 
     // centerPoints = new Map<string, THREE.Vector3>();

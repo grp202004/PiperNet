@@ -1,12 +1,46 @@
 import React, { useEffect } from "react";
-import { observable, computed, makeObservable } from "mobx";
-import State from "../../state";
-import { ForceGraph2D, ForceGraph3D } from "react-force-graph";
+import { makeAutoObservable } from "mobx";
+import Graph from "graphology";
+import State from ".";
+import {
+    ForceGraphMethods,
+    NodeObject,
+    LinkObject,
+} from "react-force-graph-3d";
+
+import * as graphology from "graphology-types";
 import * as THREE from "three";
 
-class Graph {
-    //@ts-ignore
-    // graphRef: React.MutableRefObject<ForceGraphMethods$2>;
+export interface CustomNodeObject extends NodeObject {
+    name?: string;
+    val?: number;
+}
+
+export default class GraphDelegate {
+    constructor(_graphDelegateMethods: ForceGraphMethods) {
+        this.graphDelegateMethods = _graphDelegateMethods;
+        this.threeScene = this.graphDelegateMethods.scene();
+        makeAutoObservable(this);
+    }
+
+    private graphDelegateMethods: ForceGraphMethods;
+
+    private threeScene: THREE.Scene;
+
+    get rawGraph(): Graph {
+        return State.graph.rawGraph;
+    }
+
+    get convexHullObjects(): Map<string, THREE.Object3D> {
+        return State.cluster.computeConvexHullObjects;
+    }
+
+    init() {
+        this.convexHullObjects.forEach((value, key) => {
+            this.threeScene.add(value);
+        });
+    }
+
     // get graph(): ForceGraphMethods$2 {
     //     return this.graphRef.current;
     // }
@@ -40,5 +74,3 @@ class Graph {
     //     });
     // }
 }
-
-export default new Graph();
