@@ -1,27 +1,23 @@
-import { observable, computed, makeObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
-
-// interface Edge<Data = any> {
-//     id: LinkId,
-//     fromId: NodeId,
-//     toId: NodeId,
-//     data: Data
-// }
-
-// interface Node<Data = any> {
-//     id: NodeId,
-//     links: Link[],
-//     data: Data
-// }
+import {
+    ForceGraphMethods,
+    NodeObject,
+    LinkObject,
+} from "react-force-graph-3d";
+import { CustomNodeObject } from "./GraphDelegate";
 
 export interface IHiddenOptions {
     show: boolean;
-    cluster: string | null;
 }
 
 export default class GraphStore {
-    initialGlobalConfig = {
+    constructor() {
+        makeAutoObservable(this);
+    }
+
+    globalConfig = {
         nodes: {
             colorBy: "pagerank",
             color: {
@@ -51,41 +47,34 @@ export default class GraphStore {
         type: "undirected",
     });
 
-    get adapterGraph() {
-        //interface from react-force-graph
-        interface Node {
-            id: string | number;
-            name: string | number;
-            val: number;
-        }
+    decorateRawGraph(_rawGraph: Graph) {
+        _rawGraph.forEachNode((node, attributes) => {
+            // add _options and _visualize to attributes
+            let options: IHiddenOptions = {
+                show: true,
+            };
+            _rawGraph.setNodeAttribute(node, "_options", options);
 
-        interface Edge {
-            source?: string | number;
-            target?: string | number;
-        }
-
-        let nodes: Node[] = [];
-        let links: Edge[] = [];
-
-        let tempGraph = {
-            nodes: nodes,
-            links: links,
-        };
-
-        let exportedGraph = this.rawGraph.export();
-        exportedGraph.nodes.forEach((node: graphology.SerializedNode) => {
-            if (!node.attributes?._options.show) return;
-            let thisNode: Node = {
-                id: node.key,
-                name: node.key,
-
-                // need be changed next
+            let visualize: CustomNodeObject = {
+                id: node,
+                name: node,
                 val: 1,
             };
-            tempGraph.nodes.push(thisNode);
+            _rawGraph.setNodeAttribute(node, "_visualize", visualize);
+        });
+        this.rawGraph = _rawGraph;
+    }
+
+    get delegateGraph() {
+        let tempGraph = {
+            nodes: [] as CustomNodeObject[],
+            links: [] as LinkObject[],
+        };
+        this.rawGraph.forEachNode((node, attributes) => {
+            tempGraph.nodes.push(attributes["_visualize"]);
         });
 
-        tempGraph.links = exportedGraph.edges;
+        tempGraph.links = this.rawGraph.export().edges;
         return tempGraph;
     }
 
@@ -117,8 +106,8 @@ export default class GraphStore {
         this.rawGraph.setNodeAttribute(key, "_options", newOptions);
     }
 
-    nodes = this.initialGlobalConfig.nodes;
-    edges = this.initialGlobalConfig.edges;
+    nodes = this.globalConfig.nodes;
+    edges = this.globalConfig.edges;
 
     enableDegree = true;
     enableDensity = true;
@@ -150,66 +139,4 @@ export default class GraphStore {
         nodeProperties: [],
         edgeProperties: [],
     };
-
-    // // Triggers autorun in stores/index.js to sent computedGraph to graph-frontend.
-    // get computedGraph() {
-    //     const graph = createGraph();
-    //     this.rawGraph.nodes.forEach((n) => {
-    //         // If isHidden flag is defined and true, ignore the node in graph-frontend.
-    //         if (n.isHidden) {
-    //             return;
-    //         }
-    //         const override = this.overrides.get(n.id.toString());
-    //         graph.addNode(n.id.toString(), {
-    //             label:
-    //                 (override && override.get("label")) ||
-    //                 n[this.nodes.labelBy],
-    //             size:
-    //                 (override && override.get("size")) ||
-    //                 this.nodeSizeScale(n[this.nodes.sizeBy]),
-    //             color:
-    //                 (override && override.get("color")) ||
-    //                 this.nodeColorScale(n[this.nodes.colorBy]),
-    //             shape:
-    //                 (override && override.get("shape")) || n[this.nodes.shape],
-    //             ref: n,
-    //         });
-    //     });
-
-    //     this.rawGraph.edges.forEach((e) => {
-    //         // If isHidden flag is defined and true on an associated node,
-    //         // leave out its related edges.
-    //         if (
-    //             graph.hasNode(e.source_id.toString()) &&
-    //             graph.hasNode(e.target_id.toString())
-    //         ) {
-    //             graph.addLink(e.source_id.toString(), e.target_id.toString());
-    //         }
-    //     });
-
-    //     return graph;
-    // }
-
-    constructor() {
-        makeObservable(this, {
-            rawGraph: observable,
-            adapterGraph: computed,
-            rawTable: computed,
-            initialGlobalConfig: observable,
-            hasGraph: computed,
-            nodes: observable,
-            edges: observable,
-            // computedGraph: computed,
-            enableDegree: observable,
-            enableDensity: observable,
-            enableDiameter: observable,
-            enableCoefficient: observable,
-            enableComponent: observable,
-            selectedNodes: observable,
-            currentlyHovered: observable,
-            _lastSelectedSingleNode: observable,
-            metadata: observable,
-            // _lastSelectedSingleNode: observable,
-        });
-    }
 }
