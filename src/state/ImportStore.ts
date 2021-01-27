@@ -82,7 +82,7 @@ export default class ImportStore {
         });
     }
 
-    private async readCSV(
+    public async readCSV(
         fileObject: File,
         hasHeader: boolean,
         delimiter: string
@@ -285,7 +285,6 @@ export default class ImportStore {
     public renderImportGEXFPreview(): void {}
 
     public renderImportEdgePreview(): void {
-        trace();
         let file = this.selectedEdgeFileFromInput;
         let edgeFileConfig = this.importConfig.edgeFile;
         let hasHeader = edgeFileConfig.hasHeader;
@@ -386,8 +385,7 @@ export default class ImportStore {
         };
     }
 
-    public renderImportNodePreview(): void {
-        trace();
+    public async renderImportNodePreview() {
         let file = this.selectedNodeFileFromInput;
         let nodeFileConfig = this.importConfig.nodeFile;
         let hasHeader = nodeFileConfig.hasHeader;
