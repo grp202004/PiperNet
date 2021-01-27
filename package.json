@@ -54,6 +54,7 @@
         ]
     },
     "devDependencies": {
-        "@types/jest": "^26.0.20"
+        "@types/jest": "^26.0.20",
+        "@types/react": "^17.0.0"
     }
 }
