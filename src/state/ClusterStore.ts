@@ -30,6 +30,17 @@ export default class ClusterStore {
         return keyValueMap;
     }
 
+    get attributeKeys(): Map<string | number, string[]> {
+        const attributeKeysMap = new Map<string | number, string[]>();
+        this.getAttributeValues.forEach((value) => {
+            attributeKeysMap.set(value, []);
+        });
+        this.keyAttribute.forEach((value, key) => {
+            attributeKeysMap.get(value)?.push(key);
+        });
+        return attributeKeysMap;
+    }
+
     // the possible attribute values of the attribute defined by clusterBy
     get getAttributeValues(): (string | number)[] {
         return Array.from(new Set(this.keyAttribute.values()));

@@ -310,7 +310,7 @@ export default observer(
                                             State.import
                                                 .importGraphFromCSV()
                                                 .then((res) => {
-                                                    State.graph.decorateRawGraph(
+                                                    State.graph.rawGraph = State.graph.decorateRawGraph(
                                                         res.graph
                                                     );
                                                     State.graph.metadata =

@@ -3,7 +3,7 @@ import { observable, makeObservable, computed, autorun } from "mobx";
 import { observer } from "mobx-react";
 import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
 import State from "../../state";
-import GraphDelegate from "../../state/GraphDelegate";
+import GraphDelegate from "./GraphDelegate";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -12,7 +12,7 @@ export default observer(
             makeObservable(this, {
                 graphRef: observable,
                 graphMethods: computed,
-                // centerPoints: observable,
+                graphDelegate: observable,
             });
         }
         // @ts-ignore
@@ -21,14 +21,14 @@ export default observer(
             return this.graphRef.current;
         }
 
-        graphDelegate!: GraphDelegate;
+        graphDelegate = new GraphDelegate();
 
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
                     <ForceGraph3D
                         ref={this.graphRef}
-                        graphData={State.graph.delegateGraph}
+                        graphData={this.graphDelegate.visualizationGraph}
                         nodeResolution={20}
                         onNodeDragEnd={(node) => {
                             node.fx = node.x;
@@ -77,7 +77,7 @@ export default observer(
         }
 
         componentDidMount() {
-            this.graphDelegate = new GraphDelegate(this.graphMethods);
+            this.graphDelegate.mountDelegateMethods(this.graphMethods);
         }
     }
 );

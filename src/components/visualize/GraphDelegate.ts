@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import State from ".";
+import { copy } from "copy-anything";
+import State from "../../state";
 import {
     ForceGraphMethods,
     NodeObject,
@@ -16,15 +17,75 @@ export interface CustomNodeObject extends NodeObject {
 }
 
 export default class GraphDelegate {
-    constructor(_graphDelegateMethods: ForceGraphMethods) {
-        this.graphDelegateMethods = _graphDelegateMethods;
-        this.threeScene = this.graphDelegateMethods.scene();
+    constructor() {
         makeAutoObservable(this);
     }
 
-    private graphDelegateMethods: ForceGraphMethods;
+    mountDelegateMethods(_graphDelegateMethods: ForceGraphMethods) {
+        this.graphDelegateMethods = _graphDelegateMethods;
+        this.threeScene = this.graphDelegateMethods.scene();
+    }
 
-    private threeScene: THREE.Scene;
+    private graphDelegateMethods!: ForceGraphMethods;
+
+    private threeScene!: THREE.Scene;
+
+    get visualizationGraph() {
+        let newGraph = State.graph.decorateRawGraph(
+            this.addInvisibleClusterNode(this.rawGraph)
+        );
+        let tempGraph = {
+            nodes: [] as CustomNodeObject[],
+            links: [] as LinkObject[],
+        };
+        newGraph.forEachNode((node, attributes) => {
+            tempGraph.nodes.push(attributes["_visualize"]);
+        });
+
+        tempGraph.links = newGraph.export().edges;
+        return tempGraph;
+    }
+
+    addInvisibleClusterNode(oldGraph: Graph): Graph {
+        let graphCopy = copy(oldGraph);
+        State.cluster.getAttributeValues.forEach((attribute) => {
+            let clusterID = "_CLUSTER1_" + attribute;
+            graphCopy.addNode(clusterID);
+            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
+                graphCopy.addEdge(clusterID, value);
+            });
+        });
+        State.cluster.getAttributeValues.forEach((attribute) => {
+            let clusterID = "_CLUSTER2_" + attribute;
+            graphCopy.addNode(clusterID);
+            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
+                graphCopy.addEdge(clusterID, value);
+            });
+        });
+        State.cluster.getAttributeValues.forEach((attribute) => {
+            let clusterID = "_CLUSTER3_" + attribute;
+            graphCopy.addNode(clusterID);
+            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
+                graphCopy.addEdge(clusterID, value);
+            });
+        });
+        State.cluster.getAttributeValues.forEach((attribute) => {
+            let clusterID = "_CLUSTER4_" + attribute;
+            graphCopy.addNode(clusterID);
+            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
+                graphCopy.addEdge(clusterID, value);
+            });
+        });
+        State.cluster.getAttributeValues.forEach((attribute) => {
+            let clusterID = "_CLUSTER5_" + attribute;
+            graphCopy.addNode(clusterID);
+            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
+                graphCopy.addEdge(clusterID, value);
+            });
+        });
+
+        return graphCopy;
+    }
 
     get rawGraph(): Graph {
         return State.graph.rawGraph;

@@ -6,7 +6,7 @@ import {
     NodeObject,
     LinkObject,
 } from "react-force-graph-3d";
-import { CustomNodeObject } from "./GraphDelegate";
+import { CustomNodeObject } from "../components/visualize/GraphDelegate";
 
 export interface IHiddenOptions {
     show: boolean;
@@ -47,7 +47,7 @@ export default class GraphStore {
         type: "undirected",
     });
 
-    decorateRawGraph(_rawGraph: Graph) {
+    decorateRawGraph(_rawGraph: Graph): Graph {
         _rawGraph.forEachNode((node, attributes) => {
             // add _options and _visualize to attributes
             let options: IHiddenOptions = {
@@ -62,20 +62,7 @@ export default class GraphStore {
             };
             _rawGraph.setNodeAttribute(node, "_visualize", visualize);
         });
-        this.rawGraph = _rawGraph;
-    }
-
-    get delegateGraph() {
-        let tempGraph = {
-            nodes: [] as CustomNodeObject[],
-            links: [] as LinkObject[],
-        };
-        this.rawGraph.forEachNode((node, attributes) => {
-            tempGraph.nodes.push(attributes["_visualize"]);
-        });
-
-        tempGraph.links = this.rawGraph.export().edges;
-        return tempGraph;
+        return _rawGraph;
     }
 
     get rawTable(): graphology.SerializedNode[] {

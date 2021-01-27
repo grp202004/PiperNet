@@ -10,6 +10,7 @@
     "@blueprintjs/select": "^3.15.0",
     "@blueprintjs/table": "^3.8.18",
     "classnames": "^2.2.6",
+    "copy-anything": "^2.0.1",
     "csv-parse": "^4.14.2",
     "graphology": "^0.19.3",
     "graphology-gexf": "^0.7.0",
