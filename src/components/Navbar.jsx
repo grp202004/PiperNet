@@ -13,11 +13,16 @@ import {
     MenuItem,
     MenuDivider,
 } from "@blueprintjs/core";
+// import { Popover2 as Popover } from "@blueprintjs/popover2";
 import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
 import State from "../state";
 
-import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS, BACKEND_URL } from "../constants";
+import {
+    GITHUB_URL,
+    SAMPLE_GRAPH_SNAPSHOTS,
+    fetchSampleGraph,
+} from "../constants";
 
 export default observer(
     class Navbar extends React.Component {
@@ -60,54 +65,23 @@ export default observer(
                                                             sampleSnapshotTitle
                                                         }
                                                         onClick={() => {
-                                                            try {
-                                                                fetch(
-                                                                    sampleSnapshotUrl,
-                                                                    {
-                                                                        mode:
-                                                                            "no-cors",
-                                                                    }
-                                                                )
+                                                            fetchSampleGraph(
+                                                                sampleSnapshotUrl
+                                                            ).then((file) => {
+                                                                State.import.selectedGEXFFileFromInput = file;
+                                                                State.import
+                                                                    .importGraphFromGEXF()
                                                                     .then(
                                                                         (
-                                                                            response
+                                                                            res
                                                                         ) => {
-                                                                            return response.body;
-                                                                        }
-                                                                    )
-                                                                    .then(
-                                                                        (
-                                                                            gexf
-                                                                        ) => {
-                                                                            State.import.selectedGEXFFileFromInput = new File(
-                                                                                [
-                                                                                    gexf,
-                                                                                ],
-                                                                                "sample.gexf",
-                                                                                {
-                                                                                    type:
-                                                                                        "text/xml",
-                                                                                }
-                                                                            );
-                                                                            State.import
-                                                                                .importGraphFromGEXF()
-                                                                                .then(
-                                                                                    (
-                                                                                        res
-                                                                                    ) => {
-                                                                                        State.graph.rawGraph =
-                                                                                            res.graph;
-                                                                                        State.graph.metadata =
-                                                                                            res.metadata;
-                                                                                    }
-                                                                                );
+                                                                            State.graph.rawGraph =
+                                                                                res.graph;
+                                                                            State.graph.metadata =
+                                                                                res.metadata;
                                                                         }
                                                                     );
-                                                            } catch (error) {
-                                                                console.log(
-                                                                    error
-                                                                );
-                                                            }
+                                                            });
                                                         }}
                                                     />
                                                 );
