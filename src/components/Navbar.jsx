@@ -113,9 +113,9 @@ export default observer(
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
-                                        text="Save Snapshot"
+                                        text="Export Graph"
                                         onClick={() => {
-                                            State.project.saveSnapshotDialogOpen = true;
+                                            State.project.exportDialogOpen = true;
                                         }}
                                     />
                                 </Menu>

@@ -7,6 +7,6 @@ export default class ProjectStore {
 
     currentSnapshotName = "Untitled";
 
-    saveSnapshotDialogOpen = false;
+    exportDialogOpen = false;
     renameSnapshotDialogOpen = false;
 }
