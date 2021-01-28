@@ -1,70 +1,77 @@
-# Getting Started with Create React App
+# PiperNet
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Deploy master to GitHub Pages](https://github.com/grp202004/PiperNet/workflows/Deploy%20master%20to%20GitHub%20Pages/badge.svg?branch=master) ![Coveralls](https://github.com/grp202004/PiperNet/workflows/Coveralls/badge.svg)
 
-## Available Scripts
+An interactive 2D/3D cluster graph visualization system that runs in your browsers as well as on desktop.
 
-In the project directory, you can run:
+[**Beta** - Launch early access beta version of PiperNet in your browser](https://kaby-lake.github.io/pipernet.github.io//)
 
-### `npm start`
+## About
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This project aims to help researchers map the existing information onto the 2D or 3D graphs, and discover the undetected details behind the real-world datasets, as well as modify them in various ways.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Feature Highlights
 
-### `npm test`
+### Interactive Graph Visualization
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Visualize your graph in 2D or 3D with interactive force-directed layout, with automatic sizing and coloring, and even full control over every node for customization!
 
-### `npm run build`
+### Data Import
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+PiperNet accepts both the CSV and [GEXF](https://gephi.org/gexf/format/) inputs. The following possible approaches are the several ways you can import data to this application.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**- Importing nodes with labels and their relations**
 
-### `npm run eject`
+The easiest is probably to just have a csv file like this one:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+Source,    Target
+Jeremy,    Jennifer
+Valerian,  Jeremy
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+which specify the simple undirected relationship between `Source` and `Target`. This type of input kind can be achieved by selecting "**only edge file**" on import dialog.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+---
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+**- Importing more than labels: nodes and edges attributes**
 
-## Learn More
+To import attributes we will need to proceed differently. We need 2 csv files: one for the list of nodes, one for the list of relations (edges)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Nodes must have at least an **`ID`** (you can specify which column is the ID), other fields are optional, an example file with a list of nodes:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+Id, Label,      Date of Birth,  Place of Birth,    Years of experience,    Rating
+3,  Dubois,     17/09/1980,     Paris,             8,                      9.27
+1,  Jeremy,     25/03/1978,     Tampa,             8,                      4.34
+45, Rodriguez,  30/04/1985,     Berlin,            5,                      6.66
+```
 
-### Code Splitting
+Edges must have at least a **`Source`** and **`Target`**, other fields are optional, an example file with a list of edges:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+Source, Target, Weight,   Where first met
+1,      45,     3,        London
+```
 
-### Analyzing the Bundle Size
+**- Importing with GEXF format**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+[GEXF](https://gephi.org/gexf/format/) (Graph Exchange XML Format) is a language for describing complex networks structures, their associated data and dynamics. PiperNet can import and export GEXF files with all necessary graph data stored in it.
 
-### Making a Progressive Web App
+The [Dynamic GEXF](https://gephi.org/gexf/format/dynamics.html) is currently not yet supported in PiperNet, and might not support unless enough functionalities added to enhance the interactivity of Dynamic GEXF.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Graphs for Testing and Demos
 
-### Advanced Configuration
+[Sample Datasets](./src/samples/) are located inside this repository, enjoy and have fun :\)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### More Features on the Way !
 
-### Deployment
+This project is currently under development, and we have a lot more existing new features coming soon.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
 
-### `npm run build` fails to minify
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+♥ Developed and maintained by [UNNC GRP 2020.04](https://github.com/grp202004). We are currently not accepting any contribution from other than the team members.

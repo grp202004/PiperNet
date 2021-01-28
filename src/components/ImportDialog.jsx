@@ -10,6 +10,7 @@ import {
     FileInput,
     Alert,
     Callout,
+    Tag,
 } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
@@ -31,23 +32,28 @@ let PreviewTable = observer(
                     the file for import to find possible problems.
                 </Callout>
             ) : (
-                <Table
-                    className="import-preview-table"
-                    numRows={this.file.topN.length}
-                    selectedRegions={Object.values(this.file.mapping)
-                        .map((it) => this.file.columns.indexOf(it))
-                        .map((it) => ({ rows: null, cols: [it, it] }))}
-                >
-                    {this.file.columns.map((it) => (
-                        <Column
-                            key={it}
-                            name={it}
-                            cellRenderer={(i) => (
-                                <Cell>{this.file.topN[i][it]}</Cell>
-                            )}
-                        />
-                    ))}
-                </Table>
+                <div>
+                    <Table
+                        className="import-preview-table"
+                        numRows={this.file.topN.length}
+                        selectedRegions={Object.values(this.file.mapping)
+                            .map((it) => this.file.columns.indexOf(it))
+                            .map((it) => ({ rows: null, cols: [it, it] }))}
+                    >
+                        {this.file.columns.map((it) => (
+                            <Column
+                                key={it}
+                                name={it}
+                                cellRenderer={(i) => (
+                                    <Cell>{this.file.topN[i][it]}</Cell>
+                                )}
+                            />
+                        ))}
+                    </Table>
+                    <Tag>
+                        Only the top 10 lines of the selected file are displayed
+                    </Tag>
+                </div>
             );
         };
 
@@ -304,8 +310,9 @@ export default observer(
                                             State.import
                                                 .importGraphFromCSV()
                                                 .then((res) => {
-                                                    State.graph.rawGraph =
-                                                        res.graph;
+                                                    State.graph.decorateRawGraph(
+                                                        res.graph
+                                                    );
                                                     State.graph.metadata =
                                                         res.metadata;
 

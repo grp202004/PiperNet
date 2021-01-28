@@ -1,5 +1,5 @@
 import { Toaster, Position, Intent } from "@blueprintjs/core";
-import { observable, makeObservable, trace } from "mobx";
+import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
 import gexf from "graphology-gexf";
@@ -7,6 +7,10 @@ import parse from "csv-parse/lib/sync";
 import { IHiddenOptions } from "./GraphStore";
 
 export default class ImportStore {
+    constructor() {
+        makeAutoObservable(this);
+    }
+
     // whether the graph is in importing
     isLoading = false;
     //name of the edge file
@@ -66,21 +70,6 @@ export default class ImportStore {
             delimiter: ",",
         },
     };
-
-    constructor() {
-        makeObservable(this, {
-            isLoading: observable,
-            edgeFileName: observable,
-            nodeFileName: observable,
-            gexfFileName: observable,
-            importCSVDialogOpen: observable,
-            importGEXFDialogOpen: observable,
-            selectedEdgeFileFromInput: observable,
-            selectedNodeFileFromInput: observable,
-            selectedGEXFFileFromInput: observable,
-            importConfig: observable,
-        });
-    }
 
     /**
      * read the CSV file specified by fileObject, with options defined by other paras
@@ -219,11 +208,6 @@ export default class ImportStore {
         if (config.hasNodeFile) {
             tempNodes = await this.readNodeCSV();
             tempNodes.forEach((node) => {
-                let options: IHiddenOptions = {
-                    show: true,
-                    cluster: node[config.nodeFile.mapping.cluster].toString(),
-                };
-                node._options = options;
                 graph.addNode(
                     node[config.nodeFile.mapping.id].toString(),
                     node
@@ -238,20 +222,10 @@ export default class ImportStore {
             let toId = edge[toColumn].toString();
 
             if (!graph.hasNode(fromId)) {
-                let options: IHiddenOptions = {
-                    show: true,
-                    cluster: null,
-                };
-                let data = { id: fromId, _options: options };
-                graph.addNode(fromId, data);
+                graph.addNode(fromId, { id: fromId });
             }
             if (!graph.hasNode(toId)) {
-                let options: IHiddenOptions = {
-                    show: true,
-                    cluster: null,
-                };
-                let data = { id: toId, _options: options };
-                graph.addNode(toId, data);
+                graph.addNode(toId, { id: toId });
             }
             graph.addEdge(fromId, toId);
         });
@@ -278,18 +252,6 @@ export default class ImportStore {
     //TODO:import 里的id和cluster， source target还没设置
     public async importGraphFromGEXF() {
         let graph = await this.readGEXF();
-        // add _options to Graph, if missing
-        graph.forEachNode((key: string, attribute: object) => {
-            if (attribute.hasOwnProperty("_options")) {
-                return;
-            }
-            let options: IHiddenOptions = {
-                show: true,
-                cluster: null,
-            };
-            graph.setNodeAttribute(key, "_options", options);
-        });
-
         let nodeProperties: string[] = [];
 
         for (const [key, value] of Object.entries(

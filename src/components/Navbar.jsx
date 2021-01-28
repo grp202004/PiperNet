@@ -17,7 +17,7 @@ import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
 import State from "../state";
 
-import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS } from "../constants";
+import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS, BACKEND_URL } from "../constants";
 
 export default observer(
     class Navbar extends React.Component {
@@ -50,7 +50,7 @@ export default observer(
                                             (sample) => {
                                                 const sampleSnapshotTitle =
                                                     sample[0];
-                                                const sampleSnapshotString =
+                                                const sampleSnapshotUrl =
                                                     sample[1];
 
                                                 return (
@@ -60,24 +60,54 @@ export default observer(
                                                             sampleSnapshotTitle
                                                         }
                                                         onClick={() => {
-                                                            State.import.importConfig.edgeFile.mapping.fromId =
-                                                                "source";
-                                                            State.import.importConfig.edgeFile.mapping.toId =
-                                                                "target";
-                                                            State.import.selectedEdgeFileFromInput = new Blob(
-                                                                [
-                                                                    sampleSnapshotString,
-                                                                ],
-                                                                {
-                                                                    type:
-                                                                        "text/csv",
-                                                                }
-                                                            );
-                                                            let graph = State.import.importGraphFromCSV();
-                                                            State.graph.rawGraph =
-                                                                graph.graph;
-                                                            State.graph.metadata =
-                                                                graph.metadata;
+                                                            try {
+                                                                fetch(
+                                                                    sampleSnapshotUrl,
+                                                                    {
+                                                                        mode:
+                                                                            "no-cors",
+                                                                    }
+                                                                )
+                                                                    .then(
+                                                                        (
+                                                                            response
+                                                                        ) => {
+                                                                            return response.body;
+                                                                        }
+                                                                    )
+                                                                    .then(
+                                                                        (
+                                                                            gexf
+                                                                        ) => {
+                                                                            State.import.selectedGEXFFileFromInput = new File(
+                                                                                [
+                                                                                    gexf,
+                                                                                ],
+                                                                                "sample.gexf",
+                                                                                {
+                                                                                    type:
+                                                                                        "text/xml",
+                                                                                }
+                                                                            );
+                                                                            State.import
+                                                                                .importGraphFromGEXF()
+                                                                                .then(
+                                                                                    (
+                                                                                        res
+                                                                                    ) => {
+                                                                                        State.graph.rawGraph =
+                                                                                            res.graph;
+                                                                                        State.graph.metadata =
+                                                                                            res.metadata;
+                                                                                    }
+                                                                                );
+                                                                        }
+                                                                    );
+                                                            } catch (error) {
+                                                                console.log(
+                                                                    error
+                                                                );
+                                                            }
                                                         }}
                                                     />
                                                 );
