@@ -71,6 +71,17 @@ export default class ImportStore {
         },
     };
 
+    /**
+     * read the CSV file specified by fileObject, with options defined by other paras
+     * and return a list of objects containing the key-value pair of attribute-value
+     *
+     * @param {File} fileObject
+     * @param {boolean} hasHeader
+     * @param {string} delimiter
+     * @return {*}  {Promise<Object[]>}
+     * where Object is of { attribute: number | string, anotherAttribute: number | string, ... } type
+     * @memberof ImportStore
+     */
     private async readCSV(
         fileObject: File,
         hasHeader: boolean,
@@ -120,6 +131,14 @@ export default class ImportStore {
         });
     }
 
+    /**
+     * parse the graph from import GEXF file specified in selectedGEXFFileFromInput
+     * and return a Graph object
+     *
+     * @private
+     * @return {*}  {Promise<Graph>}
+     * @memberof ImportStore
+     */
     private async readGEXF(): Promise<Graph> {
         const file = this.selectedGEXFFileFromInput;
         const reader = new FileReader();
@@ -157,6 +176,14 @@ export default class ImportStore {
         );
     }
 
+    /**
+     * will create a Graph structure to store the nodes and edges in the imported File
+     * should handle whether or not have the NodeFile, whether or not have the header of each file
+     * if successfully imported, change the .isReady to be true
+     *
+     * @return {*}
+     * @memberof ImportStore
+     */
     public async importGraphFromCSV() {
         const config = this.importConfig;
 
@@ -244,9 +271,22 @@ export default class ImportStore {
         };
     }
 
+    // TODO:
     public renderImportGEXFPreview(): void {}
 
-    public renderImportEdgePreview(): void {
+    /**
+     * change the importConfig.edgeFile.topN to be the top 10 parsed elements in the input edge file
+     * change the importConfig.edgeFile.columns to be the attributes of the imported edge file
+     * set the .mapping.fromId and .mapping.toId to be the first and second (if have) attribute of the input edge file.
+     *
+     * if successfully parsed, set the .isReady to be true, else set the.parseError
+     *
+     * This function will autorun if user specify the selectedEdgeFileFromInput and the changes that this function will make is to get ready for the rendering of preview Table in the ImportDialog
+     *
+     * @return {*}
+     * @memberof ImportStore
+     */
+    public async renderImportEdgePreview() {
         let file = this.selectedEdgeFileFromInput;
         let edgeFileConfig = this.importConfig.edgeFile;
         let hasHeader = edgeFileConfig.hasHeader;
@@ -254,62 +294,75 @@ export default class ImportStore {
 
         edgeFileConfig.parseError = false;
 
-        if (!file) {
-            return;
-        }
-        const reader = new FileReader();
-        reader.readAsText(file);
+        return new Promise<void>((resolve, reject): void => {
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.readAsText(file);
 
-        reader.onload = () => {
-            // Read entire CSV into memory as string
-            let fileAsString = <string>reader.result;
+            reader.onload = () => {
+                // Read entire CSV into memory as string
+                let fileAsString = <string>reader.result;
 
-            // if the file is not regularly formatted, replace the EOL character
-            fileAsString = fileAsString.replace(/\r\n/g, "\n");
-            fileAsString = fileAsString.replace(/\r/g, "\n");
+                // if the file is not regularly formatted, replace the EOL character
+                fileAsString = fileAsString.replace(/\r\n/g, "\n");
+                fileAsString = fileAsString.replace(/\r/g, "\n");
 
-            // Get top 10ß lines. Or if there's less than 10 line, get all the lines.
-            const lines = fileAsString.split("\n");
-            const topLinesAsString = lines
-                .map((l) => l.trim())
-                .slice(0, lines.length < 10 ? lines.length : 10)
-                .join("\n");
-            console.log(topLinesAsString);
+                // Get top 10ß lines. Or if there's less than 10 line, get all the lines.
+                const lines = fileAsString.split("\n");
+                const topLinesAsString = lines
+                    .map((l) => l.trim())
+                    .slice(0, lines.length < 10 ? lines.length : 10)
+                    .join("\n");
+                console.log(topLinesAsString);
 
-            // Parse the top lines
-            try {
-                const it = hasHeader
-                    ? parse(topLinesAsString, {
-                          comment: "#",
-                          trim: true,
-                          auto_parse: true,
-                          skip_empty_lines: true,
-                          columns: hasHeader,
-                          delimiter: delimiter,
-                      })
-                    : parse(topLinesAsString, {
-                          comment: "#",
-                          trim: true,
-                          auto_parse: true,
-                          skip_empty_lines: true,
-                          columns: undefined,
-                          delimiter: delimiter,
-                      });
-                edgeFileConfig.topN = it;
-                edgeFileConfig.columns = <any>(
-                    Object.keys(it[0]).map((key) => `${key}`)
-                );
+                // Parse the top lines
+                try {
+                    const it = hasHeader
+                        ? parse(topLinesAsString, {
+                              comment: "#",
+                              trim: true,
+                              auto_parse: true,
+                              skip_empty_lines: true,
+                              columns: hasHeader,
+                              delimiter: delimiter,
+                          })
+                        : parse(topLinesAsString, {
+                              comment: "#",
+                              trim: true,
+                              auto_parse: true,
+                              skip_empty_lines: true,
+                              columns: undefined,
+                              delimiter: delimiter,
+                          });
+                    edgeFileConfig.topN = it;
+                    edgeFileConfig.columns = <any>(
+                        Object.keys(it[0]).map((key) => `${key}`)
+                    );
 
-                // if there exists two or more columns in the parsed edge file
-                if (edgeFileConfig.columns.length >= 2) {
-                    edgeFileConfig.mapping.fromId = edgeFileConfig.columns[0];
-                    edgeFileConfig.mapping.toId = edgeFileConfig.columns[1];
-                    edgeFileConfig.isReady = true;
-                } else if (edgeFileConfig.columns.length == 1) {
-                    edgeFileConfig.mapping.fromId = edgeFileConfig.mapping.toId =
-                        edgeFileConfig.columns[0];
-                    edgeFileConfig.isReady = true;
-                } else {
+                    // if there exists two or more columns in the parsed edge file
+                    if (edgeFileConfig.columns.length >= 2) {
+                        edgeFileConfig.mapping.fromId =
+                            edgeFileConfig.columns[0];
+                        edgeFileConfig.mapping.toId = edgeFileConfig.columns[1];
+                        edgeFileConfig.isReady = true;
+                    } else if (edgeFileConfig.columns.length == 1) {
+                        edgeFileConfig.mapping.fromId = edgeFileConfig.mapping.toId =
+                            edgeFileConfig.columns[0];
+                        edgeFileConfig.isReady = true;
+                    } else {
+                        Toaster.create({
+                            position: Position.TOP,
+                        }).show({
+                            message: "Error: Fails to parse file",
+                            intent: Intent.DANGER,
+                            timeout: -1,
+                        });
+                        edgeFileConfig.parseError = true;
+                    }
+                    resolve();
+                } catch {
                     Toaster.create({
                         position: Position.TOP,
                     }).show({
@@ -318,36 +371,41 @@ export default class ImportStore {
                         timeout: -1,
                     });
                     edgeFileConfig.parseError = true;
+                    reject();
                 }
-            } catch {
+            };
+
+            reader.onerror = () => {
+                console.error(reader.error);
                 Toaster.create({
                     position: Position.TOP,
                 }).show({
-                    message: "Error: Fails to parse file",
+                    action: {
+                        onClick: () => window.location.reload(),
+                        text: "Refresh Page",
+                    },
+                    message: "Error: Fails to open file",
                     intent: Intent.DANGER,
                     timeout: -1,
                 });
-                edgeFileConfig.parseError = true;
-            }
-        };
-
-        reader.onerror = () => {
-            console.error(reader.error);
-            Toaster.create({
-                position: Position.TOP,
-            }).show({
-                action: {
-                    onClick: () => window.location.reload(),
-                    text: "Refresh Page",
-                },
-                message: "Error: Fails to open file",
-                intent: Intent.DANGER,
-                timeout: -1,
-            });
-        };
+                reject();
+            };
+        });
     }
 
-    public renderImportNodePreview(): void {
+    /**
+     * change the importConfig.nodeFile.topN to be the top 10 parsed elements in the input node file
+     * change the importConfig.nodeFile.columns to be the attributes of the imported node file
+     * set the .mapping.id .mapping.cluster to be the first and second (if have) attribute of the input edge file.
+     *
+     * if successfully parsed, set the .isReady to be true, else set the.parseError
+     *
+     * This function will autorun if user specify the selectedNodeFileFromInput and the changes that this function will make is to get ready for the rendering of preview Table in the ImportDialog
+     *
+     * @return {*}
+     * @memberof ImportStore
+     */
+    public async renderImportNodePreview() {
         let file = this.selectedNodeFileFromInput;
         let nodeFileConfig = this.importConfig.nodeFile;
         let hasHeader = nodeFileConfig.hasHeader;
@@ -355,62 +413,75 @@ export default class ImportStore {
 
         nodeFileConfig.parseError = false;
 
-        if (!file) {
-            return;
-        }
-        const reader = new FileReader();
-        reader.readAsText(file);
+        return new Promise<void>((resolve, reject): void => {
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.readAsText(file);
 
-        reader.onload = () => {
-            // Read entire CSV into memory as string
-            let fileAsString = <string>reader.result;
+            reader.onload = () => {
+                // Read entire CSV into memory as string
+                let fileAsString = <string>reader.result;
 
-            // if the file is not regularly formatted, replace the EOL character
-            fileAsString = fileAsString.replace(/\r\n/g, "\n");
-            fileAsString = fileAsString.replace(/\r/g, "\n");
+                // if the file is not regularly formatted, replace the EOL character
+                fileAsString = fileAsString.replace(/\r\n/g, "\n");
+                fileAsString = fileAsString.replace(/\r/g, "\n");
 
-            // Get top 10 lines. Or if there's less than 10 line, get all the lines.
-            const lines = fileAsString.split("\n");
-            const topLinesAsString = lines
-                .map((l) => l.trim())
-                .slice(0, lines.length < 10 ? lines.length : 10)
-                .join("\n");
-            console.log(topLinesAsString);
+                // Get top 10 lines. Or if there's less than 10 line, get all the lines.
+                const lines = fileAsString.split("\n");
+                const topLinesAsString = lines
+                    .map((l) => l.trim())
+                    .slice(0, lines.length < 10 ? lines.length : 10)
+                    .join("\n");
+                console.log(topLinesAsString);
 
-            // Parse the top lines
-            try {
-                const it = hasHeader
-                    ? parse(topLinesAsString, {
-                          comment: "#",
-                          trim: true,
-                          auto_parse: true,
-                          skip_empty_lines: true,
-                          columns: hasHeader,
-                          delimiter,
-                      })
-                    : parse(topLinesAsString, {
-                          comment: "#",
-                          trim: true,
-                          auto_parse: true,
-                          skip_empty_lines: true,
-                          columns: undefined,
-                          delimiter,
-                      });
-                nodeFileConfig.topN = it;
-                nodeFileConfig.columns = <any>(
-                    Object.keys(it[0]).map((key) => `${key}`)
-                );
+                // Parse the top lines
+                try {
+                    const it = hasHeader
+                        ? parse(topLinesAsString, {
+                              comment: "#",
+                              trim: true,
+                              auto_parse: true,
+                              skip_empty_lines: true,
+                              columns: hasHeader,
+                              delimiter,
+                          })
+                        : parse(topLinesAsString, {
+                              comment: "#",
+                              trim: true,
+                              auto_parse: true,
+                              skip_empty_lines: true,
+                              columns: undefined,
+                              delimiter,
+                          });
+                    nodeFileConfig.topN = it;
+                    nodeFileConfig.columns = <any>(
+                        Object.keys(it[0]).map((key) => `${key}`)
+                    );
 
-                // if there exists two or more columns in the parsed edge file
-                if (nodeFileConfig.columns.length >= 2) {
-                    nodeFileConfig.mapping.id = nodeFileConfig.columns[0];
-                    nodeFileConfig.mapping.cluster = nodeFileConfig.columns[1];
-                    nodeFileConfig.isReady = true;
-                } else if (nodeFileConfig.columns.length == 1) {
-                    nodeFileConfig.mapping.id = nodeFileConfig.mapping.cluster =
-                        nodeFileConfig.columns[0];
-                    nodeFileConfig.isReady = true;
-                } else {
+                    // if there exists two or more columns in the parsed edge file
+                    if (nodeFileConfig.columns.length >= 2) {
+                        nodeFileConfig.mapping.id = nodeFileConfig.columns[0];
+                        nodeFileConfig.mapping.cluster =
+                            nodeFileConfig.columns[1];
+                        nodeFileConfig.isReady = true;
+                    } else if (nodeFileConfig.columns.length == 1) {
+                        nodeFileConfig.mapping.id = nodeFileConfig.mapping.cluster =
+                            nodeFileConfig.columns[0];
+                        nodeFileConfig.isReady = true;
+                    } else {
+                        Toaster.create({
+                            position: Position.TOP,
+                        }).show({
+                            message: "Error: Fails to parse file",
+                            intent: Intent.DANGER,
+                            timeout: -1,
+                        });
+                        nodeFileConfig.parseError = true;
+                    }
+                    resolve();
+                } catch {
                     Toaster.create({
                         position: Position.TOP,
                     }).show({
@@ -419,32 +490,25 @@ export default class ImportStore {
                         timeout: -1,
                     });
                     nodeFileConfig.parseError = true;
+                    reject();
                 }
-            } catch {
+            };
+
+            reader.onerror = () => {
+                console.error(reader.error);
                 Toaster.create({
                     position: Position.TOP,
                 }).show({
-                    message: "Error: Fails to parse file",
+                    action: {
+                        onClick: () => window.location.reload(),
+                        text: "Refresh Page",
+                    },
+                    message: "Error: Fails to open file",
                     intent: Intent.DANGER,
                     timeout: -1,
                 });
-                nodeFileConfig.parseError = true;
-            }
-        };
-
-        reader.onerror = () => {
-            console.error(reader.error);
-            Toaster.create({
-                position: Position.TOP,
-            }).show({
-                action: {
-                    onClick: () => window.location.reload(),
-                    text: "Refresh Page",
-                },
-                message: "Error: Fails to open file",
-                intent: Intent.DANGER,
-                timeout: -1,
-            });
-        };
+                reject();
+            };
+        });
     }
 }
