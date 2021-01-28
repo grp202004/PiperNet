@@ -8,7 +8,10 @@ let hasHeader = [true, false];
 let delimiter = ",";
 let unsuitableDelimiter = "\t";
 
-const data = fs.readFileSync("src/samples/lesmiserables-edges.csv", "utf-8");
+const data = fs.readFileSync(
+    "src/samples/lesmiserables/lesmiserables.csv",
+    "utf-8"
+);
 const file = new File([data], "temp.csv", { type: "text/csv" });
 
 test("number of keys", () => {
