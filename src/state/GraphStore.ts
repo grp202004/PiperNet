@@ -6,7 +6,10 @@ import {
     NodeObject,
     LinkObject,
 } from "react-force-graph-3d";
-import { CustomNodeObject } from "../components/visualize/GraphDelegate";
+import {
+    CustomNodeObject,
+    CustomLinkObject,
+} from "../components/visualize/GraphDelegate";
 
 export interface IHiddenOptions {
     show: boolean;
@@ -43,7 +46,7 @@ export default class GraphStore {
 
     rawGraph: Graph = new Graph({
         allowSelfLoops: true,
-        multi: false,
+        multi: true,
         type: "undirected",
     });
 
@@ -59,8 +62,18 @@ export default class GraphStore {
                 id: node,
                 name: node,
                 val: 1,
+                isClusterNode: false,
             };
-            _rawGraph.setNodeAttribute(node, "_visualize", visualize);
+            attributes._visualize = visualize;
+        });
+
+        _rawGraph.forEachEdge((edge, attributes, source, target) => {
+            let visualize: CustomLinkObject = {
+                source: source,
+                target: target,
+                isClusterLink: false,
+            };
+            attributes._visualize = visualize;
         });
         return _rawGraph;
     }

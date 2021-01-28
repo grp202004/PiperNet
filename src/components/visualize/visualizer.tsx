@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
 import State from "../../state";
 import GraphDelegate from "./GraphDelegate";
+import SimpleSelect from "../utils/SimpleSelect";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -30,6 +31,8 @@ export default observer(
                         ref={this.graphRef}
                         graphData={this.graphDelegate.visualizationGraph}
                         nodeResolution={20}
+                        nodeVisibility={this.graphDelegate.nodeVisibility}
+                        linkVisibility={this.graphDelegate.linkVisibility}
                         onNodeDragEnd={(node) => {
                             node.fx = node.x;
                             node.fy = node.y;

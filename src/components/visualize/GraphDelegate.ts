@@ -14,6 +14,11 @@ import * as THREE from "three";
 export interface CustomNodeObject extends NodeObject {
     name?: string;
     val?: number;
+    isClusterNode?: boolean;
+}
+
+export interface CustomLinkObject extends LinkObject {
+    isClusterLink?: boolean;
 }
 
 export default class GraphDelegate {
@@ -34,6 +39,16 @@ export default class GraphDelegate {
         let newGraph = State.graph.decorateRawGraph(
             this.addInvisibleClusterNode(this.rawGraph)
         );
+        newGraph.forEachNode((node, attributes) => {
+            if (node.includes("_CLUSTER_")) {
+                attributes._visualize.isClusterNode = true;
+            }
+        });
+        newGraph.forEachEdge((edge, attributes, source, target) => {
+            if (source.includes("_CLUSTER_") || target.includes("_CLUSTER_")) {
+                attributes._visualize.isClusterLink = true;
+            }
+        });
         let tempGraph = {
             nodes: [] as CustomNodeObject[],
             links: [] as LinkObject[],
@@ -42,50 +57,52 @@ export default class GraphDelegate {
             tempGraph.nodes.push(attributes["_visualize"]);
         });
 
-        tempGraph.links = newGraph.export().edges;
+        newGraph.forEachEdge((edge, attributes) => {
+            tempGraph.links.push(attributes["_visualize"]);
+        });
         return tempGraph;
     }
 
     addInvisibleClusterNode(oldGraph: Graph): Graph {
         let graphCopy = copy(oldGraph);
-        State.cluster.getAttributeValues.forEach((attribute) => {
-            let clusterID = "_CLUSTER1_" + attribute;
-            graphCopy.addNode(clusterID);
-            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
-                graphCopy.addEdge(clusterID, value);
+        let names = [
+            "_CLUSTER_1_",
+            "_CLUSTER_2_",
+            "_CLUSTER_3_",
+            "_CLUSTER_4_",
+            "_CLUSTER_5_",
+            "_CLUSTER_6_",
+            "_CLUSTER_7_",
+            "_CLUSTER_8_",
+            "_CLUSTER_9_",
+            "_CLUSTER_10_",
+        ];
+        for (let index = 0; index < names.length; index++) {
+            State.cluster.getAttributeValues.forEach((attribute) => {
+                if (attribute === "undefined") return;
+                let clusterID = names[index] + attribute;
+                graphCopy.addNode(clusterID);
+                State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
+                    let visualize: CustomLinkObject = {
+                        isClusterLink: true,
+                    };
+                    graphCopy.addEdge(clusterID, value, {
+                        _visualize: visualize,
+                    });
+                });
             });
-        });
-        State.cluster.getAttributeValues.forEach((attribute) => {
-            let clusterID = "_CLUSTER2_" + attribute;
-            graphCopy.addNode(clusterID);
-            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
-                graphCopy.addEdge(clusterID, value);
-            });
-        });
-        State.cluster.getAttributeValues.forEach((attribute) => {
-            let clusterID = "_CLUSTER3_" + attribute;
-            graphCopy.addNode(clusterID);
-            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
-                graphCopy.addEdge(clusterID, value);
-            });
-        });
-        State.cluster.getAttributeValues.forEach((attribute) => {
-            let clusterID = "_CLUSTER4_" + attribute;
-            graphCopy.addNode(clusterID);
-            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
-                graphCopy.addEdge(clusterID, value);
-            });
-        });
-        State.cluster.getAttributeValues.forEach((attribute) => {
-            let clusterID = "_CLUSTER5_" + attribute;
-            graphCopy.addNode(clusterID);
-            State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
-                graphCopy.addEdge(clusterID, value);
-            });
-        });
+        }
 
         return graphCopy;
     }
+
+    nodeVisibility = (nodeObject: CustomNodeObject) => {
+        return nodeObject.isClusterNode ? false : true;
+    };
+
+    linkVisibility = (nodeObject: CustomLinkObject) => {
+        return nodeObject.isClusterLink ? false : true;
+    };
 
     get rawGraph(): Graph {
         return State.graph.rawGraph;
@@ -138,37 +155,4 @@ export default class GraphDelegate {
 
         return mesh;
     }
-
-    // get graph(): ForceGraphMethods$2 {
-    //     return this.graphRef.current;
-    // }
-    // nodeArray: THREE.Vector3[] = [];
-    // Graph = ForceGraph3D()(document.getElementById("graph"))
-    //     .graphData(data)
-    //     .nodeId("key")
-    //     .nodeRelSize(10)
-    //     .nodeVal(1)
-    //     .linkCurvature(0.2)
-    //     .linkWidth(linkWidth)
-    //     .linkColor(linkColor)
-    //     .nodeCanvasObject(node)
-    //     .d3VelocityDecay(0.2)
-    //     .d3AlphaDecay(0.01)
-    //     .cooldownTime(20000)
-    //     .onNodeHover(nodeHover)
-    //     .onNodeClick((node) => {
-    //         locked = true;
-    //         hover = node.key;
-    //     })
-    //     .onBackgroundClick(() => {
-    //         locked = false;
-    //     })
-    //     .enableNodeDrag(false);
-    // //.enablePointerInteraction(false);
-    // constructor() {
-    //     makeObservable(this, {
-    //         graphRef: observable,
-    //         graph: computed,
-    //     });
-    // }
 }

@@ -4,7 +4,7 @@ import classnames from "classnames";
 import {
     Button,
     Classes,
-    InputGroup,
+    ButtonGroup,
     Intent,
     Position,
     Tooltip,
@@ -12,6 +12,7 @@ import {
     Menu,
     MenuItem,
     MenuDivider,
+    Divider,
 } from "@blueprintjs/core";
 // import { Popover2 as Popover } from "@blueprintjs/popover2";
 import SimpleSelect from "./utils/SimpleSelect";
@@ -211,12 +212,26 @@ export default observer(
                         </div>
                     )}
                 </div> */}
-                    <SimpleSelect
-                        className={classnames([Classes.ALERT_CONTENTS])}
-                        items={["3D", "2D"]}
-                        value={State.preferences.view}
-                        onSelect={(it) => (State.preferences.view = it)}
-                    />
+                    <ButtonGroup>
+                        <SimpleSelect
+                            className={classnames([Classes.ALERT_CONTENTS])}
+                            items={["3D", "2D"]}
+                            value={State.preferences.view}
+                            onSelect={(it) => (State.preferences.view = it)}
+                        />
+                        <Divider />
+                        Clustered by{" "}
+                        <SimpleSelect
+                            items={
+                                State.graph.metadata.nodeProperties.length == 0
+                                    ? ["None"]
+                                    : State.graph.metadata.nodeProperties
+                            }
+                            value={State.cluster.clusterBy}
+                            onSelect={(it) => (State.cluster.clusterBy = it)}
+                        />
+                    </ButtonGroup>
+
                     <div
                         className={classnames([
                             Classes.NAVBAR_GROUP,
