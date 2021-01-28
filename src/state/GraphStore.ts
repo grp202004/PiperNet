@@ -78,10 +78,6 @@ export default class GraphStore {
         return _rawGraph;
     }
 
-    get rawTable(): graphology.SerializedNode[] {
-        return this.rawGraph.export().nodes;
-    }
-
     public hideNode(key: string) {
         let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
             key,
