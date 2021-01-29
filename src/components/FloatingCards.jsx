@@ -118,10 +118,9 @@ export default observer(
                     {/* {State.graph.selectedNodes.length === 1 && (
                         <NodeDetail node={State.graph.currentlyHoveredId} />
                     )} */}
-                    {State.graph.currentlyHoveredId !== undefined && (
-                        <NodeDetail node={State.graph.currentlyHoveredId} />
+                    {State.graph.currentlyHoveredId != "undefined" && (
+                        <NodeDetail />
                     )}
-
 
                     {/* multiple selected */}
                     {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (

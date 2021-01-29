@@ -1,9 +1,20 @@
 import React from "react";
-import { observable, makeObservable, computed, autorun } from "mobx";
+import {
+    observable,
+    makeObservable,
+    computed,
+    autorun,
+    action,
+    makeAutoObservable,
+} from "mobx";
 import { observer } from "mobx-react";
-import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
+import ForceGraph3D, {
+    ForceGraphMethods,
+    NodeObject,
+} from "react-force-graph-3d";
 import State from "../../state";
 import GraphDelegate from "../../state/GraphDelegate";
+import ComponentRef from "../ComponentRef";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -13,6 +24,7 @@ export default observer(
                 graphRef: observable,
                 graphMethods: computed,
                 // centerPoints: observable,
+                nodeHover: action,
             });
         }
         // @ts-ignore
@@ -22,6 +34,24 @@ export default observer(
         }
 
         graphDelegate!: GraphDelegate;
+
+        nodeHover = (
+            node: NodeObject | null,
+            previousNode: NodeObject | null
+        ) => {
+            if (node != null && node != previousNode) {
+                node = node as NodeObject;
+                let nodeId: string;
+                if (node.id as string) {
+                    nodeId = node.id as string;
+                } else {
+                    nodeId = (node.id as number).toString();
+                }
+                State.graph.currentlyHoveredId = nodeId;
+                console.log(State.graph.currentlyHoveredId);
+                ComponentRef.nodeDetail?.forceUpdate();
+            }
+        };
 
         renderGraph = () => {
             if (State.preferences.view === "3D") {
@@ -50,29 +80,7 @@ export default observer(
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
-                        onNodeHover={(node) => {
-
-                            if (node !== null) {
-                                let a = (node.id as string) ? (node.id) : (node.id as number).toString();
-                                State.graph.currentlyHoveredId = a;
-                                this.forceUpdate();
-                                console.log(a as string);
-                                console.log(State.graph.currentlyHoveredId as string);
-                                // console.log(State.graph.rawGraph.getNodeAttributes(a as string))
-                                // console.log(State.graph.rawGraph.getNodeAttribute(a as string, State.graph.metadata.nodeProperties[1]));
-                            }
-
-                        }}
-
-                        onNodeRightClick={(node) => {
-                            if (node !== null) {
-
-                                if (node.id !== undefined) {
-                                    let a = (node.id as string) ? (node.id) : (node.id as number).toString();
-                                    State.graph.selectedNodes.push(a as string);
-                                }
-                            }
-                        }}
+                        onNodeHover={this.nodeHover}
                     />
                 );
                 // } else {

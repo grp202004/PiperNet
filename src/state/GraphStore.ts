@@ -108,7 +108,7 @@ export default class GraphStore {
     }
 
     get allPropertiesKeyList() {
-        return uniq(this.metadata.nodeProperties.filter(k => k !== 'id')); // since node_id is already present
+        return uniq(this.metadata.nodeProperties.filter((k) => k !== "id")); // since node_id is already present
     }
 
     nodes = this.globalConfig.nodes;
@@ -124,7 +124,7 @@ export default class GraphStore {
     selectedNodes: String[] = ["1", "2"];
 
     //currently hovered node id
-    currentlyHoveredId: String | number | undefined = undefined;
+    currentlyHoveredId: string = "undefined";
 
     // Currently hovered node
     currentlyHovered = undefined;
@@ -137,8 +137,6 @@ export default class GraphStore {
     get hasGraph() {
         return this.rawGraph.order && this.rawGraph.size != 0;
     }
-
-
 
     metadata = {
         snapshotName: String,

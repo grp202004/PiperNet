@@ -1,62 +1,72 @@
 import React from "react";
 import classnames from "classnames";
-import uniq from "lodash/uniq";
 import { Classes } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
-// import State from "../../state/index";
 import { observer } from "mobx-react";
 import State from "../../state/index";
+import ComponentRef from "../ComponentRef";
 
 export default observer(
-  class NodeDetail extends React.Component {
-    render() {
-      // If input is number,
-      // currently format number between 0-1 (eg. pagerank)
-      // to show no more than 3 significant digits.
-      const formatLongFloat = (nodeAttributeValue: any) => {
-        const num = Number(nodeAttributeValue);
-        if (Number.isNaN(num) || num > 1 || num < 0) {
-          // Do not format just return original
-          return nodeAttributeValue;
+    class NodeDetail extends React.Component {
+        constructor(props: any) {
+            super(props);
         }
-        // Format to no more than 3 significant digit.
-        return Number.parseFloat(num.toString()).toPrecision(3);
-      };
 
-      const cellRenderer_property = (rowIndex: number) => {
-        return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>
-      };
+        cellRenderer_property = (rowIndex: number) => {
+            return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>;
+        };
 
-      const cellRenderer_value = (rowIndex: number) => {
+        cellRenderer_value = (rowIndex: number) => {
+            let data = State.graph.rawGraph.getNodeAttribute(
+                State.graph.currentlyHoveredId,
+                State.graph.metadata.nodeProperties[rowIndex]
+            );
+            return <Cell>{data}</Cell>;
+        };
 
-        return <Cell>{State.graph.rawGraph.getNodeAttribute(State.graph.currentlyHoveredId as string, State.graph.metadata.nodeProperties[rowIndex])}</Cell>
-      };
+        formatLongFloat = (nodeAttributeValue: any) => {
+            const num = Number(nodeAttributeValue);
+            if (Number.isNaN(num) || num > 1 || num < 0) {
+                // Do not format just return original
+                return nodeAttributeValue;
+            }
+            // Format to no more than 3 significant digit.
+            return Number.parseFloat(num.toString()).toPrecision(3);
+        };
 
-
-
-      return (
-        <div
-          className={classnames(
-            // 'overlay-card',
-            "right-overlay-card",
-            // "bottom-card",
-            "transparent-frame"
-          )}
-        >
-
-          {/* need to change */}
-          <div className={classnames(Classes.CARD, "node-details-table")}>
-
-            {/* use foreach */}
-
-            <Table numRows={State.graph.metadata.nodeProperties.length}>
-              <Column name="Properties" cellRenderer={cellRenderer_property} />
-              <Column name="Value" cellRenderer={cellRenderer_value} />
-            </Table>
-          </div>
-        </div>
-      );
+        render() {
+            return (
+                <div
+                    className={classnames(
+                        "right-overlay-card",
+                        "transparent-frame"
+                    )}
+                >
+                    <div
+                        className={classnames(
+                            Classes.CARD,
+                            "node-details-table"
+                        )}
+                    >
+                        <Table
+                            numRows={State.graph.metadata.nodeProperties.length}
+                            enableRowHeader={false}
+                        >
+                            <Column
+                                name="Properties"
+                                cellRenderer={this.cellRenderer_property}
+                            />
+                            <Column
+                                name="Value"
+                                cellRenderer={this.cellRenderer_value}
+                            />
+                        </Table>
+                    </div>
+                </div>
+            );
+        }
+        componentDidMount = () => {
+            ComponentRef.nodeDetail = this;
+        };
     }
-  }
 );
-// export default NodeDetail;
