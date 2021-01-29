@@ -9,7 +9,13 @@ import {
     Card,
     Elevation,
 } from "@blueprintjs/core";
-import { Column, Table, Cell } from "@blueprintjs/table";
+import {
+    Column,
+    Table,
+    Cell,
+    EditableCell,
+    TableLoadingOption,
+} from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../state";
@@ -23,7 +29,10 @@ export default observer(
         };
 
         rawGraph = State.graph.rawGraph;
-        rawTable = State.graph.rawTable;
+
+        get rawTable() {
+            return this.rawGraph.export().nodes;
+        }
         nodeProperties = State.graph.metadata.nodeProperties;
 
         showRenderer = (rowIndex) => {
@@ -44,23 +53,34 @@ export default observer(
             );
         };
 
+        renderCell = (rowIndex, columnIndex) => {
+            let attribute = this.nodeProperties[columnIndex - 2];
+            let cellAttributes = this.rawTable[rowIndex].attributes;
+            let cell = cellAttributes[attribute];
+
+            return (
+                <EditableCell
+                    value={cell}
+                    onChange={(newVal) =>
+                        this.setValue(newVal, rowIndex, attribute)
+                    }
+                    onConfirm={(newVal) =>
+                        this.setValue(newVal, rowIndex, attribute)
+                    }
+                />
+            );
+        };
+
+        setValue = (value, rowIndex, attribute) => {
+            let id = this.rawTable[rowIndex].key;
+            this.rawGraph.setNodeAttribute(id, attribute, value);
+            this.forceUpdate();
+        };
+
         renderColumns = () => {
             const columns = this.nodeProperties.map((it, i) => {
                 if (it != "_options") {
-                    return (
-                        <Column
-                            name={it}
-                            cellRenderer={(rowIndex, columnIndex) => {
-                                let attribute = this.nodeProperties[
-                                    columnIndex - 2
-                                ];
-                                let cellAttributes = this.rawTable[rowIndex]
-                                    .attributes;
-                                let cell = cellAttributes[attribute];
-                                return <Cell>{cell}</Cell>;
-                            }}
-                        />
-                    );
+                    return <Column name={it} cellRenderer={this.renderCell} />;
                 }
             });
             return columns.filter((element) => {
@@ -88,6 +108,7 @@ export default observer(
                             }}
                         />
                     </Card>
+
                     <Table
                         className="pt-bordered pt-striped"
                         numRows={this.rawGraph.order}

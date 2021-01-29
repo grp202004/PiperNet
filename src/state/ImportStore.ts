@@ -173,7 +173,7 @@ export default class ImportStore {
 
         const graph = new Graph({
             allowSelfLoops: true,
-            multi: false,
+            multi: true,
             type: "undirected",
         });
 

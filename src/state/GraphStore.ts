@@ -7,7 +7,10 @@ import {
     NodeObject,
     LinkObject,
 } from "react-force-graph-3d";
-import { CustomNodeObject } from "./GraphDelegate";
+import {
+    CustomNodeObject,
+    CustomLinkObject,
+} from "../components/visualize/GraphDelegate";
 
 export interface IHiddenOptions {
     show: boolean;
@@ -44,11 +47,11 @@ export default class GraphStore {
 
     rawGraph: Graph = new Graph({
         allowSelfLoops: true,
-        multi: false,
+        multi: true,
         type: "undirected",
     });
 
-    decorateRawGraph(_rawGraph: Graph) {
+    decorateRawGraph(_rawGraph: Graph): Graph {
         _rawGraph.forEachNode((node, attributes) => {
             // add _options and _visualize to attributes
             let options: IHiddenOptions = {
@@ -60,27 +63,20 @@ export default class GraphStore {
                 id: node,
                 name: node,
                 val: 1,
+                isClusterNode: false,
             };
-            _rawGraph.setNodeAttribute(node, "_visualize", visualize);
-        });
-        this.rawGraph = _rawGraph;
-    }
-
-    get delegateGraph() {
-        let tempGraph = {
-            nodes: [] as CustomNodeObject[],
-            links: [] as LinkObject[],
-        };
-        this.rawGraph.forEachNode((node, attributes) => {
-            tempGraph.nodes.push(attributes["_visualize"]);
+            attributes._visualize = visualize;
         });
 
-        tempGraph.links = this.rawGraph.export().edges;
-        return tempGraph;
-    }
-
-    get rawTable(): graphology.SerializedNode[] {
-        return this.rawGraph.export().nodes;
+        _rawGraph.forEachEdge((edge, attributes, source, target) => {
+            let visualize: CustomLinkObject = {
+                source: source,
+                target: target,
+                isClusterLink: false,
+            };
+            attributes._visualize = visualize;
+        });
+        return _rawGraph;
     }
 
     public hideNode(key: string) {

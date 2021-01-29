@@ -13,8 +13,8 @@ import ForceGraph3D, {
     NodeObject,
 } from "react-force-graph-3d";
 import State from "../../state";
-import GraphDelegate from "../../state/GraphDelegate";
 import ComponentRef from "../ComponentRef";
+import GraphDelegate from "./GraphDelegate";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -23,7 +23,7 @@ export default observer(
             makeObservable(this, {
                 graphRef: observable,
                 graphMethods: computed,
-                // centerPoints: observable,
+                graphDelegate: observable,
                 nodeHover: action,
             });
         }
@@ -33,7 +33,7 @@ export default observer(
             return this.graphRef.current;
         }
 
-        graphDelegate!: GraphDelegate;
+        graphDelegate = new GraphDelegate();
 
         nodeHover = (
             node: NodeObject | null,
@@ -58,8 +58,10 @@ export default observer(
                 return (
                     <ForceGraph3D
                         ref={this.graphRef}
-                        graphData={State.graph.delegateGraph}
+                        graphData={this.graphDelegate.visualizationGraph}
                         nodeResolution={20}
+                        nodeVisibility={this.graphDelegate.nodeVisibility}
+                        linkVisibility={this.graphDelegate.linkVisibility}
                         onNodeDragEnd={(node) => {
                             node.fx = node.x;
                             node.fy = node.y;
@@ -108,7 +110,7 @@ export default observer(
         }
 
         componentDidMount() {
-            this.graphDelegate = new GraphDelegate(this.graphMethods);
+            this.graphDelegate.mountDelegateMethods(this.graphMethods);
         }
     }
 );
