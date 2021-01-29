@@ -189,6 +189,12 @@ html {
     position: absolute;
 }
 
+.left-bottom-overlay-card {
+    left: 2em;
+    bottom: 2em;
+    position: absolute;
+}
+
 .minimal-navbar-right {
     position: absolute;
     top: 0px;
@@ -306,6 +312,16 @@ div.pt-card.sub-option.legend {
     overflow-x: auto;
     overflow-y: auto;
     max-width: 400px;
+    max-height: 60vh;
+    font-size: 0.4em;
+    pointer-events: all;
+    padding: 0;
+}
+
+.nodes-details-table {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-width: 95%;
     max-height: 60vh;
     font-size: 0.4em;
     pointer-events: all;

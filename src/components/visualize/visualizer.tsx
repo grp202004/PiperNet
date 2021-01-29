@@ -25,12 +25,23 @@ export default observer(
                 graphMethods: computed,
                 graphDelegate: observable,
                 nodeHover: action,
+                selectedNodes: observable.ref,
             });
         }
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
         get graphMethods(): ForceGraphMethods {
             return this.graphRef.current;
+        }
+
+        getNodeId(node: NodeObject): string {
+            let nodeId: string;
+            if (node.id as string) {
+                nodeId = node.id as string;
+            } else {
+                nodeId = (node.id as number).toString();
+            }
+            return nodeId;
         }
 
         graphDelegate = new GraphDelegate();
@@ -40,17 +51,35 @@ export default observer(
             previousNode: NodeObject | null
         ) => {
             if (node != null && node != previousNode) {
-                node = node as NodeObject;
-                let nodeId: string;
-                if (node.id as string) {
-                    nodeId = node.id as string;
-                } else {
-                    nodeId = (node.id as number).toString();
-                }
-                State.graph.currentlyHoveredId = nodeId;
+                State.graph.currentlyHoveredId = this.getNodeId(
+                    node as NodeObject
+                );
                 console.log(State.graph.currentlyHoveredId);
                 ComponentRef.nodeDetail?.forceUpdate();
             }
+        };
+
+        selectedNodes: string[] = State.graph.selectedNodes;
+
+        nodeSelect = (node: NodeObject, event: MouseEvent) => {
+            let nodeId = this.getNodeId(node as NodeObject);
+            if (event.ctrlKey || event.shiftKey) {
+                // multi-selection
+                if (this.selectedNodes.includes(nodeId)) {
+                    let index = this.selectedNodes.indexOf(nodeId);
+                    if (index > -1) {
+                        this.selectedNodes.splice(index, 1);
+                    }
+                } else {
+                    this.selectedNodes.push(nodeId);
+                }
+            } else {
+                // single-selection
+                // TODO
+            }
+            console.log(State.graph.selectedNodes);
+            ComponentRef.multiNodeDetail?.forceUpdate();
+            this.graphMethods.refresh(); // update color of selected nodes
         };
 
         renderGraph = () => {
@@ -82,6 +111,12 @@ export default observer(
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
+                        nodeColor={(node) =>
+                            this.selectedNodes.includes(this.getNodeId(node))
+                                ? "yellow"
+                                : "grey"
+                        }
+                        onNodeClick={this.nodeSelect}
                         onNodeHover={this.nodeHover}
                     />
                 );
