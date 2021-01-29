@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import * as graphology from "graphology-types";
+import uniq from "lodash/uniq";
 import {
     ForceGraphMethods,
     NodeObject,
@@ -102,6 +103,10 @@ export default class GraphStore {
         this.rawGraph.setNodeAttribute(key, "_options", newOptions);
     }
 
+    get allPropertiesKeyList() {
+        return uniq(this.metadata.nodeProperties.filter((k) => k !== "id")); // since node_id is already present
+    }
+
     nodes = this.globalConfig.nodes;
     edges = this.globalConfig.edges;
 
@@ -112,7 +117,10 @@ export default class GraphStore {
     enableComponent = true;
 
     // Updated by frame event
-    selectedNodes = [];
+    selectedNodes: String[] = ["1", "2"];
+
+    //currently hovered node id
+    currentlyHoveredId: string = "undefined";
 
     // Currently hovered node
     currentlyHovered = undefined;

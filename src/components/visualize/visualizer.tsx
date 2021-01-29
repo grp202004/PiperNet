@@ -1,10 +1,20 @@
 import React from "react";
-import { observable, makeObservable, computed, autorun } from "mobx";
+import {
+    observable,
+    makeObservable,
+    computed,
+    autorun,
+    action,
+    makeAutoObservable,
+} from "mobx";
 import { observer } from "mobx-react";
-import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
+import ForceGraph3D, {
+    ForceGraphMethods,
+    NodeObject,
+} from "react-force-graph-3d";
 import State from "../../state";
+import ComponentRef from "../ComponentRef";
 import GraphDelegate from "./GraphDelegate";
-import SimpleSelect from "../utils/SimpleSelect";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -14,6 +24,7 @@ export default observer(
                 graphRef: observable,
                 graphMethods: computed,
                 graphDelegate: observable,
+                nodeHover: action,
             });
         }
         // @ts-ignore
@@ -23,6 +34,24 @@ export default observer(
         }
 
         graphDelegate = new GraphDelegate();
+
+        nodeHover = (
+            node: NodeObject | null,
+            previousNode: NodeObject | null
+        ) => {
+            if (node != null && node != previousNode) {
+                node = node as NodeObject;
+                let nodeId: string;
+                if (node.id as string) {
+                    nodeId = node.id as string;
+                } else {
+                    nodeId = (node.id as number).toString();
+                }
+                State.graph.currentlyHoveredId = nodeId;
+                console.log(State.graph.currentlyHoveredId);
+                ComponentRef.nodeDetail?.forceUpdate();
+            }
+        };
 
         renderGraph = () => {
             if (State.preferences.view === "3D") {
@@ -53,6 +82,7 @@ export default observer(
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
+                        onNodeHover={this.nodeHover}
                     />
                 );
                 // } else {
