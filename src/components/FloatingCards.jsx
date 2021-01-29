@@ -8,7 +8,7 @@ import SimpleSelect from "./utils/SimpleSelect";
 import NodesPanel from "./panels/NodesPanel";
 import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
-// import NodeDetail from "./panels/NodeDetailPanel";
+import NodeDetail from "./panels/NodeDetailPanel";
 // import Legends from "./Legends";
 // // import StatusBar from './StatusBar';
 // import SelectionActionPanel from "./panels/SelectionActionPanel";
@@ -113,13 +113,19 @@ export default observer(
                         </div>
                     </div>
 
+                    {/* single selected */}
                     {/* {State.graph.selectedNodes.length === 1 && (
-            <NodeDetail node={State.graph.selectedNodes[0].data.ref} />
-          )}
+                        <NodeDetail node={State.graph.currentlyHoveredId} />
+                    )} */}
+                    {State.graph.currentlyHoveredId !== undefined && (
+                        <NodeDetail node={State.graph.currentlyHoveredId} />
+                    )}
 
-          {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
-            <NodeDetail node={State.graph.currentlyHovered.data.ref} />
-          )} */}
+
+                    {/* multiple selected */}
+                    {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
+                        <NodeDetail node={State.graph.currentlyHovered.data.ref} />
+                    )} */}
 
                     {/* <Legends />
           <StatusBar /> */}
