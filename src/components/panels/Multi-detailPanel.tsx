@@ -8,7 +8,7 @@ import { observer } from "mobx-react";
 import State from "../../state/index";
 
 export default observer(
-  class NodeDetail extends React.Component {
+  class MultipleNodeDetail extends React.Component {
     render() {
       // If input is number,
       // currently format number between 0-1 (eg. pagerank)
@@ -49,9 +49,16 @@ export default observer(
 
             {/* use foreach */}
 
-            <Table numRows={State.graph.metadata.nodeProperties.length}>
-              <Column name="Properties" cellRenderer={cellRenderer_property} />
-              <Column name="Value" cellRenderer={cellRenderer_value} />
+            <Table numRows={State.graph.selectedNodes.length}>
+              {State.graph.metadata.nodeProperties.map((it) => (
+                <Column
+                  key={it}
+                  name={it}
+                  cellRenderer={(i) => (
+                    <Cell>{State.graph.rawGraph.getNodeAttribute(State.graph.selectedNodes[i] as string, it as string)}</Cell>
+                  )}
+                />
+              ))}
             </Table>
           </div>
         </div>
@@ -59,4 +66,3 @@ export default observer(
     }
   }
 );
-// export default NodeDetail;

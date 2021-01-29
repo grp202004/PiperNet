@@ -9,6 +9,7 @@ import NodesPanel from "./panels/NodesPanel";
 import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
 import NodeDetail from "./panels/NodeDetailPanel";
+import MultiDetailPanel from "./panels/Multi-detailPanel";
 // import Legends from "./Legends";
 // // import StatusBar from './StatusBar';
 // import SelectionActionPanel from "./panels/SelectionActionPanel";
@@ -126,6 +127,7 @@ export default observer(
                     {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
                         <NodeDetail node={State.graph.currentlyHovered.data.ref} />
                     )} */}
+                    <MultiDetailPanel />
 
                     {/* <Legends />
           <StatusBar /> */}

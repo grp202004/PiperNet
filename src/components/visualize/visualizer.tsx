@@ -55,12 +55,23 @@ export default observer(
                             if (node !== null) {
                                 let a = (node.id as string) ? (node.id) : (node.id as number).toString();
                                 State.graph.currentlyHoveredId = a;
+                                this.forceUpdate();
                                 console.log(a as string);
                                 console.log(State.graph.currentlyHoveredId as string);
                                 // console.log(State.graph.rawGraph.getNodeAttributes(a as string))
                                 // console.log(State.graph.rawGraph.getNodeAttribute(a as string, State.graph.metadata.nodeProperties[1]));
                             }
 
+                        }}
+
+                        onNodeRightClick={(node) => {
+                            if (node !== null) {
+
+                                if (node.id !== undefined) {
+                                    let a = (node.id as string) ? (node.id) : (node.id as number).toString();
+                                    State.graph.selectedNodes.push(a as string);
+                                }
+                            }
                         }}
                     />
                 );

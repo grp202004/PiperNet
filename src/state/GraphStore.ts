@@ -121,7 +121,7 @@ export default class GraphStore {
     enableComponent = true;
 
     // Updated by frame event
-    selectedNodes: NodeObject[] = [];
+    selectedNodes: String[] = ["1", "2"];
 
     //currently hovered node id
     currentlyHoveredId: String | number | undefined = undefined;
