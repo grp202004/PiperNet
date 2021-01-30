@@ -13,8 +13,11 @@ import {
     ButtonGroup,
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
+import { makeObservable, computed } from "mobx";
 import classnames from "classnames";
+import gexf from "graphology-gexf/browser";
 import State from "../state";
+import { CSVLink } from "react-csv";
 
 export default observer(
     class SaveSnapshotDialog extends React.Component {
@@ -23,6 +26,44 @@ export default observer(
             this.state = {
                 ready: true,
             };
+        }
+
+        computeGEXFFile() {
+            return gexf.write(State.graph.rawGraph);
+        }
+
+        computeNodeFile() {
+            let headers = [];
+            State.graph.metadata.nodeProperties.map((value) => {
+                headers.push({ label: value, key: value });
+            });
+            headers.push({ label: "_id", key: "_id" });
+            let exportData = State.graph.rawGraph.export();
+            let data = [];
+            exportData.nodes.forEach((node) => {
+                data.push({
+                    _id: node.key,
+                    ...node.attributes,
+                });
+            });
+            return { headers: headers, data: data };
+        }
+
+        computeEdgeFile() {
+            let headers = [
+                { label: "source", key: "source" },
+                { label: "target", key: "target" },
+            ];
+
+            let exportData = State.graph.rawGraph.export();
+            let data = [];
+            exportData.edges.forEach((edge) => {
+                data.push({
+                    source: edge.source,
+                    target: edge.target,
+                });
+            });
+            return { headers: headers, data: data };
         }
 
         render() {
@@ -53,13 +94,15 @@ export default observer(
                                     />
                                 </H3>
                                 <Divider />
-                                <Button
-                                    onClick={() => {
-                                        // do something
-                                    }}
+
+                                <CSVLink
+                                    data={this.computeGEXFFile()}
+                                    filename={"Snapshot-GEXF.gexf"}
+                                    className="btn btn-primary"
+                                    target="_blank"
                                 >
-                                    Download GEXF File
-                                </Button>
+                                    <Button>Download GEXF File</Button>
+                                </CSVLink>
                             </Card>
                             <br></br>
                             <Card interactive={false} elevation={Elevation.ONE}>
@@ -78,21 +121,27 @@ export default observer(
 
                                 <Divider />
                                 <ButtonGroup>
-                                    <Button
-                                        onClick={() => {
-                                            // do something
-                                        }}
+                                    <CSVLink
+                                        data={this.computeNodeFile().data}
+                                        header={this.computeNodeFile().header}
+                                        separator={","}
+                                        filename={"Snapshot-Node.csv"}
+                                        className="btn btn-primary"
+                                        target="_blank"
                                     >
-                                        Download Node File
-                                    </Button>
+                                        <Button>Download Node File</Button>
+                                    </CSVLink>
                                     <Divider />
-                                    <Button
-                                        onClick={() => {
-                                            // do something
-                                        }}
+                                    <CSVLink
+                                        data={this.computeEdgeFile().data}
+                                        header={this.computeEdgeFile().header}
+                                        separator={","}
+                                        filename={"Snapshot-Edge.csv"}
+                                        className="btn btn-primary"
+                                        target="_blank"
                                     >
-                                        Download Edge File
-                                    </Button>
+                                        <Button>Download Edge File</Button>
+                                    </CSVLink>
                                 </ButtonGroup>
                             </Card>
                         </div>

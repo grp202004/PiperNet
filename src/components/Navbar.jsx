@@ -65,6 +65,7 @@ export default observer(
                                                         text={
                                                             sampleSnapshotTitle
                                                         }
+                                                        disabled={true}
                                                         onClick={() => {
                                                             fetchSampleGraph(
                                                                 sampleSnapshotUrl
@@ -104,13 +105,6 @@ export default observer(
                                             State.import.importGEXFDialogOpen = true;
                                         }}
                                     />
-                                    <MenuItem
-                                        icon="document-open"
-                                        text="Open Snapshot"
-                                        onClick={() => {
-                                            State.preferences.preferenceDialogOpen = true;
-                                        }}
-                                    />
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
@@ -144,13 +138,13 @@ export default observer(
                                             State.preferences.dataSheetDialogOpen = true;
                                         }}
                                     />
-                                    <MenuItem
+                                    {/* <MenuItem
                                         text="Statistics"
                                         icon="timeline-bar-chart"
                                         onClick={() => {
                                             State.preferences.statisticsDialogOpen = true;
                                         }}
-                                    />
+                                    /> */}
                                 </Menu>
                             }
                             position={Position.BOTTOM}
@@ -213,14 +207,22 @@ export default observer(
                     )}
                 </div> */}
                     <ButtonGroup>
-                        <SimpleSelect
+                        {/* <SimpleSelect
                             className={classnames([Classes.ALERT_CONTENTS])}
                             items={["3D", "2D"]}
                             value={State.preferences.view}
                             onSelect={(it) => (State.preferences.view = it)}
                         />
-                        <Divider />
-                        Clustered by{" "}
+                        <Divider /> */}
+                    </ButtonGroup>
+
+                    <div
+                        className={classnames([
+                            Classes.NAVBAR_GROUP,
+                            Classes.ALIGN_RIGHT,
+                        ])}
+                    >
+                        Clustered by{"  "}
                         <SimpleSelect
                             items={
                                 State.graph.metadata.nodeProperties.length == 0
@@ -230,26 +232,6 @@ export default observer(
                             value={State.cluster.clusterBy}
                             onSelect={(it) => (State.cluster.clusterBy = it)}
                         />
-                    </ButtonGroup>
-
-                    <div
-                        className={classnames([
-                            Classes.NAVBAR_GROUP,
-                            Classes.ALIGN_RIGHT,
-                        ])}
-                    >
-                        <Button
-                            className={classnames([
-                                Classes.BUTTON,
-                                Classes.MINIMAL,
-                            ])}
-                            icon="graph"
-                            onClick={() => {
-                                State.project.renameSnapshotDialogOpen = true;
-                            }}
-                        >
-                            {State.graph.metadata.snapshotName}
-                        </Button>
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button
                             className={classnames([
@@ -257,6 +239,7 @@ export default observer(
                                 Classes.MINIMAL,
                             ])}
                             icon="cog"
+                            disabled={true}
                             onClick={() => {
                                 State.preferences.dialogOpen = true;
                             }}
@@ -266,9 +249,11 @@ export default observer(
                                 Classes.BUTTON,
                                 Classes.MINIMAL,
                             ])}
-                            icon="help"
+                            icon="code"
                             onClick={() => {
-                                State.preferences.helpDialogOpen = true;
+                                window.open(
+                                    "https://github.com/grp202004/PiperNet"
+                                );
                             }}
                         />
                     </div>
