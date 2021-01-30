@@ -7,6 +7,7 @@ import {
     LinkObject,
 } from "react-force-graph-3d";
 import { CustomNodeObject } from "./GraphDelegate";
+import FileSaver from 'file-saver';
 
 export interface IHiddenOptions {
     show: boolean;
@@ -105,6 +106,59 @@ export default class GraphStore {
         };
         this.rawGraph.setNodeAttribute(key, "_options", newOptions);
     }
+
+    // public exportNodeFile(_tempGraph: Graph) {
+    //     let nodeList: any[] = _tempGraph.export().nodes;
+    //     let attributesList: string[] = Object.keys(nodeList[0]);
+    //     let str = '';
+    //     let i: number;
+    //     let j: number;
+
+    //     for(const i in attributesList) {
+    //         if (str === ''){
+    //             str = str + i;
+    //         } else {
+    //         str = str  + ',' + i;
+    //         }
+    //     }
+
+    //     for (i = 0;i<_tempGraph.order;i++){
+    //         str = str + '\n' + nodeList[i].key;
+    //         for(j = 0;j<attributesList.length;j++){
+    //             str = str + ',' + _tempGraph.getNodeAttribute(nodeList[i].key,attributesList[j]);
+    //         }
+    //     }
+
+    //     let blob = new Blob([str], {type: "text/plain;charset=utf-8"});
+    //     FileSaver.saveAs(blob, "nodefile.csv");
+    // }
+
+    // public exportEdgeFile(_tempGraph: Graph) {
+    //     let edgeList: any[] = _tempGraph.export().edges;
+    //     let attributeList: string[] = Object.keys(edgeList[0]);
+    //     let str = '';
+    //     let i: number;
+    //     let j: number;
+
+    //     for(const i in attributeList) {
+    //         if (str === ''){
+    //             str = str + i;
+    //         } else {
+    //         str = str  + ',' + i;
+    //         }
+    //     }
+
+    //     for (i = 0;i<_tempGraph.size;i++){
+    //         str = str + '\n' + edgeList[i].key + ',' + edgeList[i].source + ',' + edgeList[i].target;
+    //         for(j = 0;j<attributeList.length;j++){
+    //             str = str + ',' + _tempGraph.getEdgeAttribute(edgeList[i].source,edgeList[i].target,attributeList[j]);
+    //         }
+    //     }
+
+    //     let blob = new Blob([str], {type: "text/plain;charset=utf-8"});
+    //     FileSaver.saveAs(blob, "edgefile.csv");
+
+    // }
 
     nodes = this.globalConfig.nodes;
     edges = this.globalConfig.edges;
