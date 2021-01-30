@@ -1,0 +1,72 @@
+import React from "react";
+import classnames from "classnames";
+import { Classes } from "@blueprintjs/core";
+import { Cell, Column, Table } from "@blueprintjs/table";
+import { observer } from "mobx-react";
+import State from "../../state/index";
+import ComponentRef from "../ComponentRef";
+
+export default observer(
+    class NodeDetail extends React.Component {
+        constructor(props: any) {
+            super(props);
+        }
+
+        cellRenderer_property = (rowIndex: number) => {
+            return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>;
+        };
+
+        cellRenderer_value = (rowIndex: number) => {
+            let data = State.graph.rawGraph.getNodeAttribute(
+                State.graph.currentlyHoveredId,
+                State.graph.metadata.nodeProperties[rowIndex]
+            );
+            return <Cell>{data}</Cell>;
+        };
+
+        formatLongFloat = (nodeAttributeValue: any) => {
+            const num = Number(nodeAttributeValue);
+            if (Number.isNaN(num) || num > 1 || num < 0) {
+                // Do not format just return original
+                return nodeAttributeValue;
+            }
+            // Format to no more than 3 significant digit.
+            return Number.parseFloat(num.toString()).toPrecision(3);
+        };
+
+        render() {
+            return (
+                <div
+                    className={classnames(
+                        "right-overlay-card",
+                        "transparent-frame"
+                    )}
+                >
+                    <div
+                        className={classnames(
+                            Classes.CARD,
+                            "node-details-table"
+                        )}
+                    >
+                        <Table
+                            numRows={State.graph.metadata.nodeProperties.length}
+                            enableRowHeader={false}
+                        >
+                            <Column
+                                name="Properties"
+                                cellRenderer={this.cellRenderer_property}
+                            />
+                            <Column
+                                name="Value"
+                                cellRenderer={this.cellRenderer_value}
+                            />
+                        </Table>
+                    </div>
+                </div>
+            );
+        }
+        componentDidMount = () => {
+            ComponentRef.nodeDetail = this;
+        };
+    }
+);

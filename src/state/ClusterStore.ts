@@ -9,7 +9,7 @@ export default class ClusterStore {
             rawGraph: observable.ref,
         });
     }
-    clusterBy = "publish_time";
+    clusterBy = "None";
 
     rawGraph!: Graph;
 
@@ -28,6 +28,17 @@ export default class ClusterStore {
             }
         });
         return keyValueMap;
+    }
+
+    get attributeKeys(): Map<string | number, string[]> {
+        const attributeKeysMap = new Map<string | number, string[]>();
+        this.getAttributeValues.forEach((value) => {
+            attributeKeysMap.set(value, []);
+        });
+        this.keyAttribute.forEach((value, key) => {
+            attributeKeysMap.get(value)?.push(key);
+        });
+        return attributeKeysMap;
     }
 
     // the possible attribute values of the attribute defined by clusterBy
@@ -65,26 +76,4 @@ export default class ClusterStore {
         });
         return map;
     }
-
-    // centerPoints = new Map<string, THREE.Vector3>();
-
-    // // explicitly called when all node's position have been added to the map
-    // computeCenterPoints() {
-    //     let newMap = new Map<string, THREE.Vector3>();
-    //     this.attributePoints.forEach((value, key) => {
-    //         let keyString = "_CLUSTER_";
-    //         if (key as string) {
-    //             keyString += <string>key;
-    //         } else {
-    //             keyString += (<number>key).toString();
-    //         }
-    //         if (value.length < 4) {
-    //             newMap.set(keyString, new THREE.Object3D());
-    //         } else {
-    //             let convexHull = new ConvexGeometry(Array.from(value));
-    //             newMap.set(keyString, this.createMesh(convexHull));
-    //         }
-    //     });
-    //     this.convexHullObjects = newMap;
-    // }
 }

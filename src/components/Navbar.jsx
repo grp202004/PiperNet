@@ -4,7 +4,7 @@ import classnames from "classnames";
 import {
     Button,
     Classes,
-    InputGroup,
+    ButtonGroup,
     Intent,
     Position,
     Tooltip,
@@ -12,12 +12,18 @@ import {
     Menu,
     MenuItem,
     MenuDivider,
+    Divider,
 } from "@blueprintjs/core";
+// import { Popover2 as Popover } from "@blueprintjs/popover2";
 import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
 import State from "../state";
 
-import { GITHUB_URL, SAMPLE_GRAPH_SNAPSHOTS, BACKEND_URL } from "../constants";
+import {
+    GITHUB_URL,
+    SAMPLE_GRAPH_SNAPSHOTS,
+    fetchSampleGraph,
+} from "../constants";
 
 export default observer(
     class Navbar extends React.Component {
@@ -59,55 +65,25 @@ export default observer(
                                                         text={
                                                             sampleSnapshotTitle
                                                         }
+                                                        disabled={true}
                                                         onClick={() => {
-                                                            try {
-                                                                fetch(
-                                                                    sampleSnapshotUrl,
-                                                                    {
-                                                                        mode:
-                                                                            "no-cors",
-                                                                    }
-                                                                )
+                                                            fetchSampleGraph(
+                                                                sampleSnapshotUrl
+                                                            ).then((file) => {
+                                                                State.import.selectedGEXFFileFromInput = file;
+                                                                State.import
+                                                                    .importGraphFromGEXF()
                                                                     .then(
                                                                         (
-                                                                            response
+                                                                            res
                                                                         ) => {
-                                                                            return response.body;
-                                                                        }
-                                                                    )
-                                                                    .then(
-                                                                        (
-                                                                            gexf
-                                                                        ) => {
-                                                                            State.import.selectedGEXFFileFromInput = new File(
-                                                                                [
-                                                                                    gexf,
-                                                                                ],
-                                                                                "sample.gexf",
-                                                                                {
-                                                                                    type:
-                                                                                        "text/xml",
-                                                                                }
-                                                                            );
-                                                                            State.import
-                                                                                .importGraphFromGEXF()
-                                                                                .then(
-                                                                                    (
-                                                                                        res
-                                                                                    ) => {
-                                                                                        State.graph.rawGraph =
-                                                                                            res.graph;
-                                                                                        State.graph.metadata =
-                                                                                            res.metadata;
-                                                                                    }
-                                                                                );
+                                                                            State.graph.rawGraph =
+                                                                                res.graph;
+                                                                            State.graph.metadata =
+                                                                                res.metadata;
                                                                         }
                                                                     );
-                                                            } catch (error) {
-                                                                console.log(
-                                                                    error
-                                                                );
-                                                            }
+                                                            });
                                                         }}
                                                     />
                                                 );
@@ -129,19 +105,12 @@ export default observer(
                                             State.import.importGEXFDialogOpen = true;
                                         }}
                                     />
-                                    <MenuItem
-                                        icon="document-open"
-                                        text="Open Snapshot"
-                                        onClick={() => {
-                                            State.preferences.preferenceDialogOpen = true;
-                                        }}
-                                    />
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
-                                        text="Save Snapshot"
+                                        text="Export Graph"
                                         onClick={() => {
-                                            State.project.saveSnapshotDialogOpen = true;
+                                            State.project.exportDialogOpen = true;
                                         }}
                                     />
                                 </Menu>
@@ -169,13 +138,13 @@ export default observer(
                                             State.preferences.dataSheetDialogOpen = true;
                                         }}
                                     />
-                                    <MenuItem
+                                    {/* <MenuItem
                                         text="Statistics"
                                         icon="timeline-bar-chart"
                                         onClick={() => {
                                             State.preferences.statisticsDialogOpen = true;
                                         }}
-                                    />
+                                    /> */}
                                 </Menu>
                             }
                             position={Position.BOTTOM}
@@ -237,30 +206,32 @@ export default observer(
                         </div>
                     )}
                 </div> */}
-                    <SimpleSelect
-                        className={classnames([Classes.ALERT_CONTENTS])}
-                        items={["3D", "2D"]}
-                        value={State.preferences.view}
-                        onSelect={(it) => (State.preferences.view = it)}
-                    />
+                    <ButtonGroup>
+                        {/* <SimpleSelect
+                            className={classnames([Classes.ALERT_CONTENTS])}
+                            items={["3D", "2D"]}
+                            value={State.preferences.view}
+                            onSelect={(it) => (State.preferences.view = it)}
+                        />
+                        <Divider /> */}
+                    </ButtonGroup>
+
                     <div
                         className={classnames([
                             Classes.NAVBAR_GROUP,
                             Classes.ALIGN_RIGHT,
                         ])}
                     >
-                        <Button
-                            className={classnames([
-                                Classes.BUTTON,
-                                Classes.MINIMAL,
-                            ])}
-                            icon="graph"
-                            onClick={() => {
-                                State.project.renameSnapshotDialogOpen = true;
-                            }}
-                        >
-                            {State.graph.metadata.snapshotName}
-                        </Button>
+                        Clustered by{"  "}
+                        <SimpleSelect
+                            items={
+                                State.graph.metadata.nodeProperties.length == 0
+                                    ? ["None"]
+                                    : State.graph.metadata.nodeProperties
+                            }
+                            value={State.cluster.clusterBy}
+                            onSelect={(it) => (State.cluster.clusterBy = it)}
+                        />
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button
                             className={classnames([
@@ -268,6 +239,7 @@ export default observer(
                                 Classes.MINIMAL,
                             ])}
                             icon="cog"
+                            disabled={true}
                             onClick={() => {
                                 State.preferences.dialogOpen = true;
                             }}
@@ -277,9 +249,11 @@ export default observer(
                                 Classes.BUTTON,
                                 Classes.MINIMAL,
                             ])}
-                            icon="help"
+                            icon="code"
                             onClick={() => {
-                                State.preferences.helpDialogOpen = true;
+                                window.open(
+                                    "https://github.com/grp202004/PiperNet"
+                                );
                             }}
                         />
                     </div>

@@ -1,9 +1,20 @@
 import React from "react";
-import { observable, makeObservable, computed, autorun } from "mobx";
+import {
+    observable,
+    makeObservable,
+    computed,
+    autorun,
+    action,
+    makeAutoObservable,
+} from "mobx";
 import { observer } from "mobx-react";
-import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
+import ForceGraph3D, {
+    ForceGraphMethods,
+    NodeObject,
+} from "react-force-graph-3d";
 import State from "../../state";
-import GraphDelegate from "../../state/GraphDelegate";
+import ComponentRef from "../ComponentRef";
+import GraphDelegate from "./GraphDelegate";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -12,7 +23,9 @@ export default observer(
             makeObservable(this, {
                 graphRef: observable,
                 graphMethods: computed,
-                // centerPoints: observable,
+                graphDelegate: observable,
+                nodeHover: action,
+                selectedNodes: observable.ref,
             });
         }
         // @ts-ignore
@@ -21,15 +34,63 @@ export default observer(
             return this.graphRef.current;
         }
 
-        graphDelegate!: GraphDelegate;
+        getNodeId(node: NodeObject): string {
+            let nodeId: string;
+            if (node.id as string) {
+                nodeId = node.id as string;
+            } else {
+                nodeId = (node.id as number).toString();
+            }
+            return nodeId;
+        }
+
+        graphDelegate = new GraphDelegate();
+
+        nodeHover = (
+            node: NodeObject | null,
+            previousNode: NodeObject | null
+        ) => {
+            if (node != null && node != previousNode) {
+                State.graph.currentlyHoveredId = this.getNodeId(
+                    node as NodeObject
+                );
+                console.log(State.graph.currentlyHoveredId);
+                ComponentRef.nodeDetail?.forceUpdate();
+            }
+        };
+
+        selectedNodes: string[] = State.graph.selectedNodes;
+
+        nodeSelect = (node: NodeObject, event: MouseEvent) => {
+            let nodeId = this.getNodeId(node as NodeObject);
+            if (event.ctrlKey || event.shiftKey) {
+                // multi-selection
+                if (this.selectedNodes.includes(nodeId)) {
+                    let index = this.selectedNodes.indexOf(nodeId);
+                    if (index > -1) {
+                        this.selectedNodes.splice(index, 1);
+                    }
+                } else {
+                    this.selectedNodes.push(nodeId);
+                }
+            } else {
+                // single-selection
+                // TODO
+            }
+            console.log(State.graph.selectedNodes);
+            ComponentRef.multiNodeDetail?.forceUpdate();
+            this.graphMethods.refresh(); // update color of selected nodes
+        };
 
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
                     <ForceGraph3D
                         ref={this.graphRef}
-                        graphData={State.graph.delegateGraph}
+                        graphData={this.graphDelegate.visualizationGraph}
                         nodeResolution={20}
+                        nodeVisibility={this.graphDelegate.nodeVisibility}
+                        linkVisibility={this.graphDelegate.linkVisibility}
                         onNodeDragEnd={(node) => {
                             node.fx = node.x;
                             node.fy = node.y;
@@ -50,6 +111,13 @@ export default observer(
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
+                        nodeColor={(node) =>
+                            this.selectedNodes.includes(this.getNodeId(node))
+                                ? "yellow"
+                                : "grey"
+                        }
+                        onNodeClick={this.nodeSelect}
+                        onNodeHover={this.nodeHover}
                     />
                 );
                 // } else {
@@ -77,7 +145,7 @@ export default observer(
         }
 
         componentDidMount() {
-            this.graphDelegate = new GraphDelegate(this.graphMethods);
+            this.graphDelegate.mountDelegateMethods(this.graphMethods);
         }
     }
 );

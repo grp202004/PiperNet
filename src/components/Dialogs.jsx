@@ -14,6 +14,7 @@ import SaveSnapshotDialog from "./SaveSnapshotDialog";
 // import HelpDialog from './HelpDialog';
 // import NeighborDialog from './NeighborDialog';
 import DataSheetDialog from "./DataSheetDialog";
+import SaveDialog from "./SaveDialog";
 
 export default class Dialogs extends React.Component {
     render() {
@@ -33,6 +34,7 @@ export default class Dialogs extends React.Component {
                 <HelpDialog />
                 <NeighborDialog /> */}
                 <DataSheetDialog />
+                <SaveDialog />
             </div>
         );
     }

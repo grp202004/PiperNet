@@ -5,8 +5,17 @@ import {
     Dialog,
     Intent,
     ButtonGroup,
+    Card,
+    Elevation,
     NumericInput,
 } from "@blueprintjs/core";
+import {
+    Column,
+    Table,
+    Cell,
+    EditableCell,
+    TableLoadingOption,
+} from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../state";
@@ -23,19 +32,56 @@ export default observer(
             };
         }
 
+        renderTable() {
+            if (State.preferences.dataSheetLoading) {
+                return (
+                    <div className="argo-table-container">
+                        <Table
+                            className="pt-bordered pt-striped"
+                            numRows={20}
+                            loadingOptions={[
+                                TableLoadingOption.CELLS,
+                                TableLoadingOption.COLUMN_HEADERS,
+                                TableLoadingOption.ROW_HEADERS,
+                            ]}
+                        >
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                            <Column />
+                        </Table>
+                    </div>
+                );
+            } else {
+                return <GraphDataTable />;
+            }
+        }
+
         render() {
             return (
                 <Dialog
                     iconName="database"
                     isOpen={State.preferences.dataSheetDialogOpen}
+                    onOpened={() => {
+                        setTimeout(() => {
+                            State.preferences.dataSheetLoading = false;
+                        }, 100);
+                    }}
                     onClose={() => {
                         State.preferences.dataSheetDialogOpen = false;
+                        State.preferences.dataSheetLoading = true;
                     }}
                     title="Data Sheet"
                     style={{ minWidth: "80vw" }}
                 >
                     <div className={classnames(Classes.DIALOG_BODY)}>
-                        <GraphDataTable />
+                        {this.renderTable()}
                     </div>
 
                     <div className={Classes.DIALOG_FOOTER}>
