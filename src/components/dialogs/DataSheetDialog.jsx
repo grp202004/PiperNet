@@ -1,26 +1,10 @@
 import React from "react";
-import {
-    Button,
-    Classes,
-    Dialog,
-    Intent,
-    ButtonGroup,
-    Card,
-    Elevation,
-    NumericInput,
-} from "@blueprintjs/core";
-import {
-    Column,
-    Table,
-    Cell,
-    EditableCell,
-    TableLoadingOption,
-} from "@blueprintjs/table";
+import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { Column, Table, TableLoadingOption } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state";
+import State from "../../state";
 import GraphDataTable from "./GraphDataTable";
-import SimpleSelect from "./utils/SimpleSelect";
 
 export default observer(
     class DataSheetDialog extends React.Component {
@@ -66,7 +50,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    iconName="database"
+                    icon="database"
                     isOpen={State.preferences.dataSheetDialogOpen}
                     onOpened={() => {
                         setTimeout(() => {

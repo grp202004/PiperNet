@@ -1,18 +1,23 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import { Button, Classes, Popover, PopoverInteractionKind, Position } from "@blueprintjs/core";
+import {
+    Button,
+    Classes,
+    Popover,
+    PopoverInteractionKind,
+    Position,
+} from "@blueprintjs/core";
 import { SketchPicker } from "react-color";
 // import { Popover2, Select } from "@blueprintjs/labs";
 import classnames from "classnames";
 import Collapsable from "../utils/Collapsable";
-import * as THREE from 'three';
+import * as THREE from "three";
 // import SimpleSelect from "../utils/SimpleSelect";
 // import mouse from "../../graph-frontend/src/select";
 
 export default observer(
     class EdgesPanel extends React.Component {
-
         constructor(props) {
             super(props);
             this.state = {
@@ -29,25 +34,25 @@ export default observer(
                 <div>
                     <p>{`Modifying All Edges`}</p>
 
-
                     {/* Collapsable Option: Color */}
                     <Collapsable
                         name="Color"
                         isOpen={this.state.colorOptionOpen}
                         onToggle={() =>
                             this.setState({
-                                colorOptionOpen: !this.state.colorOptionOpen
+                                colorOptionOpen: !this.state.colorOptionOpen,
                             })
                         }
                     >
-                        <div
-                            className={classnames(Classes.CARD, "sub-option")}
-                        >
+                        <div className={classnames(Classes.CARD, "sub-option")}>
                             <section>
-                                <p style={{ textAlign: "left" }}>Select Edge Color:
-                            <span style={{ float: "right" }}>
+                                <p style={{ textAlign: "left" }}>
+                                    Select Edge Color:
+                                    <span style={{ float: "right" }}>
                                         <Popover
-                                            interactionKind={PopoverInteractionKind.CLICK}
+                                            interactionKind={
+                                                PopoverInteractionKind.CLICK
+                                            }
                                             popoverClassName="bp3-popover-content-sizing"
                                             position={Position.RIGHT}
                                         >
@@ -55,12 +60,17 @@ export default observer(
                                                 text="  "
                                                 style={{
                                                     backgroundImage: "inherit",
-                                                    backgroundColor: State.graph.edges.color
+                                                    backgroundColor:
+                                                        State.css.config.edges
+                                                            .color,
                                                 }}
                                             />
                                             <div>
                                                 <SketchPicker
-                                                    color={State.graph.edges.color}
+                                                    color={
+                                                        State.css.config.edges
+                                                            .color
+                                                    }
                                                     onChange={(it) => {
                                                         // State.graph.process.graph.forEachNode(n => {
 
@@ -71,15 +81,15 @@ export default observer(
                                                         //     n.renderData.linecolor.g = blue;
                                                         //     n.renderData.linecolor.b = green;
                                                         // });
-                                                        (State.graph.edges.color = it.hex);
-                                                        (console.log(it.hex));
+
+                                                        State.css.config.edges.color =
+                                                            it.hex;
+                                                        console.log(it.hex);
                                                         /**update edge color in real time*/
                                                         // State.graph.process.onHover();
-
                                                     }}
                                                 />
                                             </div>
-
                                         </Popover>
                                     </span>
                                 </p>

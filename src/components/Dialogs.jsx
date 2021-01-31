@@ -1,40 +1,33 @@
 import React from "react";
 // import PreferencesDialog from "./PreferencesDialog";
-import ImportDialog from "./ImportDialog";
-import GEXFImportDialog from "./GEXFImportDialog";
-import SaveSnapshotDialog from "./SaveSnapshotDialog";
-// import OpenDialog from "./OpenDialog";
-// import NewProjectDialog from "./NewProjectDialog";
+import ImportCSVDialog from "./dialogs/ImportCSVDialog";
+import ImportGEXFDialog from "./dialogs/ImportGEXFDialog";
+import ImportSamplesDialog from "./dialogs/ImportGEXFDialog";
+import ExportDialog from "./dialogs/ExportDialog";
 // import ProjectDetailDialog from "./ProjectDetailDialog";
-// import SaveSnapshotDialog from "./SaveSnapshotDialog";
 // import RenameSnapshotDialog from "./RenameSnapshotDialog";
-// import OpenSnapshotDialog from "./OpenSnapshotDialog";
-// import ShareDialog from './ShareDialog';
 // import StatisticsDialog from './StatisticsDialog';
 // import HelpDialog from './HelpDialog';
 // import NeighborDialog from './NeighborDialog';
-import DataSheetDialog from "./DataSheetDialog";
-import SaveDialog from "./SaveDialog";
+import DataSheetDialog from "./dialogs/DataSheetDialog";
 
 export default class Dialogs extends React.Component {
     render() {
         return (
             <div style={{ display: "none" }}>
                 {/* <PreferencesDialog /> */}
-                <ImportDialog />
-                <GEXFImportDialog />
-                {/*<OpenDialog />
-                <OpenSnapshotDialog />
-                <NewProjectDialog />
-                <ProjectDetailDialog />*/}
-                <SaveSnapshotDialog />
-                {/*<RenameSnapshotDialog />
-                <ShareDialog />
+                <ImportCSVDialog />
+                <ImportGEXFDialog />
+                <ImportSamplesDialog />
+                {/*
+                <ProjectDetailDialog />
+                <RenameSnapshotDialog />
                 <StatisticsDialog />
                 <HelpDialog />
-                <NeighborDialog /> */}
+                <NeighborDialog />\
+                */}
                 <DataSheetDialog />
-                <SaveDialog />
+                <ExportDialog />
             </div>
         );
     }

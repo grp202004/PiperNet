@@ -14,7 +14,6 @@ import {
     MenuDivider,
     Divider,
 } from "@blueprintjs/core";
-// import { Popover2 as Popover } from "@blueprintjs/popover2";
 import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
 import State from "../state";
@@ -51,8 +50,14 @@ export default observer(
                         <Popover
                             content={
                                 <Menu>
-                                    <MenuItem text="Load Sample" icon="graph">
-                                        {SAMPLE_GRAPH_SNAPSHOTS.map(
+                                    <MenuItem
+                                        text="Load Sample"
+                                        icon="graph"
+                                        onClick={
+                                            (State.import.importSamplesDialogOpen = true)
+                                        }
+                                    >
+                                        {/* {SAMPLE_GRAPH_SNAPSHOTS.map(
                                             (sample) => {
                                                 const sampleSnapshotTitle =
                                                     sample[0];
@@ -88,7 +93,7 @@ export default observer(
                                                     />
                                                 );
                                             }
-                                        )}
+                                        )} */}
                                     </MenuItem>
                                     <MenuDivider />
                                     <MenuItem

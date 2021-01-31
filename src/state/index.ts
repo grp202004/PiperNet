@@ -6,6 +6,7 @@ import ImportStore from "./ImportStore";
 import ProjectStore from "./ProjectStore";
 import SearchStore from "./SearchStore";
 import ClusterStore from "./ClusterStore";
+import CssStore from "./CssStore";
 
 class AppState {
     constructor() {}
@@ -18,6 +19,7 @@ class AppState {
     search!: SearchStore;
     project!: ProjectStore;
     cluster!: ClusterStore;
+    css!: CssStore;
 
     private privateConstructor() {
         this.preferences = new PreferencesStore();
@@ -26,6 +28,7 @@ class AppState {
         this.search = new SearchStore();
         this.project = new ProjectStore();
         this.cluster = new ClusterStore();
+        this.css = new CssStore();
     }
 
     // add singleton to prevent creating multiple instances of the State class

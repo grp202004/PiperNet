@@ -15,11 +15,11 @@ import {
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
 import { observer } from "mobx-react";
-import State from "../state";
+import State from "../../state";
 
-import Collapsable from "./utils/Collapsable";
-import SimpleSelect from "./utils/SimpleSelect";
-import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../constants/index";
+import Collapsable from "../utils/Collapsable";
+import SimpleSelect from "../utils/SimpleSelect";
+import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../../constants/index";
 
 let PreviewTable = observer(
     class PreviewTable extends React.Component {
@@ -51,7 +51,8 @@ let PreviewTable = observer(
                         ))}
                     </Table>
                     <Tag>
-                        Only the top 10 lines of the selected file are displayed
+                        Only the top {this.file.topN.length} rows of the
+                        selected file are displayed.
                     </Tag>
                 </div>
             );
@@ -64,10 +65,11 @@ let PreviewTable = observer(
 );
 
 export default observer(
-    class ImportDialog extends React.Component {
+    class ImportCSVDialog extends React.Component {
         constructor(props) {
             super(props);
             this.state = {
+                loading: false,
                 available: ONLY_EDGE_FILE,
                 nodesOpen: true,
                 edgesOpen: true,
@@ -91,7 +93,7 @@ export default observer(
         renderNodesSelection = () => {
             const nodeFile = State.import.importConfig.nodeFile;
 
-            // if file not imported, show blank
+            // show blank if node file not relevant
             if (this.state.available === ONLY_EDGE_FILE) {
                 return null;
             }
@@ -120,7 +122,7 @@ export default observer(
                                     }
                                     State.import.nodeFileName =
                                         event.target.files[0].name;
-                                    // after setting the selectedNodeFileFromInput, other attributes will update automatically
+                                    // after setting the selectedNodeFileFromInput, it will auto render the preview table
                                     State.import.selectedNodeFileFromInput =
                                         event.target.files[0];
                                 }}
@@ -227,7 +229,7 @@ export default observer(
 
         renderDelimiterSelection() {
             return (
-                <div className="column-selection">
+                <div>
                     Selected Delimiter
                     <SimpleSelect
                         items={[",", "\\t", ";", "[SPACE]"]}
@@ -253,7 +255,7 @@ export default observer(
             return (
                 <Dialog
                     style={{ minWidth: "80vw" }}
-                    iconName="import"
+                    icon="import"
                     className={classnames({
                         [Classes.DARK]: State.preferences.darkMode,
                     })}

@@ -50,6 +50,10 @@
     position: relative;
 }
 
+*:focus {
+    outline: none !important;
+    box-shadow: none;
+}
 .workspace {
     max-height: 90vh;
     padding-top: 10vh;
@@ -334,22 +338,10 @@ div.pt-card.sub-option.legend {
     margin-bottom: 10px;
 }
 
-.argo-table-container {
+.argo-table {
     overflow: auto;
-    max-width: 80vw;
-    max-height: 80vh;
-}
-
-.argo-table-container__table {
-    border-collapse: collapse;
-}
-
-.argo-table-container__table th {
-    white-space: normal;
-}
-
-.argo-table-container__table td {
-    white-space: normal;
+    width: 100%;
+    height: 600px;
 }
 
 .argo-selection-action-panel {

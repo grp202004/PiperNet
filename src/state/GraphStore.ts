@@ -155,7 +155,7 @@ export default class GraphStore {
     metadata = {
         snapshotName: String,
 
-        // attributes of nodes in imported csv
+        // attributes of nodes in imported graph
         nodeProperties: [],
         edgeProperties: [],
     };
