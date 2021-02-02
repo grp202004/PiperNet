@@ -37,8 +37,8 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "electron-start": "electron .",
-        "pack-win": "electron-packager ./ pipernet-win-0.4.0-beta -win --arch=x64 --electron-version 11.2.1 --overwrite --ignore=^/build/",
-        "pack-mac": "electron-packager ./ pipernet-mac-0.4.0-beta --platform=darwin --arch=x64 --electron-version 11.2.1 --overwrite --ignore=^/build/"
+        "pack-win": "electron-packager ./ pipernet-win-0.4.0-beta -win --arch=x64 --electron-version 11.2.1 --overwrite --ignore=/node_modules",
+        "pack-mac": "electron-packager ./ pipernet-mac-0.4.0-beta --platform=darwin --arch=x64 --electron-version 11.2.1 --overwrite --ignore=/node_modules"
     },
     "eslintConfig": {
         "extends": [
