@@ -10,10 +10,10 @@ import {
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state";
+import State from "../../state";
 
 export default observer(
-    class GEXFImportDialog extends React.Component {
+    class ImportGEXFDialog extends React.Component {
         state = {
             fileIsSelect: false,
         };
@@ -51,7 +51,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    iconName="import"
+                    icon="import"
                     className={classnames({
                         [Classes.DARK]: State.preferences.darkMode,
                     })}

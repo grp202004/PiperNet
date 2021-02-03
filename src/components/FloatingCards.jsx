@@ -10,6 +10,8 @@ import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
 import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
+import SearchPanel from "./panels/SearchPanel";
+import RightClickNodePanel from "./panels/RightClickNodePanel";
 // import Legends from "./Legends";
 // // import StatusBar from './StatusBar';
 // import SelectionActionPanel from "./panels/SelectionActionPanel";
@@ -127,6 +129,11 @@ export default observer(
                     )} */}
                     {State.graph.selectedNodes.length != 0 && (
                         <MultiDetailPanel />
+                    )}
+
+                    <SearchPanel />
+                    {State.preferences.rightClickNodePanelOpen && (
+                        <RightClickNodePanel />
                     )}
 
                     {/* <Legends />

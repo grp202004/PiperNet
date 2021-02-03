@@ -1,25 +1,8 @@
 import React from "react";
-import {
-    Button,
-    Classes,
-    Dialog,
-    Intent,
-    Switch,
-    ButtonGroup,
-    Card,
-    Elevation,
-} from "@blueprintjs/core";
-import {
-    Column,
-    Table,
-    Cell,
-    EditableCell,
-    TableLoadingOption,
-} from "@blueprintjs/table";
+import { Intent, Switch, Callout } from "@blueprintjs/core";
+import { Column, Table, Cell, EditableCell } from "@blueprintjs/table";
 import { observer } from "mobx-react";
-import classnames from "classnames";
-import State from "../state";
-import SimpleSelect from "./utils/SimpleSelect";
+import State from "../../state";
 
 export default observer(
     class GraphTable extends React.Component {
@@ -90,29 +73,18 @@ export default observer(
 
         render() {
             return (
-                <div className="argo-table-container">
-                    <Card interactive={false} elevation={Elevation.ONE}>
-                        Sort By
-                        <SimpleSelect
-                            items={this.nodeProperties}
-                            value={this.state.sortBy}
-                            onSelect={(selected) => {
-                                this.setState({ sortBy: selected });
-                            }}
-                        />
-                        <SimpleSelect
-                            items={["Descending", "Ascending"]}
-                            value={this.state.sortOrder}
-                            onSelect={(selected) => {
-                                this.setState({ sortOrder: selected });
-                            }}
-                        />
-                    </Card>
-
-                    <Table
-                        className="pt-bordered pt-striped"
-                        numRows={this.rawGraph.order}
+                <div>
+                    <Callout
+                        title={
+                            "Try to click on a cell and type in something..."
+                        }
+                        intent="primary"
+                        icon="edit"
                     >
+                        The corresponding value of a node's attribute can be
+                        modified by clicking the cell and type in
+                    </Callout>
+                    <Table className="argo-table" numRows={this.rawGraph.order}>
                         {/* first column is the Show switch */}
                         <Column
                             name="Show"

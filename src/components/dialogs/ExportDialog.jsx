@@ -16,11 +16,11 @@ import { observer } from "mobx-react";
 import { makeObservable, computed } from "mobx";
 import classnames from "classnames";
 import gexf from "graphology-gexf/browser";
-import State from "../state";
+import State from "../../state";
 import { CSVLink } from "react-csv";
 
 export default observer(
-    class SaveSnapshotDialog extends React.Component {
+    class ExportDialog extends React.Component {
         constructor(props) {
             super(props);
             this.state = {
@@ -69,7 +69,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    iconName="projects"
+                    icon="projects"
                     isOpen={State.project.exportDialogOpen}
                     onClose={() => {
                         State.project.exportDialogOpen = false;

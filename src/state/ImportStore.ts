@@ -1,10 +1,8 @@
 import { Toaster, Position, Intent } from "@blueprintjs/core";
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import * as graphology from "graphology-types";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
-import { IHiddenOptions } from "./GraphStore";
 
 export default class ImportStore {
     constructor() {
@@ -23,6 +21,7 @@ export default class ImportStore {
     gexfFileName = "Choose GEXF File ...";
 
     importCSVDialogOpen = false;
+    importSamplesDialogOpen = false;
     importGEXFDialogOpen = false;
 
     // specific: File object selected via the file input.
