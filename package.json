@@ -55,8 +55,8 @@
         ]
     },
     "devDependencies": {
-        "@types/jest": "^26.0.20",
         "@types/classnames": "^2.2.11",
+        "@types/jest": "^26.0.20",
         "@types/randomcolor": "^0.5.5",
         "@types/react": "^17.0.0"
     }

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import { copy } from "copy-anything";
-import State from "../../state";
+import State from ".";
 import {
     ForceGraphMethods,
     NodeObject,
@@ -154,5 +154,25 @@ export default class GraphDelegate {
         ]);
 
         return mesh;
+    }
+
+    ////
+
+    cameraFocusOn(nodeId: string) {
+        let node = State.graph.rawGraph.getNodeAttribute(nodeId, "_visualize");
+        if (!(node.x && node.y && node.z)) return;
+        // Aim at node from outside it
+        const distance = 40;
+        const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+
+        this.graphDelegateMethods.cameraPosition(
+            {
+                x: node.x * distRatio,
+                y: node.y * distRatio,
+                z: node.z * distRatio,
+            }, // new position
+            { x: node.x, y: node.y, z: node.z }, // lookAt ({ x, y, z })
+            3000 // ms transition duration
+        );
     }
 }

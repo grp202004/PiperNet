@@ -1,4 +1,10 @@
-import { autorun, runInAction, observable, makeObservable } from "mobx";
+import {
+    autorun,
+    runInAction,
+    observable,
+    makeObservable,
+    reaction,
+} from "mobx";
 
 import PreferencesStore from "./PreferencesStore";
 import GraphStore from "./GraphStore";
@@ -7,6 +13,7 @@ import ProjectStore from "./ProjectStore";
 import SearchStore from "./SearchStore";
 import ClusterStore from "./ClusterStore";
 import CssStore from "./CssStore";
+import GraphDelegate from "./GraphDelegate";
 
 class AppState {
     constructor() {}
@@ -15,6 +22,7 @@ class AppState {
 
     preferences!: PreferencesStore;
     graph!: GraphStore;
+    graphDelegate!: GraphDelegate;
     import!: ImportStore;
     search!: SearchStore;
     project!: ProjectStore;
@@ -24,6 +32,7 @@ class AppState {
     private privateConstructor() {
         this.preferences = new PreferencesStore();
         this.graph = new GraphStore();
+        this.graphDelegate = new GraphDelegate();
         this.import = new ImportStore();
         this.search = new SearchStore();
         this.project = new ProjectStore();
@@ -54,6 +63,9 @@ autorun(() => State.import.renderImportEdgePreview());
 // will auto run if selectedNodeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportNodePreview());
 
-autorun(() => (State.cluster.rawGraph = State.graph.rawGraph));
+autorun(
+    () =>
+        (State.cluster.rawGraph = State.search.rawGraph = State.graph.rawGraph)
+);
 
 export default State;

@@ -14,7 +14,7 @@ import ForceGraph3D, {
 } from "react-force-graph-3d";
 import State from "../../state";
 import ComponentRef from "../ComponentRef";
-import GraphDelegate from "./GraphDelegate";
+import GraphDelegate from "../../state/GraphDelegate";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -44,18 +44,17 @@ export default observer(
             return nodeId;
         }
 
-        graphDelegate = new GraphDelegate();
+        graphDelegate = State.graphDelegate;
 
         nodeHover = (
             node: NodeObject | null,
             previousNode: NodeObject | null
         ) => {
+            if (State.search.isPreviewing) return;
             if (node != null && node != previousNode) {
                 State.graph.currentlyHoveredId = this.getNodeId(
                     node as NodeObject
                 );
-                console.log(State.graph.currentlyHoveredId);
-                ComponentRef.nodeDetail?.forceUpdate();
             }
         };
 
@@ -77,8 +76,6 @@ export default observer(
                 // single-selection
                 // TODO
             }
-            console.log(State.graph.selectedNodes);
-            ComponentRef.multiNodeDetail?.forceUpdate();
             this.graphMethods.refresh(); // update color of selected nodes
         };
 

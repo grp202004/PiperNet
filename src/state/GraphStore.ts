@@ -1,9 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import {
-    CustomNodeObject,
-    CustomLinkObject,
-} from "../components/visualize/GraphDelegate";
+import { CustomNodeObject, CustomLinkObject } from "./GraphDelegate";
 
 /**
  * the hidden options inside a node

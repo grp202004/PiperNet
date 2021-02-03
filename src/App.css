@@ -232,6 +232,11 @@ html {
     margin: 5px 10px 5px 10px;
 }
 
+.bottom-overlay-card {
+    position: absolute;
+    bottom: 5px;
+}
+
 button.pt-fill.text-align-left {
     display: flex;
     justify-content: space-between;
@@ -322,14 +327,17 @@ div.pt-card.sub-option.legend {
     padding: 0;
 }
 
-.nodes-details-table {
+.search {
+    font-size: 0.4em;
+    pointer-events: all;
+}
+
+.search-menu {
     overflow-x: auto;
     overflow-y: auto;
-    max-width: 95%;
     max-height: 60vh;
     font-size: 0.4em;
     pointer-events: all;
-    padding: 0;
 }
 
 .argo-menu-list-header {
