@@ -5,6 +5,10 @@ export default class PreferencesStore {
         makeAutoObservable(this);
     }
 
+    rightClickNodePanelOpen = false;
+    rightClickPositionX = 30;
+    rightClickPositionY = 30;
+
     preferenceDialogOpen = false;
 
     darkMode = true;

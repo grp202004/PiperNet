@@ -327,6 +327,12 @@ div.pt-card.sub-option.legend {
     padding: 0;
 }
 
+.right-click-panel {
+    position: absolute;
+    width: 10vw;
+    pointer-events: all;
+}
+
 .search {
     font-size: 0.4em;
     pointer-events: all;

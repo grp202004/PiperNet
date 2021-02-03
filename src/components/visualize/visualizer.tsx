@@ -7,14 +7,13 @@ import {
     action,
     makeAutoObservable,
 } from "mobx";
+import { Menu, MenuItem } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
     NodeObject,
 } from "react-force-graph-3d";
 import State from "../../state";
-import ComponentRef from "../ComponentRef";
-import GraphDelegate from "../../state/GraphDelegate";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -79,6 +78,13 @@ export default observer(
             this.graphMethods.refresh(); // update color of selected nodes
         };
 
+        nodeRightClick = (node: NodeObject, event: MouseEvent) => {
+            State.preferences.rightClickPositionX = event.x;
+
+            State.preferences.rightClickPositionY = event.y;
+            State.preferences.rightClickNodePanelOpen = true;
+        };
+
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
@@ -92,12 +98,6 @@ export default observer(
                             node.fx = node.x;
                             node.fy = node.y;
                             node.fz = node.z;
-                        }}
-                        onBackgroundClick={() => {
-                            // this.allAdded = true;
-                            // this.graphRef.current.pauseAnimation();
-                            // this.graphMethods.refresh();
-                            // this.graphDelegate.init();
                         }}
                         onBackgroundRightClick={() => {
                             // this.allAdded = true;
@@ -114,6 +114,10 @@ export default observer(
                                 : "grey"
                         }
                         onNodeClick={this.nodeSelect}
+                        onNodeRightClick={this.nodeRightClick}
+                        onBackgroundClick={() =>
+                            (State.preferences.rightClickNodePanelOpen = false)
+                        }
                         onNodeHover={this.nodeHover}
                     />
                 );
