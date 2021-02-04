@@ -136,11 +136,17 @@ export default observer(
                             content={
                                 <Menu>
                                     <MenuItem
-                                        text="Data Sheet"
-                                        icon="database"
+                                        text="Node DataSheet"
+                                        icon="ungroup-objects"
                                         onClick={() => {
-                                            // State.graph.frame.pauseLayout();
-                                            State.preferences.dataSheetDialogOpen = true;
+                                            State.preferences.nodeDataSheetDialogOpen = true;
+                                        }}
+                                    />
+                                    <MenuItem
+                                        text="Edge DataSheet"
+                                        icon="link"
+                                        onClick={() => {
+                                            State.preferences.edgeDataSheetDialogOpen = true;
                                         }}
                                     />
                                     {/* <MenuItem

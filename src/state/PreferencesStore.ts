@@ -16,8 +16,9 @@ export default class PreferencesStore {
     statisticsDialogOpen = false;
     helpDialogOpen = false;
     neighborDialogOpen = false;
-    dataSheetDialogOpen = false;
-    dataSheetLoading = true;
+
+    nodeDataSheetDialogOpen = false;
+    edgeDataSheetDialogOpen = false;
 
     isRenderOptionsCardHidden = true;
 
