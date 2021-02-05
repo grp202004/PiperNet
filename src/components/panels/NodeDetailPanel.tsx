@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { Classes } from "@blueprintjs/core";
-import { Cell, Column, Table } from "@blueprintjs/table";
+import { Cell, Column, EditableCell, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import State from "../../state/index";
 import ComponentRef from "../ComponentRef";
@@ -21,7 +21,20 @@ export default observer(
                 State.graph.currentlyHoveredId,
                 State.graph.metadata.nodeProperties[rowIndex]
             );
-            return <Cell>{data}</Cell>;
+            // return a Eidtable Cell where user can edit the value of certain property;
+            return <EditableCell
+                        value = {data}
+                        onChange={(newVal) =>
+                            State.graph.rawGraph.setNodeAttribute(State.graph.currentlyHoveredId,
+                                State.graph.metadata.nodeProperties[rowIndex],
+                                newVal)
+                        }
+                        onConfirm={(newVal) =>
+                            State.graph.rawGraph.setNodeAttribute(State.graph.currentlyHoveredId,
+                                State.graph.metadata.nodeProperties[rowIndex],
+                                newVal)
+                        }
+                        />
         };
 
         formatLongFloat = (nodeAttributeValue: any) => {
