@@ -81,23 +81,6 @@ export default observer(
                     <div className={classnames(Classes.DIALOG_BODY)}>
                         {this.renderTable()}
                     </div>
-
-                    <div className={Classes.DIALOG_FOOTER}>
-                        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                            <Button
-                                intent={Intent.PRIMARY}
-                                onClick={() => {
-                                    if (this.props.for == "node") {
-                                        State.preferences.nodeDataSheetDialogOpen = false;
-                                    } else {
-                                        State.preferences.edgeDataSheetDialogOpen = false;
-                                    }
-                                    this.state.loading = true;
-                                }}
-                                text="Done"
-                            />
-                        </div>
-                    </div>
                 </Dialog>
             );
         }
