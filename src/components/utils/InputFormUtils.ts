@@ -23,7 +23,7 @@ export function handleNumberChange(handler: (value: number) => void) {
     return handleStringChange((value) => handler(+value));
 }
 
-export function previewNodeDetail(attributes: Attributes): string {
+export function stringifyNodeDetail(attributes: Attributes): string {
     let res = "";
     for (var attribute in attributes) {
         if (
@@ -36,4 +36,13 @@ export function previewNodeDetail(attributes: Attributes): string {
     }
 
     return res;
+}
+
+export function parseNumberOrString(value: string): string | number {
+    let numberVal = Number(value);
+    if (isNaN(numberVal)) {
+        return value;
+    } else {
+        return numberVal;
+    }
 }

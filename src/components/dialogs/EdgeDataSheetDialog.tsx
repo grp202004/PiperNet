@@ -1,40 +1,29 @@
-import React, { RefObject } from "react";
+import React from "react";
 import {
-    Button,
-    Classes,
-    Dialog,
-    Intent,
-    Switch,
-    Callout,
     Alert,
-    Code,
-    InputGroup,
+    Button,
     ButtonGroup,
+    Callout,
+    Classes,
+    Code,
+    Dialog,
     Divider,
-    FormGroup,
-    MenuItem,
-    H4,
-    Alignment,
-    Tooltip,
-    Position,
+    InputGroup,
+    Intent,
 } from "@blueprintjs/core";
 import {
-    Column,
-    Table,
     Cell,
+    Column,
     ICellRenderer,
-    Regions,
     RenderMode,
+    Table,
 } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import State from "../../state";
 import DataSheetDialogWrapper from "../utils/DataSheetDialogWrapper";
-import { Attributes, SerializedEdge, SerializedNode } from "graphology-types";
-import { handleStringChange, previewNodeDetail } from "../utils/InputFormUtils";
-import CommonItemRenderer from "../utils/CommonItemRenderer";
-import { ItemPredicate, ItemRenderer, Select } from "@blueprintjs/select";
-import { Popover2, Tooltip2 } from "@blueprintjs/popover2";
-import { INTENT_PRIMARY } from "@blueprintjs/core/lib/esm/common/classes";
+import { Attributes, SerializedEdge } from "graphology-types";
+import { handleStringChange } from "../utils/InputFormUtils";
+import NodeChooser from "../utils/NodeChooser";
 
 let GraphEdgeTable = observer(
     class GraphEdgeTable extends React.Component {
@@ -44,7 +33,7 @@ let GraphEdgeTable = observer(
 
         state = {
             addEdgeDialogOpen: false,
-            deleteEdgeAlertOpen: false,
+            deleteAlertOpen: false,
             edgeToDelete: null as SerializedEdge<Attributes> | null,
             filterQuery: "",
             chosenSource: "",
@@ -88,12 +77,6 @@ let GraphEdgeTable = observer(
             );
         };
 
-        deleteEdge = () => {
-            State.graph.rawGraph.dropEdge(
-                this.state.edgeToDelete?.key as string
-            );
-        };
-
         deleteEdgeAlert = () => {
             return (
                 <Alert
@@ -101,10 +84,12 @@ let GraphEdgeTable = observer(
                     confirmButtonText="Confirm Delete"
                     icon="trash"
                     intent={Intent.DANGER}
-                    isOpen={this.state.deleteEdgeAlertOpen}
+                    isOpen={this.state.deleteAlertOpen}
                     onCancel={() => this.setState({ deleteAlertOpen: false })}
                     onConfirm={() => {
-                        this.deleteEdge();
+                        State.graph.rawGraph.dropEdge(
+                            this.state.edgeToDelete?.key as string
+                        );
                         this.setState({ deleteAlertOpen: false });
                     }}
                 >
@@ -140,14 +125,14 @@ let GraphEdgeTable = observer(
                             target.
                         </p>
                         <ButtonGroup fill={true}>
-                            <ChooseNodeInputGroup
+                            <NodeChooser
                                 text="Source Node"
                                 onChange={(value) => {
                                     this.setState({ chosenSource: value });
                                 }}
                             />
                             <Divider />
-                            <ChooseNodeInputGroup
+                            <NodeChooser
                                 text="Target Node"
                                 onChange={(value) => {
                                     this.setState({ chosenTarget: value });
@@ -290,76 +275,6 @@ let GraphEdgeTable = observer(
                     {this.deleteEdgeAlert()}
                     {this.addEdgeDialog()}
                 </div>
-            );
-        }
-    }
-);
-
-interface Props {
-    text: string;
-    onChange: (value: string) => void;
-}
-
-// this component can be used to choose the node among all the nodes, with basic search filters available
-// have to specify the text shown on it as well as the onChange function to call when a node is selected, as Props interface above
-// feel free to use it :)
-
-export let ChooseNodeInputGroup = observer(
-    class ChooseNodeInputGroup extends React.Component<Props, {}> {
-        constructor(props: any) {
-            super(props);
-        }
-
-        state = {
-            select: "Choose " + this.props.text,
-        };
-
-        render() {
-            return (
-                <FormGroup
-                    label={this.props.text}
-                    labelFor="text-input"
-                    labelInfo="(required)"
-                >
-                    <Select
-                        filterable={true}
-                        items={State.graph.rawGraph.export().nodes}
-                        itemPredicate={(
-                            query: string,
-                            item: SerializedNode<Attributes>
-                        ) => {
-                            return item.key.includes(query);
-                        }}
-                        itemRenderer={(item: SerializedNode<Attributes>) => {
-                            return (
-                                <Tooltip2
-                                    content={previewNodeDetail(
-                                        item.attributes ?? {}
-                                    )}
-                                >
-                                    <MenuItem
-                                        key={item.key}
-                                        text={item.key}
-                                        onClick={() => {
-                                            let key = item.key;
-                                            this.setState({ select: key });
-                                            this.props.onChange(key);
-                                        }}
-                                    />
-                                </Tooltip2>
-                            );
-                        }}
-                        noResults={
-                            <MenuItem disabled={true} text="No results." />
-                        }
-                        onItemSelect={() => {}}
-                    >
-                        <Button
-                            text={this.state.select}
-                            rightIcon="double-caret-vertical"
-                        />
-                    </Select>
-                </FormGroup>
             );
         }
     }

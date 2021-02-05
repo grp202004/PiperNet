@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import { CustomNodeObject, CustomLinkObject } from "./GraphDelegate";
+import { Attributes } from "graphology-types";
 
 /**
  * the hidden options inside a node
@@ -39,6 +40,31 @@ export default class GraphStore {
         type: "undirected",
     });
 
+    decorateRawNode(node: string, attributes: Attributes) {
+        // add _options and _visualize to attributes
+        let options: IHiddenOptions = {
+            show: true,
+        };
+        attributes._options = options;
+
+        let visualize: CustomNodeObject = {
+            id: node,
+            name: node,
+            val: 1, // to be changed, to represent the size of the node
+            isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
+        };
+        attributes._visualize = visualize;
+    }
+
+    decorateRawEdge(source: string, target: string, attributes: Attributes) {
+        let visualize: CustomLinkObject = {
+            source: source,
+            target: target,
+            isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
+        };
+        attributes._visualize = visualize;
+    }
+
     /**
      * should be called on every graph import
      * add the _options and _visualize to every nodes inside the specified graph
@@ -52,30 +78,13 @@ export default class GraphStore {
      * @memberof GraphStore
      */
     decorateRawGraph(_rawGraph: Graph): Graph {
-        _rawGraph.forEachNode((node, attributes) => {
-            // add _options and _visualize to attributes
-            let options: IHiddenOptions = {
-                show: true,
-            };
-            attributes._options = options;
+        _rawGraph.forEachNode((node, attributes) =>
+            this.decorateRawNode(node, attributes)
+        );
 
-            let visualize: CustomNodeObject = {
-                id: node,
-                name: node,
-                val: 1, // to be changed, to represent the size of the node
-                isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
-            };
-            attributes._visualize = visualize;
-        });
-
-        _rawGraph.forEachEdge((edge, attributes, source, target) => {
-            let visualize: CustomLinkObject = {
-                source: source,
-                target: target,
-                isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
-            };
-            attributes._visualize = visualize;
-        });
+        _rawGraph.forEachEdge((edge, attributes, source, target) =>
+            this.decorateRawEdge(source, target, attributes)
+        );
         return _rawGraph;
     }
 
@@ -153,7 +162,6 @@ export default class GraphStore {
         snapshotName: String,
 
         // attributes of nodes in imported graph
-        nodeProperties: [],
-        edgeProperties: [],
+        nodeProperties: [] as string[],
     };
 }
