@@ -6,121 +6,159 @@ import {
     Intent,
     Switch,
     Callout,
+    Alert,
+    Code,
+    InputGroup,
 } from "@blueprintjs/core";
 import {
     Column,
     Table,
     Cell,
-    EditableCell,
-    TableLoadingOption,
     ICellRenderer,
+    Regions,
+    RenderMode,
 } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import State from "../../state";
 import DataSheetDialogWrapper from "../utils/DataSheetDialogWrapper";
+import { Attributes, SerializedEdge } from "graphology-types";
+import { action, computed, makeObservable } from "mobx";
+import { handleStringChange } from "../utils/InputFormUtils";
 
 let GraphEdgeTable = observer(
     class GraphEdgeTable extends React.Component {
-        rawGraph = State.graph.rawGraph;
-
-        get rawTable() {
-            return this.rawGraph.export().nodes;
+        constructor(props: any) {
+            super(props);
         }
-        nodeProperties = State.graph.metadata.nodeProperties;
 
-        showRenderer: ICellRenderer = (rowIndex) => {
-            let node = this.rawTable[rowIndex];
+        state = {
+            deleteAlertOpen: false,
+            edgeToDelete: null as SerializedEdge<Attributes> | null,
+            filterQuery: "",
+        };
 
+        get filteredTable() {
+            let newTable: SerializedEdge<Attributes>[] = [];
+            State.graph.rawGraph.export().edges.forEach((edge) => {
+                if (
+                    edge.source
+                        .toLocaleLowerCase()
+                        .includes(this.state.filterQuery.toLocaleLowerCase()) ||
+                    edge.target
+                        .toLocaleLowerCase()
+                        .includes(this.state.filterQuery.toLocaleLowerCase()) ||
+                    this.state.filterQuery == ""
+                ) {
+                    newTable.push(edge);
+                }
+            });
+            return newTable;
+        }
+
+        deleteEdgeRenderer: ICellRenderer = (rowIndex) => {
             return (
                 <Cell>
-                    <Switch
-                        checked={node.attributes?._options.show}
-                        onChange={() => {
-                            node.attributes?._options.show
-                                ? State.graph.hideNode(node.key)
-                                : State.graph.showNode(node.key);
-                            this.forceUpdate();
+                    <Button
+                        onClick={() => {
+                            this.setState({
+                                edgeToDelete: this.filteredTable[rowIndex],
+                                deleteAlertOpen: true,
+                            });
                         }}
+                        icon="trash"
+                        intent="danger"
+                        text="Delete"
+                        minimal={true}
                     />
                 </Cell>
             );
         };
 
-        renderCell: ICellRenderer = (rowIndex, columnIndex) => {
-            let attribute = this.nodeProperties[columnIndex - 2];
-            let cellAttributes = this.rawTable[rowIndex].attributes;
-            //@ts-ignore
-            let cell = cellAttributes[attribute];
-
-            return (
-                <EditableCell
-                    value={cell}
-                    onChange={(newVal) =>
-                        this.setValue(newVal, rowIndex, attribute)
-                    }
-                    onConfirm={(newVal) =>
-                        this.setValue(newVal, rowIndex, attribute)
-                    }
-                />
+        deleteEdge = () => {
+            State.graph.rawGraph.dropEdge(
+                this.state.edgeToDelete?.key as string
             );
         };
 
-        // if the input is a number in string, it will convert the string into number to store
-        setValue = (value: string, rowIndex: number, attribute: string) => {
-            let id = this.rawTable[rowIndex].key;
-            let numberVal = Number(value);
-            if (isNaN(numberVal)) {
-                this.rawGraph.setNodeAttribute(id, attribute, value);
-            } else {
-                this.rawGraph.setNodeAttribute(id, attribute, numberVal);
-            }
-            this.forceUpdate();
-        };
-
-        renderColumns: any = () => {
-            const columns = this.nodeProperties.map((it, i) => {
-                if (it != "_options") {
-                    return <Column name={it} cellRenderer={this.renderCell} />;
-                }
-            });
-            return columns.filter((element) => {
-                return element != undefined;
-            });
+        style = {
+            textAlign: "center",
         };
 
         render() {
             return (
                 <div>
-                    <Callout
-                        title={
-                            "Try to click on a cell and type in something..."
-                        }
-                        intent="primary"
-                        icon="edit"
+                    <InputGroup
+                        asyncControl={true}
+                        leftIcon="search"
+                        onChange={handleStringChange((value) => {
+                            this.setState({ filterQuery: value });
+                        })}
+                        placeholder="Search any Source or Target of a Node..."
+                        value={this.state.filterQuery}
+                    />
+                    <hr />
+                    <Table
+                        className="argo-table"
+                        numRows={this.filteredTable.length}
+                        defaultRowHeight={30}
+                        renderMode={RenderMode.NONE}
                     >
-                        The corresponding value of a node's attribute can be
-                        modified by clicking the cell and type in
-                    </Callout>
-
-                    <Table className="argo-table" numRows={this.rawGraph.order}>
-                        {/* first column is the Show switch */}
                         <Column
-                            name="Show"
+                            name=""
+                            cellRenderer={this.deleteEdgeRenderer}
                             //@ts-ignore
-                            intent={Intent.SUCCESS}
-                            cellRenderer={this.showRenderer}
+                            style={this.style}
                         />
                         <Column
-                            name="ID"
+                            name="Source"
                             //@ts-ignore
-                            intent={Intent.SUCCESS}
+                            intent={Intent.PRIMARY}
                             cellRenderer={(rowIndex) => {
-                                let id = this.rawTable[rowIndex].key;
-                                return <Cell>{id}</Cell>;
+                                return (
+                                    <Cell>
+                                        {this.filteredTable[rowIndex].source}
+                                    </Cell>
+                                );
                             }}
                         />
-                        {this.renderColumns()}
+                        <Column
+                            name="Target"
+                            //@ts-ignore
+                            intent={Intent.PRIMARY}
+                            cellRenderer={(rowIndex) => {
+                                return (
+                                    <Cell>
+                                        {this.filteredTable[rowIndex].target}
+                                    </Cell>
+                                );
+                            }}
+                        />
                     </Table>
+
+                    <Alert
+                        cancelButtonText="Cancel"
+                        confirmButtonText="Confirm Delete"
+                        icon="trash"
+                        intent={Intent.DANGER}
+                        isOpen={this.state.deleteAlertOpen}
+                        onCancel={() =>
+                            this.setState({ deleteAlertOpen: false })
+                        }
+                        onConfirm={() => {
+                            this.deleteEdge();
+                            this.setState({ deleteAlertOpen: false });
+                        }}
+                    >
+                        <p>
+                            Are you sure you want to delete the edge with ID{" "}
+                            <Code>{this.state.edgeToDelete?.key}</Code> from
+                            Node ID{" "}
+                            <Code>{this.state.edgeToDelete?.source}</Code> to
+                            Node ID{" "}
+                            <Code>{this.state.edgeToDelete?.target}</Code>. This
+                            action cannot be reversed.
+                        </p>
+                    </Alert>
                 </div>
             );
         }
