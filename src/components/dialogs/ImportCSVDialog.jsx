@@ -147,15 +147,6 @@ export default observer(
                                 value={nodeFile.mapping.id}
                                 onSelect={(it) => (nodeFile.mapping.id = it)}
                             />
-                            <br />
-                            Column for Attribute for Cluster:
-                            <SimpleSelect
-                                items={nodeFile.columns}
-                                value={nodeFile.mapping.cluster}
-                                onSelect={(it) =>
-                                    (nodeFile.mapping.cluster = it)
-                                }
-                            />
                         </div>
                     )}
                 </Collapsable>
@@ -304,10 +295,6 @@ export default observer(
                                         })}
                                         intent={Intent.PRIMARY}
                                         onClick={() => {
-                                            // requestCreateNewProject({
-                                            //     name: State.project.newProjectName,
-                                            //     createdDate: new Date().toLocaleString(),
-                                            // });
                                             State.import.isLoading = true;
                                             State.import
                                                 .importGraphFromCSV()
@@ -317,27 +304,8 @@ export default observer(
                                                     );
                                                     State.graph.metadata =
                                                         res.metadata;
-
-                                                    // runInAction(
-                                                    //     "load imported graph",
-                                                    //     () => {
-                                                    //         appState.graph.rawGraph =
-                                                    //             graph.rawGraph;
-                                                    //         appState.graph.metadata =
-                                                    //             graph.metadata;
-                                                    //         appState.graph.setUpFrame();
-                                                    //     }
-                                                    // );
-                                                    // // Reinitialize global configs
-                                                    // appState.graph.nodes =
-                                                    //     appState.graph.initialGlobalConfig.nodes;
-                                                    // appState.graph.overrides = new Map();
-
                                                     State.import.isLoading = false;
                                                     State.import.importCSVDialogOpen = false;
-
-                                                    // // Newly imported graph shouldn't have label showing
-                                                    // appState.graph.frame.turnOffLabelCSSRenderer();
                                                 });
                                         }}
                                         text="Import"

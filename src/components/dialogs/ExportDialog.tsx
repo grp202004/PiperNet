@@ -21,25 +21,29 @@ import { CSVLink } from "react-csv";
 
 export default observer(
     class ExportDialog extends React.Component {
-        constructor(props) {
+        constructor(props: any) {
             super(props);
-            this.state = {
-                ready: true,
-            };
         }
+
+        state = {
+            ready: true,
+        };
 
         computeGEXFFile() {
             return gexf.write(State.graph.rawGraph);
         }
 
         computeNodeFile() {
-            let headers = [];
+            let headers: {
+                label: string;
+                key: string;
+            }[] = [];
             State.graph.metadata.nodeProperties.map((value) => {
                 headers.push({ label: value, key: value });
             });
             headers.push({ label: "_id", key: "_id" });
             let exportData = State.graph.rawGraph.export();
-            let data = [];
+            let data: any[] = [];
             exportData.nodes.forEach((node) => {
                 data.push({
                     _id: node.key,
@@ -50,13 +54,16 @@ export default observer(
         }
 
         computeEdgeFile() {
-            let headers = [
+            let headers: {
+                label: string;
+                key: string;
+            }[] = [
                 { label: "source", key: "source" },
                 { label: "target", key: "target" },
             ];
 
             let exportData = State.graph.rawGraph.export();
-            let data = [];
+            let data: any[] = [];
             exportData.edges.forEach((edge) => {
                 data.push({
                     source: edge.source,
@@ -123,7 +130,7 @@ export default observer(
                                 <ButtonGroup>
                                     <CSVLink
                                         data={this.computeNodeFile().data}
-                                        header={this.computeNodeFile().header}
+                                        headers={this.computeNodeFile().headers}
                                         separator={","}
                                         filename={"Snapshot-Node.csv"}
                                         className="btn btn-primary"
@@ -134,7 +141,7 @@ export default observer(
                                     <Divider />
                                     <CSVLink
                                         data={this.computeEdgeFile().data}
-                                        header={this.computeEdgeFile().header}
+                                        headers={this.computeEdgeFile().headers}
                                         separator={","}
                                         filename={"Snapshot-Edge.csv"}
                                         className="btn btn-primary"

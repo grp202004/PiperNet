@@ -9,7 +9,7 @@
         "@blueprintjs/labs": "^0.16.3",
         "@blueprintjs/popover2": "^0.1.1",
         "@blueprintjs/select": "^3.15.0",
-        "@blueprintjs/table": "^3.8.18",
+        "@blueprintjs/table": "3.5.0",
         "classnames": "^2.2.6",
         "copy-anything": "^2.0.1",
         "csv-parse": "^4.14.2",
@@ -63,6 +63,7 @@
         "@types/jest": "^26.0.20",
         "@types/randomcolor": "^0.5.5",
         "@types/react": "^17.0.0",
+        "@types/react-csv": "^1.1.1",
         "electron": "^11.2.1",
         "electron-packager": "^15.2.0"
     }

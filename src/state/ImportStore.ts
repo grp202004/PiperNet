@@ -47,7 +47,6 @@ export default class ImportStore {
             columns: [],
             mapping: {
                 id: "Unknown",
-                cluster: "Unknown",
             },
             delimiter: ",",
         },
@@ -207,10 +206,9 @@ export default class ImportStore {
         if (config.hasNodeFile) {
             tempNodes = await this.readNodeCSV();
             tempNodes.forEach((node) => {
-                graph.addNode(
-                    node[config.nodeFile.mapping.id].toString(),
-                    node
-                );
+                let nodeId = node[config.nodeFile.mapping.id].toString();
+                delete node[config.nodeFile.mapping.id];
+                graph.addNode(nodeId, node);
             });
         }
 
@@ -240,10 +238,6 @@ export default class ImportStore {
             metadata: {
                 snapshotName: "Untitled",
                 nodeProperties: nodeProperties,
-                clusterProperties: config.hasNodeFile
-                    ? null
-                    : config.nodeFile.mapping.cluster,
-                edgeProperties: ["source_id", "target_id"],
             },
         };
     }
@@ -460,14 +454,8 @@ export default class ImportStore {
                     );
 
                     // if there exists two or more columns in the parsed edge file
-                    if (nodeFileConfig.columns.length >= 2) {
+                    if (nodeFileConfig.columns.length >= 1) {
                         nodeFileConfig.mapping.id = nodeFileConfig.columns[0];
-                        nodeFileConfig.mapping.cluster =
-                            nodeFileConfig.columns[1];
-                        nodeFileConfig.isReady = true;
-                    } else if (nodeFileConfig.columns.length == 1) {
-                        nodeFileConfig.mapping.id = nodeFileConfig.mapping.cluster =
-                            nodeFileConfig.columns[0];
                         nodeFileConfig.isReady = true;
                     } else {
                         Toaster.create({

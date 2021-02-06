@@ -55,6 +55,10 @@ class AppState {
 
 const State = AppState.instance;
 
+// this is for easily debugging in runtime
+//@ts-ignore
+window._state = State;
+
 // extract CSV from selected edge File object and update related fields.
 // will auto run if selectedEdgeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportEdgePreview());
