@@ -16,6 +16,7 @@ export default class PreferencesStore {
     statisticsDialogOpen = false;
     helpDialogOpen = false;
     neighborDialogOpen = false;
+    AddNodeDialogOpen = false;
 
     nodeDataSheetDialogOpen = false;
     edgeDataSheetDialogOpen = false;
