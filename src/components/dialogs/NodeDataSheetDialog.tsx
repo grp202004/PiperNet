@@ -79,8 +79,7 @@ let GraphNodeTable = observer(
             );
         };
 
-        renderCell: ICellRenderer = (rowIndex, columnIndex) => {
-            let attribute = this.nodeProperties[columnIndex - 2];
+        renderCell = (rowIndex: number, attribute: string) => {
             let cellAttributes = this.filteredTable[rowIndex].attributes;
             //@ts-ignore
             let cell = cellAttributes[attribute];
@@ -111,7 +110,15 @@ let GraphNodeTable = observer(
         renderColumns: any = () => {
             const columns = this.nodeProperties.map((it, i) => {
                 if (it != "_options") {
-                    return <Column name={it} cellRenderer={this.renderCell} />;
+                    return (
+                        <Column
+                            name={it}
+                            cellRenderer={(
+                                rowIndex: number,
+                                columnIndex: number
+                            ) => this.renderCell(rowIndex, it)}
+                        />
+                    );
                 }
             });
             return columns.filter((element) => {

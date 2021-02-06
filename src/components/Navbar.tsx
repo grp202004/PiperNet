@@ -1,28 +1,19 @@
 import React from "react";
-import { observer, inject } from "mobx-react";
+import { observer } from "mobx-react";
 import classnames from "classnames";
 import {
     Button,
     Classes,
     ButtonGroup,
-    Intent,
     Position,
-    Tooltip,
     Popover,
     Menu,
     MenuItem,
     MenuDivider,
-    Divider,
 } from "@blueprintjs/core";
 import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
 import State from "../state";
-
-import {
-    GITHUB_URL,
-    SAMPLE_GRAPH_SNAPSHOTS,
-    fetchSampleGraph,
-} from "../constants";
 
 export default observer(
     class Navbar extends React.Component {
@@ -53,9 +44,9 @@ export default observer(
                                     <MenuItem
                                         text="Load Sample"
                                         icon="graph"
-                                        onClick={
-                                            (State.import.importSamplesDialogOpen = true)
-                                        }
+                                        onClick={() => {
+                                            State.import.importSamplesDialogOpen = true;
+                                        }}
                                     >
                                         {/* {SAMPLE_GRAPH_SNAPSHOTS.map(
                                             (sample) => {
@@ -241,7 +232,9 @@ export default observer(
                                     : State.graph.metadata.nodeProperties
                             }
                             value={State.cluster.clusterBy}
-                            onSelect={(it) => (State.cluster.clusterBy = it)}
+                            onSelect={(it: string) =>
+                                (State.cluster.clusterBy = it)
+                            }
                         />
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button
@@ -252,7 +245,7 @@ export default observer(
                             icon="cog"
                             disabled={true}
                             onClick={() => {
-                                State.preferences.dialogOpen = true;
+                                State.preferences.preferenceDialogOpen = true;
                             }}
                         />
                         <Button

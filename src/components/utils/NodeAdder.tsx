@@ -29,7 +29,7 @@ interface Props {
 
 export default observer(
     class NodeAdder extends React.Component<Props, {}> {
-        constructor(props: any) {
+        constructor(props: Props | Readonly<Props>) {
             super(props);
         }
 

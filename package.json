@@ -63,6 +63,7 @@
         "@types/jest": "^26.0.20",
         "@types/randomcolor": "^0.5.5",
         "@types/react": "^17.0.0",
+        "@types/react-csv": "^1.1.1",
         "electron": "^11.2.1",
         "electron-packager": "^15.2.0"
     }
