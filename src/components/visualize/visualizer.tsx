@@ -80,9 +80,16 @@ export default observer(
 
         nodeRightClick = (node: NodeObject, event: MouseEvent) => {
             State.preferences.rightClickPositionX = event.x;
-
             State.preferences.rightClickPositionY = event.y;
+            State.preferences.rightClickBackgroundPanelOpen = false;
             State.preferences.rightClickNodePanelOpen = true;
+        };
+
+        backgroundRightClick = (event: MouseEvent) => {
+            State.preferences.rightClickPositionX = event.x;
+            State.preferences.rightClickPositionY = event.y;
+            State.preferences.rightClickNodePanelOpen = false;
+            State.preferences.rightClickBackgroundPanelOpen = true;
         };
 
         renderGraph = () => {
@@ -99,12 +106,7 @@ export default observer(
                             node.fy = node.y;
                             node.fz = node.z;
                         }}
-                        onBackgroundRightClick={() => {
-                            // this.allAdded = true;
-                            // this.graphRef.current.pauseAnimation();
-                            // this.graphMethods.refresh();
-                            // this.graphDelegate.init();
-                        }}
+                        onBackgroundRightClick={this.backgroundRightClick}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
@@ -115,8 +117,10 @@ export default observer(
                         }
                         onNodeClick={this.nodeSelect}
                         onNodeRightClick={this.nodeRightClick}
-                        onBackgroundClick={() =>
-                            (State.preferences.rightClickNodePanelOpen = false)
+                        onBackgroundClick={() => {
+                            State.preferences.rightClickNodePanelOpen = false;
+                            State.preferences.rightClickBackgroundPanelOpen = false;
+                        }
                         }
                         onNodeHover={this.nodeHover}
                     />

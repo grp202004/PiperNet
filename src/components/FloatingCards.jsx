@@ -12,6 +12,7 @@ import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
+import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
 // import Legends from "./Legends";
 // // import StatusBar from './StatusBar';
 // import SelectionActionPanel from "./panels/SelectionActionPanel";
@@ -134,6 +135,10 @@ export default observer(
                     <SearchPanel />
                     {State.preferences.rightClickNodePanelOpen && (
                         <RightClickNodePanel />
+                    )}
+
+                    {State.preferences.rightClickBackgroundPanelOpen && (
+                        <RightClickBackgroundPanel />
                     )}
 
                     {/* <Legends />

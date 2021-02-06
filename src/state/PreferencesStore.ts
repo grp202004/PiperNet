@@ -5,6 +5,7 @@ export default class PreferencesStore {
         makeAutoObservable(this);
     }
 
+    rightClickBackgroundPanelOpen = false;
     rightClickNodePanelOpen = false;
     rightClickPositionX = 30;
     rightClickPositionY = 30;
