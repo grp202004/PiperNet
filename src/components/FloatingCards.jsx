@@ -3,8 +3,6 @@ import { Classes, Tab, Tabs, Button } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
-import SimpleSelect from "./utils/SimpleSelect";
-// import { addNode } from "../ipc/client";
 import NodesPanel from "./panels/NodesPanel";
 import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
@@ -12,6 +10,7 @@ import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
+import AddEdgeInteractionPanel from "./panels/AddEdgeInteractionPanel";
 // import Legends from "./Legends";
 // // import StatusBar from './StatusBar';
 // import SelectionActionPanel from "./panels/SelectionActionPanel";
@@ -135,6 +134,10 @@ export default observer(
                     {State.preferences.rightClickNodePanelOpen && (
                         <RightClickNodePanel />
                     )}
+
+                    <AddEdgeInteractionPanel
+                        onNode={State.graph.selectedNode}
+                    />
 
                     {/* <Legends />
           <StatusBar /> */}

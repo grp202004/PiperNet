@@ -7,7 +7,6 @@ import {
     action,
     makeAutoObservable,
 } from "mobx";
-import { Menu, MenuItem } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
@@ -19,16 +18,10 @@ export default observer(
     class ThreeJSVis extends React.Component {
         constructor(props: any) {
             super(props);
-            makeObservable(this, {
-                graphRef: observable,
-                graphMethods: computed,
-                graphDelegate: observable,
-                nodeHover: action,
-                selectedNodes: observable.ref,
-            });
         }
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
+
         get graphMethods(): ForceGraphMethods {
             return this.graphRef.current;
         }
@@ -57,6 +50,7 @@ export default observer(
             }
         };
 
+        // ref of State.graph.selectedNodes
         selectedNodes: string[] = State.graph.selectedNodes;
 
         nodeSelect = (node: NodeObject, event: MouseEvent) => {
@@ -79,6 +73,7 @@ export default observer(
         };
 
         nodeRightClick = (node: NodeObject, event: MouseEvent) => {
+            State.graph.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
 
             State.preferences.rightClickPositionY = event.y;
@@ -99,11 +94,63 @@ export default observer(
                             node.fy = node.y;
                             node.fz = node.z;
                         }}
-                        onBackgroundRightClick={() => {
-                            // this.allAdded = true;
-                            // this.graphRef.current.pauseAnimation();
-                            // this.graphMethods.refresh();
-                            // this.graphDelegate.init();
+                        linkWidth={(link) => {
+                            if (State.graphDelegate.highlightLink == null) {
+                                return 1;
+                            }
+                            let sourceId = (link.source as NodeObject)
+                                .id as string;
+                            let targetId = (link.target as NodeObject)
+                                .id as string;
+
+                            if (
+                                (sourceId ==
+                                    (State.graphDelegate.highlightLink
+                                        ?.source as string) &&
+                                    targetId ==
+                                        (State.graphDelegate.highlightLink
+                                            ?.target as string)) ||
+                                (sourceId ==
+                                    (State.graphDelegate.highlightLink
+                                        ?.target as string) &&
+                                    targetId ==
+                                        (State.graphDelegate.highlightLink
+                                            ?.source as string))
+                            ) {
+                                console.log(link);
+                                return 4;
+                            } else {
+                                return 1;
+                            }
+                        }}
+                        linkColor={(link) => {
+                            if (State.graphDelegate.highlightLink == null) {
+                                return "white";
+                            }
+                            let sourceId = (link.source as NodeObject)
+                                .id as string;
+                            let targetId = (link.target as NodeObject)
+                                .id as string;
+
+                            if (
+                                (sourceId ==
+                                    (State.graphDelegate.highlightLink
+                                        ?.source as string) &&
+                                    targetId ==
+                                        (State.graphDelegate.highlightLink
+                                            ?.target as string)) ||
+                                (sourceId ==
+                                    (State.graphDelegate.highlightLink
+                                        ?.target as string) &&
+                                    targetId ==
+                                        (State.graphDelegate.highlightLink
+                                            ?.source as string))
+                            ) {
+                                console.log(link);
+                                return "blue";
+                            } else {
+                                return "white";
+                            }
                         }}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
