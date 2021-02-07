@@ -4,17 +4,6 @@ import { CustomNodeObject, CustomLinkObject } from "./GraphDelegate";
 import { Attributes } from "graphology-types";
 
 /**
- * the hidden options inside a node
- * will be mounted as a attribute named as [_options] inside every node
- *
- * @export
- * @interface IHiddenOptions
- */
-export interface IHiddenOptions {
-    show: boolean;
-}
-
-/**
  * the class to store a raw graph as well as the related information
  
  * @export
@@ -32,7 +21,6 @@ export default class GraphStore {
      * @see graphology
      *
      * @type {Graph}
-     * @memberof GraphStore
      */
     rawGraph: Graph = new Graph({
         allowSelfLoops: true,
@@ -40,22 +28,36 @@ export default class GraphStore {
         type: "undirected",
     });
 
-    decorateRawNode(node: string, attributes: Attributes) {
-        // add _options and _visualize to attributes
-        let options: IHiddenOptions = {
-            show: true,
-        };
-        attributes._options = options;
+    /**
+     * should be called when individual nodes are added to the graph.
 
+     * add the CustomNodeObject to node attributes stored in the data structure
+     * @see CustomNodeObject
+     * name as @code _visualize in attributes
+     *
+     * @param {string} node
+     * @param {Attributes} attributes
+     */
+    decorateRawNode(node: string, attributes: Attributes) {
         let visualize: CustomNodeObject = {
             id: node,
-            name: node,
             val: 1, // to be changed, to represent the size of the node
             isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
         };
         attributes._visualize = visualize;
     }
 
+    /**
+     * should be called when individual edges are added to the graph.
+     *
+     * add the CustomLinkObject to node attributes stored in the data structure
+     * @see CustomLinkObject
+     * name as @code _visualize in attributes
+     *
+     * @param {string} source
+     * @param {string} target
+     * @param {Attributes} attributes
+     */
     decorateRawEdge(source: string, target: string, attributes: Attributes) {
         let visualize: CustomLinkObject = {
             source: source,
@@ -67,15 +69,12 @@ export default class GraphStore {
 
     /**
      * should be called on every graph import
-     * add the _options and _visualize to every nodes inside the specified graph
-     * as well as the _visualize to every links inside the specified graph
+     * add the the _visualize to every links inside the specified graph
      *
-     * the _options is for the visualizing configs: such as the show or hide of a node
      * the _visualize is for storing the object to be send to front-end to render the graph
      *
      * @param {Graph} _rawGraph
      * @return {*}  {Graph}
-     * @memberof GraphStore
      */
     decorateRawGraph(_rawGraph: Graph): Graph {
         _rawGraph.forEachNode((node, attributes) =>
@@ -89,64 +88,32 @@ export default class GraphStore {
     }
 
     /**
-     * hide the node specified by node id
-     *
-     * @param {string} key
-     * @memberof GraphStore
-     */
-    public hideNode(key: string) {
-        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
-            key,
-            "_options"
-        );
-        let newOptions: IHiddenOptions = {
-            ...originalOptions,
-            show: false,
-        };
-        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
-    }
-
-    /**
-     * hide the node specified by node id
-     *
-     * @param {string} key
-     * @memberof GraphStore
-     */
-    public showNode(key: string) {
-        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
-            key,
-            "_options"
-        );
-        let newOptions: IHiddenOptions = {
-            ...originalOptions,
-            show: true,
-        };
-        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
-    }
-
-    /**
      * the currently selected node ids
      * the singleNodeDetailPanel will render and refresh if this changes
      *
      * @type {string[]}
-     * @memberof GraphStore
      */
     selectedNodes: string[] = [];
+
+    /**
+     * the currently selected node id
+     *
+     * @type {string}
+     */
+    selectedNode: string = "";
 
     /**
      * the currently hovered node id
      * the multiNodeDetailPanel will render and refresh if this changes
      *
-     * @memberof GraphStore
+     * @type {string}
      */
-
     currentlyHoveredId: string = "undefined";
 
     /**
      * if currently there is a graph in the dataset
      *
      * @readonly
-     * @memberof GraphStore
      */
     get hasGraph() {
         return this.rawGraph.order && this.rawGraph.size != 0;
@@ -156,7 +123,6 @@ export default class GraphStore {
      * the metadata related to the raw graph
      * should be updated if a new graph is imported
      *
-     * @memberof GraphStore
      */
     metadata = {
         snapshotName: String,

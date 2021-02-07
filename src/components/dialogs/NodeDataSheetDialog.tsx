@@ -61,24 +61,6 @@ let GraphNodeTable = observer(
 
         nodeProperties = State.graph.metadata.nodeProperties;
 
-        showRenderer: ICellRenderer = (rowIndex) => {
-            let node = this.filteredTable[rowIndex];
-
-            return (
-                <Cell>
-                    <Switch
-                        checked={node.attributes?._options.show}
-                        onChange={() => {
-                            node.attributes?._options.show
-                                ? State.graph.hideNode(node.key)
-                                : State.graph.showNode(node.key);
-                            this.forceUpdate();
-                        }}
-                    />
-                </Cell>
-            );
-        };
-
         renderCell = (rowIndex: number, attribute: string) => {
             let cellAttributes = this.filteredTable[rowIndex].attributes;
             //@ts-ignore
@@ -267,14 +249,6 @@ let GraphNodeTable = observer(
                             cellRenderer={this.deleteNodeRenderer}
                             //@ts-ignore
                             style={this.style}
-                        />
-                        <Column
-                            name="Show"
-                            //@ts-ignore
-                            intent={Intent.SUCCESS}
-                            //@ts-ignore
-                            style={this.style}
-                            cellRenderer={this.showRenderer}
                         />
                         <Column
                             name="ID"

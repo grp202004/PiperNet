@@ -1,12 +1,4 @@
 import React from "react";
-import {
-    observable,
-    makeObservable,
-    computed,
-    autorun,
-    action,
-    makeAutoObservable,
-} from "mobx";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
@@ -95,63 +87,30 @@ export default observer(
                             node.fz = node.z;
                         }}
                         linkWidth={(link) => {
-                            if (State.graphDelegate.highlightLink == null) {
-                                return 1;
-                            }
-                            let sourceId = (link.source as NodeObject)
-                                .id as string;
-                            let targetId = (link.target as NodeObject)
-                                .id as string;
-
-                            if (
-                                (sourceId ==
-                                    (State.graphDelegate.highlightLink
-                                        ?.source as string) &&
-                                    targetId ==
-                                        (State.graphDelegate.highlightLink
-                                            ?.target as string)) ||
-                                (sourceId ==
-                                    (State.graphDelegate.highlightLink
-                                        ?.target as string) &&
-                                    targetId ==
-                                        (State.graphDelegate.highlightLink
-                                            ?.source as string))
-                            ) {
-                                console.log(link);
-                                return 4;
-                            } else {
-                                return 1;
-                            }
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                4,
+                                1,
+                                1
+                            );
                         }}
                         linkColor={(link) => {
-                            if (State.graphDelegate.highlightLink == null) {
-                                return "white";
-                            }
-                            let sourceId = (link.source as NodeObject)
-                                .id as string;
-                            let targetId = (link.target as NodeObject)
-                                .id as string;
-
-                            if (
-                                (sourceId ==
-                                    (State.graphDelegate.highlightLink
-                                        ?.source as string) &&
-                                    targetId ==
-                                        (State.graphDelegate.highlightLink
-                                            ?.target as string)) ||
-                                (sourceId ==
-                                    (State.graphDelegate.highlightLink
-                                        ?.target as string) &&
-                                    targetId ==
-                                        (State.graphDelegate.highlightLink
-                                            ?.source as string))
-                            ) {
-                                console.log(link);
-                                return "blue";
-                            } else {
-                                return "white";
-                            }
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                "blue",
+                                "white",
+                                "white"
+                            );
                         }}
+                        linkDirectionalParticles={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                4,
+                                0,
+                                0
+                            );
+                        }}
+                        linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }

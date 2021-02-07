@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import { copy } from "copy-anything";
 import State from ".";
 import {
     ForceGraphMethods,
@@ -10,9 +9,9 @@ import {
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import * as THREE from "three";
+import { copy } from "copy-anything";
 
 export interface CustomNodeObject extends NodeObject {
-    name?: string;
     val?: number;
     isClusterNode?: boolean;
 }
@@ -26,29 +25,55 @@ export default class GraphDelegate {
         makeAutoObservable(this);
     }
 
+    /**
+     * assign the force-graph methods to this class
+     * should be called as long as the visualizer react component is mounted
+     *
+     * @param {ForceGraphMethods} _graphDelegateMethods
+     * @memberof GraphDelegate
+     */
     mountDelegateMethods(_graphDelegateMethods: ForceGraphMethods) {
         this.graphDelegateMethods = _graphDelegateMethods;
         this.threeScene = this.graphDelegateMethods.scene();
     }
 
-    private graphDelegateMethods!: ForceGraphMethods;
+    /**
+     * the ForceGraphMethods exposed by the visualization force-graph
+     *
+     * @see ForceGraphMethods
+     *
+     * @type {ForceGraphMethods}
+     * @memberof GraphDelegate
+     */
+    graphDelegateMethods!: ForceGraphMethods;
 
-    private threeScene!: THREE.Scene;
+    /**
+     * the THREE.js WebGL Scene of the visualization
+     *
+     * @type {THREE.Scene}
+     * @memberof GraphDelegate
+     */
+    threeScene!: THREE.Scene;
 
+    /**
+     * compute the delegate graph that will be used by the ForceGraph3D
+     * will add invisible cluster nodes and edges to balance the clustered graph and adjust force
+     * the NodeObject and LinkObject inside attributes (named _visualize) will be used.
+     *
+     * nodes and edges with the show=false will be ignored in this case
+     *
+     * @readonly
+     * @memberof GraphDelegate
+     */
     get visualizationGraph() {
-        let newGraph = State.graph.decorateRawGraph(
-            this.addInvisibleClusterNode(this.rawGraph)
-        );
-        newGraph.forEachNode((node, attributes) => {
-            if (node.includes("_CLUSTER_")) {
-                attributes._visualize.isClusterNode = true;
-            }
-        });
-        newGraph.forEachEdge((edge, attributes, source, target) => {
-            if (source.includes("_CLUSTER_") || target.includes("_CLUSTER_")) {
-                attributes._visualize.isClusterLink = true;
-            }
-        });
+        let newGraph: Graph;
+        if (State.cluster.clusterBy === "None") {
+            newGraph = State.graph.rawGraph;
+        } else {
+            newGraph = State.graph.decorateRawGraph(
+                this.addInvisibleClusterNode(State.graph.rawGraph)
+            );
+        }
         let tempGraph = {
             nodes: [] as CustomNodeObject[],
             links: [] as LinkObject[],
@@ -63,7 +88,16 @@ export default class GraphDelegate {
         return tempGraph;
     }
 
-    addInvisibleClusterNode(oldGraph: Graph): Graph {
+    /**
+     * return a new graph that contains the invisible clusters, formed as nodes
+     * as well as the edges that connected to the cluster node to simulate the force within the same cluster
+     * the new graph is a deep copy of the old node, so no worries of the original graph DS
+     *
+     * @private
+     * @param {Graph} oldGraph
+     * @returns {*}  {Graph}
+     */
+    private addInvisibleClusterNode(oldGraph: Graph): Graph {
         let graphCopy = copy(oldGraph);
         let names = [
             "_CLUSTER_1_",
@@ -78,39 +112,70 @@ export default class GraphDelegate {
             "_CLUSTER_10_",
         ];
         for (let index = 0; index < names.length; index++) {
-            State.cluster.getAttributeValues.forEach((attribute) => {
-                if (attribute === "undefined") return;
-                let clusterID = names[index] + attribute;
-                graphCopy.addNode(clusterID);
-                State.cluster.attributeKeys.get(attribute)?.forEach((value) => {
-                    let visualize: CustomLinkObject = {
-                        isClusterLink: true,
+            State.cluster.getAttributeValues.forEach(
+                (attribute: string | number) => {
+                    // if a node does not belong to any cluster, a undefined will be formed with no cluster to generate
+                    if (attribute === "undefined") return;
+
+                    let clusterID = names[index] + attribute;
+                    let visualize: CustomNodeObject = {
+                        isClusterNode: true,
                     };
-                    graphCopy.addEdge(clusterID, value, {
-                        _visualize: visualize,
-                    });
-                });
-            });
+                    graphCopy.addNode(clusterID, { _visualize: visualize });
+
+                    // add edges to simulate the force of the same cluster
+                    State.cluster.attributeKeys
+                        .get(attribute)
+                        ?.forEach((target) => {
+                            let visualize: CustomLinkObject = {
+                                isClusterLink: true,
+                            };
+                            graphCopy.addEdge(clusterID, target, {
+                                _visualize: visualize,
+                            });
+                        });
+                }
+            );
         }
 
         return graphCopy;
     }
 
+    /**
+     * determine whether this Node is the cluster delegate node
+     *
+     * @param {CustomNodeObject} nodeObject
+     */
     nodeVisibility = (nodeObject: CustomNodeObject) => {
         return nodeObject.isClusterNode ? false : true;
     };
 
+    /**
+     * determine whether this edge is the cluster delegate edge
+     *
+     * @param {CustomLinkObject} nodeObject
+     */
     linkVisibility = (nodeObject: CustomLinkObject) => {
         return nodeObject.isClusterLink ? false : true;
     };
 
-    get rawGraph(): Graph {
-        return State.graph.rawGraph;
-    }
-
+    /**
+     * all the clusters will form a 3D object to be imported into Scene
+     * and this indicates the formed 3d object in the last refresh
+     *
+     * @type {THREE.Object3D}
+     */
     lastObject3D!: THREE.Object3D;
 
+    /**
+     * add the computed clusters 3d object to the Scene
+     * always keep the Scene with only 1 cluster object by first deleting the last one then add
+     *
+     */
     clusterDelegation() {
+        if (State.cluster.clusterBy === "None") {
+            return;
+        }
         this.threeScene.remove(this.lastObject3D);
         this.lastObject3D = new THREE.Object3D();
         this.convexHullObjects.forEach((value, key) => {
@@ -119,7 +184,12 @@ export default class GraphDelegate {
         this.threeScene.add(this.lastObject3D);
     }
 
-    // explicitly called when all node's position have been added to the map
+    /**
+     * the map between the value of the cluster and the 3d object that this cluster created
+     *
+     * @readonly
+     * @type {(Map<string | number, THREE.Object3D>)}
+     */
     get convexHullObjects(): Map<string | number, THREE.Object3D> {
         let newMap = new Map<string | number, THREE.Object3D>();
         State.cluster.attributePoints.forEach((value, key) => {
@@ -158,11 +228,18 @@ export default class GraphDelegate {
 
     ////
 
-    cameraFocusOn(nodeId: string) {
+    /**
+     * this will re-position the camera to focus on the specified node
+     * if distance not specified, a default of 40 will be used
+     *
+     * @param {string} nodeId the node to be focused
+     * @param {number} [distance=40] the ending distance between the camera and the node
+     * @returns {*}
+     */
+    cameraFocusOn(nodeId: string, distance: number = 40) {
         let node = State.graph.rawGraph.getNodeAttribute(nodeId, "_visualize");
         if (!(node.x && node.y && node.z)) return;
         // Aim at node from outside it
-        const distance = 40;
         const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
 
         this.graphDelegateMethods.cameraPosition(
@@ -174,5 +251,35 @@ export default class GraphDelegate {
             { x: node.x, y: node.y, z: node.z }, // lookAt ({ x, y, z })
             3000 // ms transition duration
         );
+    }
+
+    /**
+     * which link to be highlighted
+     *
+     * @type {(LinkObject | null)}
+     */
+    highlightLink: LinkObject | null = null;
+
+    ifHighlightLink<T>(link: LinkObject, _if: T, _else: T, _default: T): T {
+        if (State.graphDelegate.highlightLink == null) {
+            return _default;
+        }
+        let sourceId = (link.source as NodeObject).id as string;
+        let targetId = (link.target as NodeObject).id as string;
+
+        if (
+            (sourceId ==
+                (State.graphDelegate.highlightLink?.source as string) &&
+                targetId ==
+                    (State.graphDelegate.highlightLink?.target as string)) ||
+            (sourceId ==
+                (State.graphDelegate.highlightLink?.target as string) &&
+                targetId ==
+                    (State.graphDelegate.highlightLink?.source as string))
+        ) {
+            return _if;
+        } else {
+            return _else;
+        }
     }
 }
