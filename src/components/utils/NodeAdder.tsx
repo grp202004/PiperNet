@@ -132,6 +132,9 @@ export default observer(
                                 this.state.attributes
                             );
                             State.preferences.AddNodeDialogOpen = false;
+                            // State.preferences.rightClickBackgroundPanelOpen = false;
+                            // this.forceUpdate();
+                            // State.graphDelegate.cameraFocusOn(this.state.newNodeId);
                         }}
                         disabled={!this.canImport}
                     >
