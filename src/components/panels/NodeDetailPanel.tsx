@@ -21,20 +21,27 @@ export default observer(
                 State.graph.currentlyHoveredId,
                 State.graph.metadata.nodeProperties[rowIndex]
             );
-            // return a Eidtable Cell where user can edit the value of certain property;
-            return <EditableCell
-                        value = {data}
-                        onChange={(newVal) =>
-                            State.graph.rawGraph.setNodeAttribute(State.graph.currentlyHoveredId,
-                                State.graph.metadata.nodeProperties[rowIndex],
-                                newVal)
-                        }
-                        onConfirm={(newVal) =>
-                            State.graph.rawGraph.setNodeAttribute(State.graph.currentlyHoveredId,
-                                State.graph.metadata.nodeProperties[rowIndex],
-                                newVal)
-                        }
-                        />
+            // return a Editable Cell where user can edit the value of certain property;
+            return (
+                <EditableCell
+                    value={data}
+                    onChange={(newVal) =>
+                        State.graph.rawGraph.setNodeAttribute(
+                            State.graph.currentlyHoveredId,
+                            State.graph.metadata.nodeProperties[rowIndex],
+                            newVal
+                        )
+                    }
+                    onConfirm={(newVal) =>
+                        State.graph.rawGraph.setNodeAttribute(
+                            State.graph.currentlyHoveredId,
+                            State.graph.metadata.nodeProperties[rowIndex],
+                            newVal
+                        )
+                    }
+                    tooltip={data}
+                />
+            );
         };
 
         formatLongFloat = (nodeAttributeValue: any) => {

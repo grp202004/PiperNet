@@ -56,15 +56,15 @@ export default observer(
                     <Button icon="tick" intent="success" minimal={true} />
                 </Tooltip2>
             ) : (
-                <Tooltip2
-                    content={
-                        "This Node Id is currently in use by other nodes, try with another one instead"
-                    }
-                    intent="warning"
-                >
-                    <Button icon="cross" intent="warning" minimal={true} />
-                </Tooltip2>
-            );
+                    <Tooltip2
+                        content={
+                            "This Node Id is currently in use by other nodes, try with another one instead"
+                        }
+                        intent="warning"
+                    >
+                        <Button icon="cross" intent="warning" minimal={true} />
+                    </Tooltip2>
+                );
         };
 
         renderAttributesForm = (attributes: string[]) => {
@@ -131,6 +131,10 @@ export default observer(
                                 this.state.newNodeId,
                                 this.state.attributes
                             );
+                            State.preferences.AddNodeDialogOpen = false;
+                            // State.preferences.rightClickBackgroundPanelOpen = false;
+                            // this.forceUpdate();
+                            // State.graphDelegate.cameraFocusOn(this.state.newNodeId);
                         }}
                         disabled={!this.canImport}
                     >

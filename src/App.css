@@ -199,6 +199,12 @@ html {
     position: absolute;
 }
 
+.right-bottom-overlay-card {
+    right: 2em;
+    bottom: 2em;
+    position: absolute;
+}
+
 .minimal-navbar-right {
     position: absolute;
     top: 0px;

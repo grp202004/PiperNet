@@ -3,8 +3,6 @@ import { Classes, Tab, Tabs, Button } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
-import SimpleSelect from "./utils/SimpleSelect";
-// import { addNode } from "../ipc/client";
 import NodesPanel from "./panels/NodesPanel";
 import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
@@ -12,11 +10,8 @@ import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
-// import Legends from "./Legends";
-// // import StatusBar from './StatusBar';
-// import SelectionActionPanel from "./panels/SelectionActionPanel";
-
-// TODO: migrate to simple select
+import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
+import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 
 let RenderOptionsCard = observer(
     class RenderOptionsCard extends React.Component {
@@ -136,11 +131,14 @@ export default observer(
                         <RightClickNodePanel />
                     )}
 
-                    {/* <Legends />
-          <StatusBar /> */}
-                    {/* {// This menu only shows when there are nodes selected
-            State.graph.selectedNodes.length > 0 && !State.preferences.isNavbarInMinimalMode && <SelectionActionPanel />
-          } */}
+                    {State.preferences.rightClickBackgroundPanelOpen && (
+                        <RightClickBackgroundPanel />
+                    )}
+                    {State.preferences.deleteEdgePanelOpen && (
+                        <DeleteEdgeInteractionPanel
+                            onNode={State.graph.selectedNode}
+                        />
+                    )}
                 </div>
             );
         }

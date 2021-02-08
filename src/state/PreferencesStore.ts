@@ -5,9 +5,12 @@ export default class PreferencesStore {
         makeAutoObservable(this);
     }
 
+    rightClickBackgroundPanelOpen = false;
     rightClickNodePanelOpen = false;
     rightClickPositionX = 30;
     rightClickPositionY = 30;
+
+    deleteEdgePanelOpen = false;
 
     preferenceDialogOpen = false;
 
@@ -16,6 +19,7 @@ export default class PreferencesStore {
     statisticsDialogOpen = false;
     helpDialogOpen = false;
     neighborDialogOpen = false;
+    AddNodeDialogOpen = false;
 
     nodeDataSheetDialogOpen = false;
     edgeDataSheetDialogOpen = false;
