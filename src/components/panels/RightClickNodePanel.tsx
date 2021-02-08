@@ -37,6 +37,7 @@ export default observer(
                         text="Delete Edge"
                         onClick={() => {
                             State.preferences.deleteEdgePanelOpen = true;
+                            State.preferences.rightClickNodePanelOpen = false;
                         }}
                     />
                 </Menu>

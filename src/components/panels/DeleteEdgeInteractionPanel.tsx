@@ -143,9 +143,11 @@ export default observer(
                     <Card className={classnames("node-details-table")}>
                         <Button
                             icon="cross"
-                            onClick={() =>
-                                (State.preferences.deleteEdgePanelOpen = false)
-                            }
+                            onClick={() => {
+                                State.preferences.deleteEdgePanelOpen = false;
+                                State.graphDelegate.highlightLink = null;
+                                State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+                            }}
                         >
                             Close
                         </Button>

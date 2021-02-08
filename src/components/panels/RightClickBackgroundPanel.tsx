@@ -29,9 +29,15 @@ export default observer(
                     )}
                     style={this.stylePosition}
                 >
-                    <MenuItem icon="new-object" text="Add Node" onClick={() => { State.preferences.AddNodeDialogOpen = true }} />
+                    <MenuItem
+                        icon="new-object"
+                        text="Add Node"
+                        onClick={() => {
+                            State.preferences.AddNodeDialogOpen = true;
+                            State.preferences.rightClickBackgroundPanelOpen = false;
+                        }}
+                    />
                     <MenuDivider />
-
                 </Menu>
             );
         }

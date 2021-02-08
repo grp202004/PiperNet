@@ -28,10 +28,10 @@ export default class Dialogs extends React.Component {
                 <HelpDialog />
                 <NeighborDialog />\
                 */}
+                <AddNodeDialog />
                 <NodeDataSheetDialog />
                 <EdgeDataSheetDialog />
                 <ExportDialog />
-                <AddNodeDialog />
             </div>
         );
     }
