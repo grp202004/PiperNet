@@ -6,7 +6,7 @@ import State from "../../state";
 import { computed, makeObservable } from "mobx";
 
 export default observer(
-    class RightClickNodePanel extends React.Component {
+    class RightClickBackgroundPanel extends React.Component {
         constructor(props: any) {
             super(props);
             makeObservable(this, {
@@ -29,17 +29,15 @@ export default observer(
                     )}
                     style={this.stylePosition}
                 >
-                    <MenuItem icon="graph-remove" text="Delete Node" />
-                    <MenuDivider />
-                    <MenuItem icon="new-link" text="Add Edge" />
                     <MenuItem
-                        icon="cross"
-                        text="Delete Edge"
+                        icon="new-object"
+                        text="Add Node"
                         onClick={() => {
-                            State.preferences.deleteEdgePanelOpen = true;
-                            State.preferences.rightClickNodePanelOpen = false;
+                            State.preferences.AddNodeDialogOpen = true;
+                            State.preferences.rightClickBackgroundPanelOpen = false;
                         }}
                     />
+                    <MenuDivider />
                 </Menu>
             );
         }

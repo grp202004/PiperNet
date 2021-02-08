@@ -29,7 +29,6 @@ import {
     stringifyNodeDetail,
 } from "../utils/InputFormUtils";
 import { Attributes, SerializedNode } from "graphology-types";
-import NodeAdder from "../utils/NodeAdder";
 
 let GraphNodeTable = observer(
     class GraphNodeTable extends React.Component {
@@ -106,38 +105,6 @@ let GraphNodeTable = observer(
                 id,
                 attribute,
                 parseNumberOrString(value)
-            );
-        };
-
-        addNodeDialog = () => {
-            return (
-                <Dialog
-                    isOpen={this.state.addNodeDialogOpen}
-                    icon="new-object"
-                    onClose={() => this.setState({ addNodeDialogOpen: false })}
-                    title="Add Node"
-                >
-                    <div className={Classes.DIALOG_BODY}>
-                        <p>
-                            <strong>
-                                You can only add node with unique node id to the
-                                graph dataset.
-                            </strong>
-                        </p>
-                        <p>
-                            A <em>UNIQUE</em> node means there should only exist
-                            one node that has the respective node id.
-                        </p>
-                        <Tag>New edges are added to the end of the table</Tag>
-                        <hr />
-                        <NodeAdder
-                            onAdded={() => {
-                                this.setState({ addNodeDialogOpen: false });
-                                this.forceUpdate();
-                            }}
-                        />
-                    </div>
-                </Dialog>
             );
         };
 
@@ -219,9 +186,9 @@ let GraphNodeTable = observer(
                             text="Refresh"
                         />
                         <Button
-                            onClick={() =>
-                                this.setState({ addNodeDialogOpen: true })
-                            }
+                            onClick={() => {
+                                State.preferences.AddNodeDialogOpen = true;
+                            }}
                             icon="new-object"
                             intent="primary"
                             text="Add Node"
@@ -263,7 +230,6 @@ let GraphNodeTable = observer(
                         {this.renderColumns()}
                     </Table>
                     {this.deleteNodeAlert()}
-                    {this.addNodeDialog()}
                 </div>
             );
         }

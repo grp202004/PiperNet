@@ -10,6 +10,7 @@ import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
+import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 
 let RenderOptionsCard = observer(
@@ -130,17 +131,14 @@ export default observer(
                         <RightClickNodePanel />
                     )}
 
+                    {State.preferences.rightClickBackgroundPanelOpen && (
+                        <RightClickBackgroundPanel />
+                    )}
                     {State.preferences.deleteEdgePanelOpen && (
                         <DeleteEdgeInteractionPanel
                             onNode={State.graph.selectedNode}
                         />
                     )}
-
-                    {/* <Legends />
-          <StatusBar /> */}
-                    {/* {// This menu only shows when there are nodes selected
-            State.graph.selectedNodes.length > 0 && !State.preferences.isNavbarInMinimalMode && <SelectionActionPanel />
-          } */}
                 </div>
             );
         }
