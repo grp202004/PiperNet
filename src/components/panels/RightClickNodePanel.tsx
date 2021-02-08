@@ -20,6 +20,11 @@ export default observer(
             };
         }
 
+        node_delete = () => {
+            State.graph.rawGraph.dropNode(State.graph.currentlyHoveredId);
+            this.setState({rawGraph:State.graph.rawGraph})
+        }
+
         render() {
             return (
                 <Menu
@@ -29,7 +34,9 @@ export default observer(
                     )}
                     style={this.stylePosition}
                 >
-                    <MenuItem icon="graph-remove" text="Delete Node" />
+                    <MenuItem icon="graph-remove" text="Delete Node"
+                        onClick = {this.node_delete}
+                    />
                     <MenuDivider />
                     <MenuItem icon="new-link" text="Add Edge" />
                     <MenuItem icon="cross" text="Delete Edge" />
