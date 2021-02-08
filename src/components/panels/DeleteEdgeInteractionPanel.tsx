@@ -8,6 +8,7 @@ import {
     Alert,
     Code,
     Intent,
+    Card,
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
@@ -31,7 +32,7 @@ interface Props {
 }
 
 export default observer(
-    class AddEdgeInteractionPanel extends React.Component<Props, {}> {
+    class DeleteEdgeInteractionPanel extends React.Component<Props, {}> {
         constructor(props: any) {
             super(props);
         }
@@ -139,12 +140,15 @@ export default observer(
                         "transparent-frame"
                     )}
                 >
-                    <div
-                        className={classnames(
-                            Classes.CARD,
-                            "node-details-table"
-                        )}
-                    >
+                    <Card className={classnames("node-details-table")}>
+                        <Button
+                            icon="cross"
+                            onClick={() =>
+                                (State.preferences.deleteEdgePanelOpen = false)
+                            }
+                        >
+                            Close
+                        </Button>
                         <Table
                             numRows={this.neighbors.length}
                             defaultRowHeight={30}
@@ -164,7 +168,7 @@ export default observer(
                             />
                         </Table>
                         {this.deleteEdgeAlert()}
-                    </div>
+                    </Card>
                 </div>
             );
         }

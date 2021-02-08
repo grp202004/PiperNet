@@ -9,6 +9,8 @@ export default class PreferencesStore {
     rightClickPositionX = 30;
     rightClickPositionY = 30;
 
+    deleteEdgePanelOpen = false;
+
     preferenceDialogOpen = false;
 
     darkMode = true;

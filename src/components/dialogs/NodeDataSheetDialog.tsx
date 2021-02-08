@@ -61,34 +61,6 @@ let GraphNodeTable = observer(
 
         nodeProperties = State.graph.metadata.nodeProperties;
 
-        renderCell = (rowIndex: number, attribute: string) => {
-            let cellAttributes = this.filteredTable[rowIndex].attributes;
-            //@ts-ignore
-            let cell = cellAttributes[attribute];
-
-            return (
-                <EditableCell
-                    value={cell}
-                    onChange={(newVal) =>
-                        this.setValue(newVal, rowIndex, attribute)
-                    }
-                    onConfirm={(newVal) =>
-                        this.setValue(newVal, rowIndex, attribute)
-                    }
-                />
-            );
-        };
-
-        // if the input is a number in string, it will convert the string into number to store
-        setValue = (value: string, rowIndex: number, attribute: string) => {
-            let id = this.filteredTable[rowIndex].key;
-            State.graph.rawGraph.setNodeAttribute(
-                id,
-                attribute,
-                parseNumberOrString(value)
-            );
-        };
-
         renderColumns: any = () => {
             const columns = this.nodeProperties.map((it, i) => {
                 if (it != "_options") {
@@ -106,6 +78,35 @@ let GraphNodeTable = observer(
             return columns.filter((element) => {
                 return element != undefined;
             });
+        };
+
+        renderCell = (rowIndex: number, attribute: string) => {
+            let cellAttributes = this.filteredTable[rowIndex].attributes;
+            //@ts-ignore
+            let cell = cellAttributes[attribute];
+
+            return (
+                <EditableCell
+                    value={cell}
+                    onChange={(newVal) =>
+                        this.setValue(newVal, rowIndex, attribute)
+                    }
+                    onConfirm={(newVal) =>
+                        this.setValue(newVal, rowIndex, attribute)
+                    }
+                    tooltip={cell}
+                />
+            );
+        };
+
+        // if the input is a number in string, it will convert the string into number to store
+        setValue = (value: string, rowIndex: number, attribute: string) => {
+            let id = this.filteredTable[rowIndex].key;
+            State.graph.rawGraph.setNodeAttribute(
+                id,
+                attribute,
+                parseNumberOrString(value)
+            );
         };
 
         addNodeDialog = () => {

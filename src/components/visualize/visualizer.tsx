@@ -89,15 +89,15 @@ export default observer(
                         linkWidth={(link) => {
                             return State.graphDelegate.ifHighlightLink(
                                 link,
-                                4,
-                                1,
+                                2,
+                                0.1,
                                 1
                             );
                         }}
                         linkColor={(link) => {
                             return State.graphDelegate.ifHighlightLink(
                                 link,
-                                "blue",
+                                "orangered",
                                 "white",
                                 "white"
                             );

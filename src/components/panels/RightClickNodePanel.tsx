@@ -32,7 +32,13 @@ export default observer(
                     <MenuItem icon="graph-remove" text="Delete Node" />
                     <MenuDivider />
                     <MenuItem icon="new-link" text="Add Edge" />
-                    <MenuItem icon="cross" text="Delete Edge" />
+                    <MenuItem
+                        icon="cross"
+                        text="Delete Edge"
+                        onClick={() => {
+                            State.preferences.deleteEdgePanelOpen = true;
+                        }}
+                    />
                 </Menu>
             );
         }

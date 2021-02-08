@@ -34,16 +34,17 @@ let GraphEdgeTable = observer(
         state = {
             addEdgeDialogOpen: false,
             deleteAlertOpen: false,
-            edgeToDelete: null as SerializedEdge<Attributes> | null,
-            filterQuery: "",
-            chosenSource: "",
-            chosenTarget: "",
+            edgeToDelete: null as null | SerializedEdge<Attributes>,
+            filterQuery: null as null | string,
+            chosenSource: null as null | string,
+            chosenTarget: null as null | string,
         };
 
         get filteredTable() {
             let newTable: SerializedEdge<Attributes>[] = [];
             State.graph.rawGraph.export().edges.forEach((edge) => {
                 if (
+                    !this.state.filterQuery ||
                     edge.source
                         .toLocaleLowerCase()
                         .includes(this.state.filterQuery.toLocaleLowerCase()) ||
@@ -110,6 +111,12 @@ let GraphEdgeTable = observer(
                     isOpen={this.state.addEdgeDialogOpen}
                     icon="new-link"
                     onClose={() => this.setState({ addEdgeDialogOpen: false })}
+                    onClosed={() =>
+                        this.setState({
+                            chosenSource: null,
+                            chosenTarget: null,
+                        })
+                    }
                     title="Add Edge"
                 >
                     <div className={Classes.DIALOG_BODY}>
@@ -165,8 +172,8 @@ let GraphEdgeTable = observer(
                                 intent={Intent.PRIMARY}
                                 onClick={() => {
                                     State.graph.rawGraph.addEdge(
-                                        this.state.chosenSource,
-                                        this.state.chosenTarget
+                                        this.state.chosenSource!,
+                                        this.state.chosenTarget!
                                     );
                                     this.setState({ addEdgeDialogOpen: false });
                                 }}
@@ -181,10 +188,9 @@ let GraphEdgeTable = observer(
         };
 
         get canImport(): boolean {
-            if (
-                this.state.chosenSource == "" ||
-                this.state.chosenTarget == ""
-            ) {
+            if (!this.state.chosenSource || !this.state.chosenTarget) {
+                return false;
+            } else if (this.state.chosenSource === this.state.chosenTarget) {
                 return false;
             } else {
                 return (
@@ -230,7 +236,7 @@ let GraphEdgeTable = observer(
                                 this.setState({ filterQuery: value });
                             })}
                             placeholder="Search any Source or Target of a Node..."
-                            value={this.state.filterQuery}
+                            value={this.state.filterQuery ?? ""}
                         />
                     </ButtonGroup>
 

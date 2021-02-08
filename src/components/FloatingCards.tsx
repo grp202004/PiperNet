@@ -10,12 +10,7 @@ import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
-import AddEdgeInteractionPanel from "./panels/AddEdgeInteractionPanel";
-// import Legends from "./Legends";
-// // import StatusBar from './StatusBar';
-// import SelectionActionPanel from "./panels/SelectionActionPanel";
-
-// TODO: migrate to simple select
+import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 
 let RenderOptionsCard = observer(
     class RenderOptionsCard extends React.Component {
@@ -135,9 +130,11 @@ export default observer(
                         <RightClickNodePanel />
                     )}
 
-                    <AddEdgeInteractionPanel
-                        onNode={State.graph.selectedNode}
-                    />
+                    {State.preferences.deleteEdgePanelOpen && (
+                        <DeleteEdgeInteractionPanel
+                            onNode={State.graph.selectedNode}
+                        />
+                    )}
 
                     {/* <Legends />
           <StatusBar /> */}
