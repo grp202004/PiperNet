@@ -1,13 +1,4 @@
 import React from "react";
-import {
-    observable,
-    makeObservable,
-    computed,
-    autorun,
-    action,
-    makeAutoObservable,
-} from "mobx";
-import { Menu, MenuItem } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
@@ -19,16 +10,10 @@ export default observer(
     class ThreeJSVis extends React.Component {
         constructor(props: any) {
             super(props);
-            makeObservable(this, {
-                graphRef: observable,
-                graphMethods: computed,
-                graphDelegate: observable,
-                nodeHover: action,
-                selectedNodes: observable.ref,
-            });
         }
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
+
         get graphMethods(): ForceGraphMethods {
             return this.graphRef.current;
         }
@@ -57,6 +42,7 @@ export default observer(
             }
         };
 
+        // ref of State.graph.selectedNodes
         selectedNodes: string[] = State.graph.selectedNodes;
 
         nodeSelect = (node: NodeObject, event: MouseEvent) => {
@@ -79,6 +65,7 @@ export default observer(
         };
 
         nodeRightClick = (node: NodeObject, event: MouseEvent) => {
+            State.graph.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickBackgroundPanelOpen = false;
@@ -107,6 +94,31 @@ export default observer(
                             node.fz = node.z;
                         }}
                         onBackgroundRightClick={this.backgroundRightClick}
+                        linkWidth={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                2,
+                                0.1,
+                                1
+                            );
+                        }}
+                        linkColor={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                "orangered",
+                                "white",
+                                "white"
+                            );
+                        }}
+                        linkDirectionalParticles={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                4,
+                                0,
+                                0
+                            );
+                        }}
+                        linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
@@ -120,8 +132,7 @@ export default observer(
                         onBackgroundClick={() => {
                             State.preferences.rightClickNodePanelOpen = false;
                             State.preferences.rightClickBackgroundPanelOpen = false;
-                        }
-                        }
+                        }}
                         onNodeHover={this.nodeHover}
                     />
                 );
