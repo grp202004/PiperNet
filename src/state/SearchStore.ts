@@ -53,7 +53,7 @@ export default class SearchStore {
                     list.push(node);
                 }
             });
-        } else if (this.searchStr == "") {
+        } else if (this.searchStr === "") {
         } else {
             this.rawGraph.forEachNode((node) => {
                 if (node.toLocaleLowerCase().includes(this.searchStr)) {

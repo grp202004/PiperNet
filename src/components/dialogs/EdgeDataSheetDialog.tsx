@@ -27,10 +27,6 @@ import NodeChooser from "../utils/NodeChooser";
 
 let GraphEdgeTable = observer(
     class GraphEdgeTable extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
-
         state = {
             addEdgeDialogOpen: false,
             deleteAlertOpen: false,
@@ -51,7 +47,7 @@ let GraphEdgeTable = observer(
                     edge.target
                         .toLocaleLowerCase()
                         .includes(this.state.filterQuery.toLocaleLowerCase()) ||
-                    this.state.filterQuery == ""
+                    this.state.filterQuery === ""
                 ) {
                     newTable.push(edge);
                 }
@@ -288,10 +284,6 @@ let GraphEdgeTable = observer(
 
 export default observer(
     class EdgeDataSheetDialog extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
-
         render() {
             return (
                 <DataSheetDialogWrapper for="edge">

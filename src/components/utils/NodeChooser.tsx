@@ -35,10 +35,6 @@ interface Props {
  */
 export default observer(
     class NodeChooser extends React.Component<Props, {}> {
-        constructor(props: Props | Readonly<Props>) {
-            super(props);
-        }
-
         state = {
             select: "Choose " + this.props.text,
         };

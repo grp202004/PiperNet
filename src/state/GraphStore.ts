@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import { CustomNodeObject, CustomLinkObject } from "./GraphDelegate";
 import { Attributes } from "graphology-types";
 
 /**
@@ -39,12 +38,11 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawNode(node: string, attributes: Attributes) {
-        let visualize: CustomNodeObject = {
+        attributes._visualize = {
             id: node,
             val: 1, // to be changed, to represent the size of the node
             isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
         };
-        attributes._visualize = visualize;
     }
 
     /**
@@ -59,12 +57,11 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawEdge(source: string, target: string, attributes: Attributes) {
-        let visualize: CustomLinkObject = {
+        attributes._visualize = {
             source: source,
             target: target,
             isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
         };
-        attributes._visualize = visualize;
     }
 
     /**
@@ -116,7 +113,7 @@ export default class GraphStore {
      * @readonly
      */
     get hasGraph() {
-        return this.rawGraph.order && this.rawGraph.size != 0;
+        return this.rawGraph.order && this.rawGraph.size !== 0;
     }
 
     /**
@@ -125,7 +122,7 @@ export default class GraphStore {
      *
      */
     metadata = {
-        snapshotName: String,
+        snapshotName: "SNAPSHOT" as string,
 
         // attributes of nodes in imported graph
         nodeProperties: [] as string[],

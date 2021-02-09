@@ -8,10 +8,6 @@ import ComponentRef from "../ComponentRef";
 
 export default observer(
     class NodeDetail extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
-
         cellRenderer_property = (rowIndex: number) => {
             return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>;
         };

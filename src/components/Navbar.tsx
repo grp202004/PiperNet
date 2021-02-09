@@ -3,13 +3,13 @@ import { observer } from "mobx-react";
 import classnames from "classnames";
 import {
     Button,
-    Classes,
     ButtonGroup,
-    Position,
-    Popover,
+    Classes,
     Menu,
-    MenuItem,
     MenuDivider,
+    MenuItem,
+    Popover,
+    Position,
 } from "@blueprintjs/core";
 import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
@@ -32,7 +32,8 @@ export default observer(
                             src={logo}
                             width="35"
                             height="35"
-                        ></img>
+                            alt="PiperNet Logo"
+                        />
                         <div className={classnames([Classes.NAVBAR_HEADING])}>
                             {" "}
                             PiperNet{" "}
@@ -227,11 +228,11 @@ export default observer(
                         Clustered by{"  "}
                         <SimpleSelect
                             items={
-                                State.graph.metadata.nodeProperties.length == 0
+                                State.graph.metadata.nodeProperties.length === 0
                                     ? ["None"]
                                     : State.graph.metadata.nodeProperties
                             }
-                            value={State.cluster.clusterBy}
+                            text={State.cluster.clusterBy}
                             onSelect={(it: string) =>
                                 (State.cluster.clusterBy = it)
                             }

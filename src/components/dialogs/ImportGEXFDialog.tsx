@@ -4,9 +4,9 @@ import {
     Button,
     Classes,
     Dialog,
+    FileInput,
     Intent,
     Spinner,
-    FileInput,
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
@@ -86,16 +86,19 @@ export default observer(
                                         <FileInput
                                             text={State.import.gexfFileName}
                                             onInputChange={(event) => {
+                                                let target = event.target as HTMLInputElement;
                                                 if (
-                                                    event.target.files.length <
-                                                    1
+                                                    !target.files ||
+                                                    target.files.length < 1
                                                 ) {
                                                     return;
                                                 }
                                                 State.import.gexfFileName =
-                                                    event.target.files[0].name;
+                                                    target.files[0].name;
+                                                // after setting the selectedNodeFileFromInput, it will auto render the preview table
                                                 State.import.selectedGEXFFileFromInput =
-                                                    event.target.files[0];
+                                                    target.files[0];
+
                                                 this.setState({
                                                     fileIsSelect: true,
                                                 });

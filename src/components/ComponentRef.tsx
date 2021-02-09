@@ -1,5 +1,6 @@
 import { makeAutoObservable, reaction } from "mobx";
 import State from "../state";
+
 class ComponentRef {
     constructor() {
         makeAutoObservable(this);

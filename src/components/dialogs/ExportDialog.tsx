@@ -1,19 +1,16 @@
 import React from "react";
 import {
     Button,
-    Classes,
-    Card,
-    Icon,
-    Dialog,
-    Intent,
-    Spinner,
-    Elevation,
-    Divider,
-    H3,
     ButtonGroup,
+    Card,
+    Classes,
+    Dialog,
+    Divider,
+    Elevation,
+    H3,
+    Spinner,
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
-import { makeObservable, computed } from "mobx";
 import classnames from "classnames";
 import gexf from "graphology-gexf/browser";
 import State from "../../state";
@@ -21,10 +18,6 @@ import { CSVLink } from "react-csv";
 
 export default observer(
     class ExportDialog extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
-
         state = {
             ready: true,
         };
@@ -40,6 +33,7 @@ export default observer(
             }[] = [];
             State.graph.metadata.nodeProperties.map((value) => {
                 headers.push({ label: value, key: value });
+                return null;
             });
             headers.push({ label: "_id", key: "_id" });
             let exportData = State.graph.rawGraph.export();
@@ -111,7 +105,7 @@ export default observer(
                                     <Button>Download GEXF File</Button>
                                 </CSVLink>
                             </Card>
-                            <br></br>
+                            <br />
                             <Card interactive={false} elevation={Elevation.ONE}>
                                 <H3>
                                     CSV Export{" "}

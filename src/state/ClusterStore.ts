@@ -20,7 +20,6 @@ export default class ClusterStore {
      * Specify which attribute to be clustered
      * if this is changed, all get values will be updated
      *
-     * @memberof ClusterStore
      */
     clusterBy = "None";
 
@@ -29,7 +28,6 @@ export default class ClusterStore {
      * the reference bounded to the GraphStore/rawGraph
      *
      * @type {Graph}
-     * @memberof ClusterStore
      */
     rawGraph!: Graph;
 
@@ -41,7 +39,6 @@ export default class ClusterStore {
      *
      * @readonly
      * @type {(Map<string, string | number>)}
-     * @memberof ClusterStore
      */
     get keyAttribute(): Map<string, string | number> {
         const attribute = this.clusterBy;
@@ -64,7 +61,6 @@ export default class ClusterStore {
      *
      * @readonly
      * @type {((string | number)[])}
-     * @memberof ClusterStore
      */
     get getAttributeValues(): (string | number)[] {
         return Array.from(new Set(this.keyAttribute.values()));
@@ -78,7 +74,6 @@ export default class ClusterStore {
      *
      * @readonly
      * @type {(Map<string | number, string[]>)}
-     * @memberof ClusterStore
      */
     get attributeKeys(): Map<string | number, string[]> {
         const attributeKeysMap = new Map<string | number, string[]>();
@@ -100,7 +95,6 @@ export default class ClusterStore {
      *
      * @readonly
      * @type {(Map<string | number, string>)}
-     * @memberof ClusterStore
      */
     get attributeColor(): Map<string | number, string> {
         let colors = randomcolor({
@@ -109,7 +103,7 @@ export default class ClusterStore {
         });
         let position = 0;
         let map = new Map<string | number, string>();
-        this.getAttributeValues.map((attribute) => {
+        this.getAttributeValues.forEach((attribute) => {
             map.set(attribute, colors[position++]);
         });
         return map;
@@ -124,11 +118,10 @@ export default class ClusterStore {
      *
      * @readonly
      * @type {(Map<string | number, THREE.Vector3[]>)}
-     * @memberof ClusterStore
      */
     get attributePoints(): Map<string | number, THREE.Vector3[]> {
         let map = new Map<string | number, THREE.Vector3[]>();
-        this.getAttributeValues.map((attribute) => {
+        this.getAttributeValues.forEach((attribute) => {
             let vectorList: THREE.Vector3[] = [];
             map.set(attribute, vectorList);
         });

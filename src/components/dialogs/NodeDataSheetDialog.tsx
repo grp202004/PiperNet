@@ -4,14 +4,10 @@ import {
     Button,
     ButtonGroup,
     Callout,
-    Classes,
     Code,
-    Dialog,
     Divider,
     InputGroup,
     Intent,
-    Switch,
-    Tag,
 } from "@blueprintjs/core";
 import {
     Cell,
@@ -32,25 +28,21 @@ import { Attributes, SerializedNode } from "graphology-types";
 
 let GraphNodeTable = observer(
     class GraphNodeTable extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
-
         state = {
             filterQuery: "",
             addNodeDialogOpen: false,
             deleteAlertOpen: false,
-            nodeToDelete: null as SerializedNode<Attributes> | null,
+            nodeToDelete: null as SerializedNode | null,
         };
 
         get filteredTable() {
-            let newTable: SerializedNode<Attributes>[] = [];
+            let newTable: SerializedNode[] = [];
             State.graph.rawGraph.export().nodes.forEach((node) => {
                 if (
                     node.key
                         .toLocaleLowerCase()
                         .includes(this.state.filterQuery.toLocaleLowerCase()) ||
-                    this.state.filterQuery == ""
+                    this.state.filterQuery === ""
                 ) {
                     newTable.push(node);
                 }
@@ -62,7 +54,7 @@ let GraphNodeTable = observer(
 
         renderColumns: any = () => {
             const columns = this.nodeProperties.map((it, i) => {
-                if (it != "_options") {
+                if (it !== "_options") {
                     return (
                         <Column
                             name={it}
@@ -73,15 +65,15 @@ let GraphNodeTable = observer(
                         />
                     );
                 }
+                return null;
             });
             return columns.filter((element) => {
-                return element != undefined;
+                return element !== undefined;
             });
         };
 
         renderCell = (rowIndex: number, attribute: string) => {
-            let cellAttributes = this.filteredTable[rowIndex].attributes;
-            //@ts-ignore
+            let cellAttributes = this.filteredTable[rowIndex].attributes!!;
             let cell = cellAttributes[attribute];
 
             return (
@@ -238,10 +230,6 @@ let GraphNodeTable = observer(
 
 export default observer(
     class NodeDataSheetDialog extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
-
         render() {
             return (
                 <DataSheetDialogWrapper for="node">

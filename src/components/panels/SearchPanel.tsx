@@ -1,18 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import {
-    Button,
-    Classes,
-    InputGroup,
-    Menu,
-    MenuItem,
-    Popover,
-    PopoverInteractionKind,
-    Position,
-} from "@blueprintjs/core";
+import { InputGroup, Menu, MenuItem } from "@blueprintjs/core";
 import classnames from "classnames";
-import GraphDelegate from "../../state/GraphDelegate";
 import { handleStringChange } from "../utils/InputFormUtils";
 
 export default observer(
@@ -27,7 +17,7 @@ export default observer(
                             State.graph.currentlyHoveredId = it;
                             State.graphDelegate.cameraFocusOn(it);
                         }}
-                    ></MenuItem>
+                    />
                 );
             });
         };
@@ -41,7 +31,7 @@ export default observer(
                     )}
                 >
                     <div className={classnames("search")}>
-                        {State.search.candidates.length != 0 && (
+                        {State.search.candidates.length !== 0 && (
                             <Menu
                                 large={true}
                                 className={classnames("search-menu")}

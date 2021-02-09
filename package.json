@@ -61,10 +61,16 @@
     "devDependencies": {
         "@types/classnames": "^2.2.11",
         "@types/jest": "^26.0.20",
+        "@types/pluralize": "0.0.29",
         "@types/randomcolor": "^0.5.5",
         "@types/react": "^17.0.0",
+        "@types/react-color": "^3.0.4",
         "@types/react-csv": "^1.1.1",
         "electron": "^11.2.1",
-        "electron-packager": "^15.2.0"
+        "electron-packager": "^15.2.0",
+        "prettier": "2.2.1"
+    },
+    "prettier": {
+        "tabWidth": 4
     }
 }

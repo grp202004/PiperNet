@@ -8,9 +8,6 @@ import State from "../../state";
 
 export default observer(
     class ThreeJSVis extends React.Component {
-        constructor(props: any) {
-            super(props);
-        }
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -35,7 +32,7 @@ export default observer(
             previousNode: NodeObject | null
         ) => {
             if (State.search.isPreviewing) return;
-            if (node != null && node != previousNode) {
+            if (node != null && node !== previousNode) {
                 State.graph.currentlyHoveredId = this.getNodeId(
                     node as NodeObject
                 );

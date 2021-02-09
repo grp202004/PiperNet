@@ -29,10 +29,6 @@ interface Props {
 
 export default observer(
     class NodeAdder extends React.Component<Props, {}> {
-        constructor(props: Props | Readonly<Props>) {
-            super(props);
-        }
-
         state = {
             newNodeId: "",
             attributes: {} as Attributes,
@@ -41,7 +37,7 @@ export default observer(
         get canImport() {
             return (
                 !State.graph.rawGraph.hasNode(this.state.newNodeId) &&
-                this.state.newNodeId != ""
+                this.state.newNodeId !== ""
             );
         }
 
@@ -56,20 +52,20 @@ export default observer(
                     <Button icon="tick" intent="success" minimal={true} />
                 </Tooltip2>
             ) : (
-                    <Tooltip2
-                        content={
-                            "This Node Id is currently in use by other nodes, try with another one instead"
-                        }
-                        intent="warning"
-                    >
-                        <Button icon="cross" intent="warning" minimal={true} />
-                    </Tooltip2>
-                );
+                <Tooltip2
+                    content={
+                        "This Node Id is currently in use by other nodes, try with another one instead"
+                    }
+                    intent="warning"
+                >
+                    <Button icon="cross" intent="warning" minimal={true} />
+                </Tooltip2>
+            );
         };
 
         renderAttributesForm = (attributes: string[]) => {
             return attributes.map((attribute) => {
-                if (attribute != "_options" && attribute != "_visualize") {
+                if (attribute !== "_options" && attribute !== "_visualize") {
                     return (
                         <FormGroup label={attribute}>
                             <InputGroup
@@ -89,6 +85,8 @@ export default observer(
                             />
                         </FormGroup>
                     );
+                } else {
+                    return null;
                 }
             });
         };

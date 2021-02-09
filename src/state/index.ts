@@ -1,10 +1,4 @@
-import {
-    autorun,
-    runInAction,
-    observable,
-    makeObservable,
-    reaction,
-} from "mobx";
+import { autorun } from "mobx";
 
 import PreferencesStore from "./PreferencesStore";
 import GraphStore from "./GraphStore";
@@ -16,8 +10,6 @@ import CssStore from "./CssStore";
 import GraphDelegate from "./GraphDelegate";
 
 class AppState {
-    constructor() {}
-
     static _instance: AppState | null = null;
 
     preferences!: PreferencesStore;

@@ -1,9 +1,6 @@
 import React from "react";
 import { Button, Classes, Slider } from "@blueprintjs/core";
-import { Select } from "@blueprintjs/select";
 import { observer } from "mobx-react";
-import State from "../../state";
-import CommonItemRenderer from "../utils/CommonItemRenderer";
 
 export default observer(
     class LabelsPanel extends React.Component {
@@ -16,7 +13,7 @@ export default observer(
                             id="hideAll"
                             icon="eye-off"
                             className={Classes.FILL}
-                            onClick={() => State.graph.frame.hideAllLabels()}
+                            // onClick={() => State.graph.frame.hideAllLabels()}
                         >
                             Hide All
                         </Button>
@@ -25,7 +22,7 @@ export default observer(
                             id="showAll"
                             icon="eye-on"
                             className={Classes.FILL}
-                            onClick={() => State.graph.frame.showAllLabels()}
+                            // onClick={() => State.graph.frame.showAllLabels()}
                         >
                             Show All
                         </Button>
@@ -34,9 +31,9 @@ export default observer(
                             id="hideSelected"
                             icon="eye-off"
                             className={Classes.FILL}
-                            onClick={() =>
-                                State.graph.frame.hideSelectedLabels()
-                            }
+                            // onClick={() =>
+                            //     State.graph.frame.hideSelectedLabels()
+                            // }
                         >
                             Hide Selected
                         </Button>
@@ -49,9 +46,9 @@ export default observer(
                             id="showSelected"
                             icon="eye-on"
                             className={Classes.FILL}
-                            onClick={() =>
-                                State.graph.frame.showSelectedLabels()
-                            }
+                            // onClick={() =>
+                            //     State.graph.frame.showSelectedLabels()
+                            // }
                         >
                             Show Selected
                         </Button>
@@ -97,4 +94,3 @@ export default observer(
         }
     }
 );
-// export default LabelsPanel;

@@ -3,8 +3,8 @@ import Graph from "graphology";
 import State from ".";
 import {
     ForceGraphMethods,
-    NodeObject,
     LinkObject,
+    NodeObject,
 } from "react-force-graph-3d";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
@@ -30,7 +30,6 @@ export default class GraphDelegate {
      * should be called as long as the visualizer react component is mounted
      *
      * @param {ForceGraphMethods} _graphDelegateMethods
-     * @memberof GraphDelegate
      */
     mountDelegateMethods(_graphDelegateMethods: ForceGraphMethods) {
         this.graphDelegateMethods = _graphDelegateMethods;
@@ -43,7 +42,6 @@ export default class GraphDelegate {
      * @see ForceGraphMethods
      *
      * @type {ForceGraphMethods}
-     * @memberof GraphDelegate
      */
     graphDelegateMethods!: ForceGraphMethods;
 
@@ -51,7 +49,6 @@ export default class GraphDelegate {
      * the THREE.js WebGL Scene of the visualization
      *
      * @type {THREE.Scene}
-     * @memberof GraphDelegate
      */
     threeScene!: THREE.Scene;
 
@@ -63,7 +60,6 @@ export default class GraphDelegate {
      * nodes and edges with the show=false will be ignored in this case
      *
      * @readonly
-     * @memberof GraphDelegate
      */
     get visualizationGraph() {
         let newGraph: Graph;
@@ -147,7 +143,7 @@ export default class GraphDelegate {
      * @param {CustomNodeObject} nodeObject
      */
     nodeVisibility = (nodeObject: CustomNodeObject) => {
-        return nodeObject.isClusterNode ? false : true;
+        return !nodeObject.isClusterNode;
     };
 
     /**
@@ -156,7 +152,7 @@ export default class GraphDelegate {
      * @param {CustomLinkObject} nodeObject
      */
     linkVisibility = (nodeObject: CustomLinkObject) => {
-        return nodeObject.isClusterLink ? false : true;
+        return !nodeObject.isClusterLink;
     };
 
     /**
@@ -197,33 +193,31 @@ export default class GraphDelegate {
                 newMap.set(key, new THREE.Object3D());
             } else {
                 let convexHull = new ConvexGeometry(Array.from(value));
-                newMap.set(key, this.createMesh(convexHull, key));
+                newMap.set(key, GraphDelegate.createMesh(convexHull, key));
             }
         });
         return newMap;
     }
 
-    private createMesh(
+    private static createMesh(
         geom: ConvexGeometry,
         name: string | number
     ): THREE.Object3D {
         // 实例化一个绿色的半透明的材质
-        var meshMaterial = new THREE.MeshBasicMaterial({
+        const meshMaterial = new THREE.MeshBasicMaterial({
             color: State.cluster.attributeColor.get(name),
             transparent: true,
             opacity: 0.2,
         });
         meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
-        var wireFrameMat = new THREE.MeshBasicMaterial();
+        const wireFrameMat = new THREE.MeshBasicMaterial();
         wireFrameMat.wireframe = true; //把材质渲染成线框
 
         // 将两种材质都赋给几何体
-        var mesh = SceneUtils.createMultiMaterialObject(geom, [
+        return SceneUtils.createMultiMaterialObject(geom, [
             meshMaterial,
             wireFrameMat,
         ]);
-
-        return mesh;
     }
 
     ////
@@ -268,13 +262,13 @@ export default class GraphDelegate {
         let targetId = (link.target as NodeObject).id as string;
 
         if (
-            (sourceId ==
+            (sourceId ===
                 (State.graphDelegate.highlightLink?.source as string) &&
-                targetId ==
+                targetId ===
                     (State.graphDelegate.highlightLink?.target as string)) ||
-            (sourceId ==
+            (sourceId ===
                 (State.graphDelegate.highlightLink?.target as string) &&
-                targetId ==
+                targetId ===
                     (State.graphDelegate.highlightLink?.source as string))
         ) {
             return _if;

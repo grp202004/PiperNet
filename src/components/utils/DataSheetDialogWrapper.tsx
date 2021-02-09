@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { Classes, Dialog } from "@blueprintjs/core";
 import { Column, Table, TableLoadingOption } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import classnames from "classnames";
@@ -12,10 +12,6 @@ interface Props {
 
 export default observer(
     class DataSheetDialogWrapper extends React.Component<Props, {}> {
-        constructor(props: any) {
-            super(props);
-        }
-
         state = {
             loading: true,
         };
@@ -56,7 +52,7 @@ export default observer(
                 <Dialog
                     icon="database"
                     isOpen={
-                        this.props.for == "node"
+                        this.props.for === "node"
                             ? State.preferences.nodeDataSheetDialogOpen
                             : State.preferences.edgeDataSheetDialogOpen
                     }
@@ -68,12 +64,14 @@ export default observer(
                         }, 100);
                     }}
                     onClose={() => {
-                        if (this.props.for == "node") {
+                        if (this.props.for === "node") {
                             State.preferences.nodeDataSheetDialogOpen = false;
                         } else {
                             State.preferences.edgeDataSheetDialogOpen = false;
                         }
-                        this.state.loading = true;
+                        this.setState({
+                            loading: true,
+                        });
                     }}
                     title="Data Sheet"
                     style={{ minWidth: "80vw" }}

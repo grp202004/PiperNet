@@ -1,5 +1,5 @@
 import React from "react";
-import { Classes, Tab, Tabs, Button } from "@blueprintjs/core";
+import { Button, Classes, Tab, Tabs } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
@@ -79,7 +79,7 @@ export default observer(
                                 className="openbtn2"
                                 icon="chevron-left"
                                 onClick={this.toggleOptions}
-                            ></Button>
+                            />
                             <br />
                             <RenderOptionsCard />
                         </div>
@@ -107,7 +107,7 @@ export default observer(
                                         ? this.sideButtonVis
                                         : this.sideButtonInv
                                 }
-                            ></Button>
+                            />
                         </div>
                     </div>
 
@@ -115,14 +115,16 @@ export default observer(
                     {/* {State.graph.selectedNodes.length === 1 && (
                         <NodeDetail node={State.graph.currentlyHoveredId} />
                     )} */}
-                    {State.graph.currentlyHoveredId != "undefined" &&
-                        State.graph.selectedNodes.length == 0 && <NodeDetail />}
+                    {State.graph.currentlyHoveredId !== "undefined" &&
+                        State.graph.selectedNodes.length === 0 && (
+                            <NodeDetail />
+                        )}
 
                     {/* multiple selected */}
                     {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
                         <NodeDetail node={State.graph.currentlyHovered.data.ref} />
                     )} */}
-                    {State.graph.selectedNodes.length != 0 && (
+                    {State.graph.selectedNodes.length !== 0 && (
                         <MultiDetailPanel />
                     )}
 

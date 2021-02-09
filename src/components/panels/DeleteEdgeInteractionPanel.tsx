@@ -1,24 +1,14 @@
-import React, { Attributes } from "react";
-import {
-    Menu,
-    MenuItem,
-    MenuDivider,
-    Classes,
-    Button,
-    Alert,
-    Code,
-    Intent,
-    Card,
-} from "@blueprintjs/core";
+import React from "react";
+import { Alert, Button, Card, Code, Intent } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import {
-    Table,
-    RenderMode,
-    Column,
     Cell,
+    Column,
     ICellRenderer,
+    RenderMode,
+    Table,
 } from "@blueprintjs/table";
 
 interface Props {
@@ -33,17 +23,13 @@ interface Props {
 
 export default observer(
     class DeleteEdgeInteractionPanel extends React.Component<Props, {}> {
-        constructor(props: any) {
-            super(props);
-        }
-
         state = {
             edgeToDelete: "",
             deleteAlertOpen: false,
         };
 
         get neighbors(): string[] {
-            if (this.props.onNode == "") {
+            if (this.props.onNode === "") {
                 return [];
             }
             let neighbors: string[] = [];
@@ -81,7 +67,7 @@ export default observer(
         };
 
         deleteEdgeAlert = () => {
-            if (this.state.edgeToDelete == "") {
+            if (this.state.edgeToDelete === "") {
                 return null;
             }
             let source = State.graph.rawGraph.source(this.state.edgeToDelete);

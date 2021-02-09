@@ -9,27 +9,19 @@ import {
     Position,
 } from "@blueprintjs/core";
 import { SketchPicker } from "react-color";
-// import { Popover2, Select } from "@blueprintjs/labs";
 import classnames from "classnames";
 import Collapsable from "../utils/Collapsable";
-import * as THREE from "three";
-// import SimpleSelect from "../utils/SimpleSelect";
-// import mouse from "../../graph-frontend/src/select";
 
 export default observer(
     class EdgesPanel extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                timeOutRef: null,
-                sizeOptionOpen: false,
-                thicknessOptionOpen: false,
-                colorOptionOpen: false,
-            };
-        }
+        state = {
+            timeOutRef: null,
+            sizeOptionOpen: false,
+            thicknessOptionOpen: false,
+            colorOptionOpen: false,
+        };
 
         render() {
-            let graph = State.graph.graph;
             return (
                 <div>
                     <p>{`Modifying All Edges`}</p>
@@ -85,7 +77,7 @@ export default observer(
                                                         State.css.config.edges.color =
                                                             it.hex;
                                                         console.log(it.hex);
-                                                        /**update edge color in real time*/
+                                                        /**update edge color in real time*/
                                                         // State.graph.process.onHover();
                                                     }}
                                                 />

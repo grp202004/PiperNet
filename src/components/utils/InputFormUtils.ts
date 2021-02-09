@@ -1,4 +1,5 @@
 import { Attributes } from "graphology-types";
+import React from "react";
 
 /** Event handler that exposes the target element's value as a boolean. */
 export function handleBooleanChange(handler: (checked: boolean) => void) {
@@ -28,8 +29,8 @@ export function stringifyNodeDetail(attributes: Attributes): string {
     for (var attribute in attributes) {
         if (
             attributes.hasOwnProperty(attribute) &&
-            attribute != "_visualize" &&
-            attribute != "_options"
+            attribute !== "_visualize" &&
+            attribute !== "_options"
         ) {
             res += attribute + " : " + attributes[attribute] + " ; ";
         }
