@@ -308,11 +308,10 @@ export default observer(
                                             State.import
                                                 .importGraphFromCSV()
                                                 .then((res) => {
-                                                    State.graph.rawGraph = State.graph.decorateRawGraph(
-                                                        res.graph
+                                                    State.graph.setGraph(
+                                                        res.graph,
+                                                        res.metadata
                                                     );
-                                                    State.graph.metadata =
-                                                        res.metadata;
                                                     State.import.isLoading = false;
                                                     State.import.importCSVDialogOpen = false;
                                                 });

@@ -19,9 +19,10 @@ export default class ClusterStore {
      * @observable
      * Specify which attribute to be clustered
      * if this is changed, all get values will be updated
+     * the default value should be None, and front-end graph will interpret this to Not-Cluster
      *
      */
-    clusterBy = "None";
+    clusterBy: string | null = null;
 
     /**
      * @observable .ref
@@ -41,8 +42,11 @@ export default class ClusterStore {
      * @type {(Map<string, string | number>)}
      */
     get keyAttribute(): Map<string, string | number> {
-        const attribute = this.clusterBy;
         const keyValueMap = new Map<string, string | number>();
+        if (this.clusterBy === null) {
+            return keyValueMap;
+        }
+        const attribute = this.clusterBy as string;
 
         this.rawGraph?.forEachNode((key, attributes) => {
             // if this attribute is defined
