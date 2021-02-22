@@ -1,6 +1,14 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import { Attributes } from "graphology-types";
+import State from ".";
+
+export interface IMetaData {
+    snapshotName: string;
+
+    // attributes of nodes in imported graph
+    nodeProperties: string[];
+}
 
 /**
  * the class to store a raw graph as well as the related information
@@ -84,6 +92,21 @@ export default class GraphStore {
         return _rawGraph;
     }
 
+    
+    /**
+     * proxy method to set the new graph
+     * if intend to set a new graph, please use this method instead of directly modify GraphStore
+     *
+     * @param {Graph} newGraph
+     * @param {IMetaData} metadata
+     */
+    public setGraph(newGraph: Graph, metadata: IMetaData) {
+        this.rawGraph = this.decorateRawGraph(newGraph);
+        this.metadata = metadata;
+        this.flush();
+        State.cluster.clusterBy = null;
+    }
+
     /**
      * the currently selected node ids
      * the singleNodeDetailPanel will render and refresh if this changes
@@ -97,7 +120,7 @@ export default class GraphStore {
      *
      * @type {string}
      */
-    selectedNode: string = "";
+    selectedNode: string | null = null;
 
     /**
      * the currently hovered node id
@@ -105,7 +128,17 @@ export default class GraphStore {
      *
      * @type {string}
      */
-    currentlyHoveredId: string = "undefined";
+    currentlyHoveredId: string | null = null;
+
+    /**
+     * should call this on every refresh of graph DS
+     *
+     */
+    flush() {
+        this.selectedNodes = [];
+        this.selectedNode = null;
+        this.currentlyHoveredId = null;
+    }
 
     /**
      * if currently there is a graph in the dataset
@@ -121,10 +154,8 @@ export default class GraphStore {
      * should be updated if a new graph is imported
      *
      */
-    metadata = {
-        snapshotName: "SNAPSHOT" as string,
-
-        // attributes of nodes in imported graph
-        nodeProperties: [] as string[],
+    metadata: IMetaData = {
+        snapshotName: "SNAPSHOT",
+        nodeProperties: [],
     };
 }
