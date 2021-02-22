@@ -5,6 +5,13 @@ export default class PreferencesStore {
         makeAutoObservable(this);
     }
 
+    rightClickBackgroundPanelOpen = false;
+    rightClickNodePanelOpen = false;
+    rightClickPositionX = 30;
+    rightClickPositionY = 30;
+
+    deleteEdgePanelOpen = false;
+
     preferenceDialogOpen = false;
 
     darkMode = true;
@@ -12,8 +19,10 @@ export default class PreferencesStore {
     statisticsDialogOpen = false;
     helpDialogOpen = false;
     neighborDialogOpen = false;
-    dataSheetDialogOpen = false;
-    dataSheetLoading = true;
+    AddNodeDialogOpen = false;
+
+    nodeDataSheetDialogOpen = false;
+    edgeDataSheetDialogOpen = false;
 
     isRenderOptionsCardHidden = true;
 

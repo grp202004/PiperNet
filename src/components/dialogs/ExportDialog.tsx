@@ -1,45 +1,43 @@
 import React from "react";
 import {
     Button,
-    Classes,
-    Card,
-    Icon,
-    Dialog,
-    Intent,
-    Spinner,
-    Elevation,
-    Divider,
-    H3,
     ButtonGroup,
+    Card,
+    Classes,
+    Dialog,
+    Divider,
+    Elevation,
+    H3,
+    Spinner,
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
-import { makeObservable, computed } from "mobx";
 import classnames from "classnames";
 import gexf from "graphology-gexf/browser";
-import State from "../state";
+import State from "../../state";
 import { CSVLink } from "react-csv";
 
 export default observer(
-    class SaveSnapshotDialog extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                ready: true,
-            };
-        }
+    class ExportDialog extends React.Component {
+        state = {
+            ready: true,
+        };
 
         computeGEXFFile() {
             return gexf.write(State.graph.rawGraph);
         }
 
         computeNodeFile() {
-            let headers = [];
+            let headers: {
+                label: string;
+                key: string;
+            }[] = [];
             State.graph.metadata.nodeProperties.map((value) => {
                 headers.push({ label: value, key: value });
+                return null;
             });
             headers.push({ label: "_id", key: "_id" });
             let exportData = State.graph.rawGraph.export();
-            let data = [];
+            let data: any[] = [];
             exportData.nodes.forEach((node) => {
                 data.push({
                     _id: node.key,
@@ -50,13 +48,16 @@ export default observer(
         }
 
         computeEdgeFile() {
-            let headers = [
+            let headers: {
+                label: string;
+                key: string;
+            }[] = [
                 { label: "source", key: "source" },
                 { label: "target", key: "target" },
             ];
 
             let exportData = State.graph.rawGraph.export();
-            let data = [];
+            let data: any[] = [];
             exportData.edges.forEach((edge) => {
                 data.push({
                     source: edge.source,
@@ -69,7 +70,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    iconName="projects"
+                    icon="projects"
                     isOpen={State.project.exportDialogOpen}
                     onClose={() => {
                         State.project.exportDialogOpen = false;
@@ -104,7 +105,7 @@ export default observer(
                                     <Button>Download GEXF File</Button>
                                 </CSVLink>
                             </Card>
-                            <br></br>
+                            <br />
                             <Card interactive={false} elevation={Elevation.ONE}>
                                 <H3>
                                     CSV Export{" "}
@@ -123,7 +124,7 @@ export default observer(
                                 <ButtonGroup>
                                     <CSVLink
                                         data={this.computeNodeFile().data}
-                                        header={this.computeNodeFile().header}
+                                        headers={this.computeNodeFile().headers}
                                         separator={","}
                                         filename={"Snapshot-Node.csv"}
                                         className="btn btn-primary"
@@ -134,7 +135,7 @@ export default observer(
                                     <Divider />
                                     <CSVLink
                                         data={this.computeEdgeFile().data}
-                                        header={this.computeEdgeFile().header}
+                                        headers={this.computeEdgeFile().headers}
                                         separator={","}
                                         filename={"Snapshot-Edge.csv"}
                                         className="btn btn-primary"

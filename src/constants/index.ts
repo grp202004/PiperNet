@@ -1,5 +1,4 @@
 import convert from "xml-js";
-import State from "../state";
 
 export const GITHUB_URL = "";
 

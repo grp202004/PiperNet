@@ -1,4 +1,4 @@
-import { autorun, runInAction, observable, makeObservable } from "mobx";
+import { autorun } from "mobx";
 
 import PreferencesStore from "./PreferencesStore";
 import GraphStore from "./GraphStore";
@@ -6,26 +6,30 @@ import ImportStore from "./ImportStore";
 import ProjectStore from "./ProjectStore";
 import SearchStore from "./SearchStore";
 import ClusterStore from "./ClusterStore";
+import CssStore from "./CssStore";
+import GraphDelegate from "./GraphDelegate";
 
 class AppState {
-    constructor() {}
-
     static _instance: AppState | null = null;
 
     preferences!: PreferencesStore;
     graph!: GraphStore;
+    graphDelegate!: GraphDelegate;
     import!: ImportStore;
     search!: SearchStore;
     project!: ProjectStore;
     cluster!: ClusterStore;
+    css!: CssStore;
 
     private privateConstructor() {
         this.preferences = new PreferencesStore();
         this.graph = new GraphStore();
+        this.graphDelegate = new GraphDelegate();
         this.import = new ImportStore();
         this.search = new SearchStore();
         this.project = new ProjectStore();
         this.cluster = new ClusterStore();
+        this.css = new CssStore();
     }
 
     // add singleton to prevent creating multiple instances of the State class
@@ -43,6 +47,10 @@ class AppState {
 
 const State = AppState.instance;
 
+// this is for easily debugging in runtime
+//@ts-ignore
+window._state = State;
+
 // extract CSV from selected edge File object and update related fields.
 // will auto run if selectedEdgeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportEdgePreview());
@@ -51,6 +59,9 @@ autorun(() => State.import.renderImportEdgePreview());
 // will auto run if selectedNodeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportNodePreview());
 
-autorun(() => (State.cluster.rawGraph = State.graph.rawGraph));
+autorun(
+    () =>
+        (State.cluster.rawGraph = State.search.rawGraph = State.graph.rawGraph)
+);
 
 export default State;

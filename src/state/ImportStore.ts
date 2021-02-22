@@ -1,10 +1,45 @@
-import { Toaster, Position, Intent } from "@blueprintjs/core";
+import { Intent, Position, Toaster } from "@blueprintjs/core";
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import * as graphology from "graphology-types";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
-import { IHiddenOptions } from "./GraphStore";
+
+export interface INodeFileConfig {
+    // the file is successfully parsed and ready for display
+    isReady: boolean;
+    parseError: boolean;
+    path: string;
+
+    // has header at the top
+    hasHeader: boolean;
+
+    // Get top 20 lines. Or if there's less than 10 line, get all the lines.
+    topN: any[];
+    //names for the columns of this csv
+    columns: string[];
+    mapping: {
+        id: string;
+    };
+    delimiter: string;
+}
+
+export interface IEdgeFileConfig {
+    isReady: boolean;
+    parseError: boolean;
+
+    // should save the csv to temp for further change the cluster attribute
+    path: string;
+    hasHeader: boolean;
+
+    // array of objects storing the
+    topN: any[];
+    columns: string[];
+    mapping: {
+        fromId: string;
+        toId: string;
+    };
+    delimiter: string;
+}
 
 export default class ImportStore {
     constructor() {
@@ -23,6 +58,7 @@ export default class ImportStore {
     gexfFileName = "Choose GEXF File ...";
 
     importCSVDialogOpen = false;
+    importSamplesDialogOpen = false;
     importGEXFDialogOpen = false;
 
     // specific: File object selected via the file input.
@@ -48,10 +84,9 @@ export default class ImportStore {
             columns: [],
             mapping: {
                 id: "Unknown",
-                cluster: "Unknown",
             },
             delimiter: ",",
-        },
+        } as INodeFileConfig,
         edgeFile: {
             isReady: false,
             parseError: false,
@@ -68,7 +103,7 @@ export default class ImportStore {
                 toId: "Unknown",
             },
             delimiter: ",",
-        },
+        } as IEdgeFileConfig,
     };
 
     /**
@@ -80,7 +115,6 @@ export default class ImportStore {
      * @param {string} delimiter
      * @return {*}  {Promise<Object[]>}
      * where Object is of { attribute: number | string, anotherAttribute: number | string, ... } type
-     * @memberof ImportStore
      */
     private async readCSV(
         fileObject: File,
@@ -137,7 +171,6 @@ export default class ImportStore {
      *
      * @private
      * @return {*}  {Promise<Graph>}
-     * @memberof ImportStore
      */
     private async readGEXF(): Promise<Graph> {
         const file = this.selectedGEXFFileFromInput;
@@ -146,7 +179,7 @@ export default class ImportStore {
         return new Promise((resolve, reject) => {
             reader.onload = () => {
                 try {
-                    resolve(gexf.parse(Graph, <string>reader.result));
+                    resolve(gexf.parse(Graph, reader.result as string));
                 } catch (err) {
                     Toaster.create({
                         position: Position.TOP,
@@ -182,7 +215,6 @@ export default class ImportStore {
      * if successfully imported, change the .isReady to be true
      *
      * @return {*}
-     * @memberof ImportStore
      */
     public async importGraphFromCSV() {
         const config = this.importConfig;
@@ -208,10 +240,9 @@ export default class ImportStore {
         if (config.hasNodeFile) {
             tempNodes = await this.readNodeCSV();
             tempNodes.forEach((node) => {
-                graph.addNode(
-                    node[config.nodeFile.mapping.id].toString(),
-                    node
-                );
+                let nodeId = node[config.nodeFile.mapping.id].toString();
+                delete node[config.nodeFile.mapping.id];
+                graph.addNode(nodeId, node);
             });
         }
 
@@ -241,10 +272,6 @@ export default class ImportStore {
             metadata: {
                 snapshotName: "Untitled",
                 nodeProperties: nodeProperties,
-                clusterProperties: config.hasNodeFile
-                    ? null
-                    : config.nodeFile.mapping.cluster,
-                edgeProperties: ["source_id", "target_id"],
             },
         };
     }
@@ -254,7 +281,7 @@ export default class ImportStore {
         let graph = await this.readGEXF();
         let nodeProperties: string[] = [];
 
-        for (const [key, value] of Object.entries(
+        for (const [key] of Object.entries(
             graph.getNodeAttributes(graph.nodes()[0])
         )) {
             nodeProperties.push(key);
@@ -271,9 +298,6 @@ export default class ImportStore {
         };
     }
 
-    // TODO:
-    public renderImportGEXFPreview(): void {}
-
     /**
      * change the importConfig.edgeFile.topN to be the top 10 parsed elements in the input edge file
      * change the importConfig.edgeFile.columns to be the attributes of the imported edge file
@@ -284,7 +308,6 @@ export default class ImportStore {
      * This function will autorun if user specify the selectedEdgeFileFromInput and the changes that this function will make is to get ready for the rendering of preview Table in the ImportDialog
      *
      * @return {*}
-     * @memberof ImportStore
      */
     public async renderImportEdgePreview() {
         let file = this.selectedEdgeFileFromInput;
@@ -303,7 +326,7 @@ export default class ImportStore {
 
             reader.onload = () => {
                 // Read entire CSV into memory as string
-                let fileAsString = <string>reader.result;
+                let fileAsString = reader.result as string;
 
                 // if the file is not regularly formatted, replace the EOL character
                 fileAsString = fileAsString.replace(/\r\n/g, "\n");
@@ -337,8 +360,8 @@ export default class ImportStore {
                               delimiter: delimiter,
                           });
                     edgeFileConfig.topN = it;
-                    edgeFileConfig.columns = <any>(
-                        Object.keys(it[0]).map((key) => `${key}`)
+                    edgeFileConfig.columns = Object.keys(it[0]).map(
+                        (key) => `${key}`
                     );
 
                     // if there exists two or more columns in the parsed edge file
@@ -347,7 +370,7 @@ export default class ImportStore {
                             edgeFileConfig.columns[0];
                         edgeFileConfig.mapping.toId = edgeFileConfig.columns[1];
                         edgeFileConfig.isReady = true;
-                    } else if (edgeFileConfig.columns.length == 1) {
+                    } else if (edgeFileConfig.columns.length === 1) {
                         edgeFileConfig.mapping.fromId = edgeFileConfig.mapping.toId =
                             edgeFileConfig.columns[0];
                         edgeFileConfig.isReady = true;
@@ -403,7 +426,6 @@ export default class ImportStore {
      * This function will autorun if user specify the selectedNodeFileFromInput and the changes that this function will make is to get ready for the rendering of preview Table in the ImportDialog
      *
      * @return {*}
-     * @memberof ImportStore
      */
     public async renderImportNodePreview() {
         let file = this.selectedNodeFileFromInput;
@@ -422,7 +444,7 @@ export default class ImportStore {
 
             reader.onload = () => {
                 // Read entire CSV into memory as string
-                let fileAsString = <string>reader.result;
+                let fileAsString = reader.result as string;
 
                 // if the file is not regularly formatted, replace the EOL character
                 fileAsString = fileAsString.replace(/\r\n/g, "\n");
@@ -456,19 +478,13 @@ export default class ImportStore {
                               delimiter,
                           });
                     nodeFileConfig.topN = it;
-                    nodeFileConfig.columns = <any>(
-                        Object.keys(it[0]).map((key) => `${key}`)
+                    nodeFileConfig.columns = Object.keys(it[0]).map(
+                        (key) => `${key}`
                     );
 
                     // if there exists two or more columns in the parsed edge file
-                    if (nodeFileConfig.columns.length >= 2) {
+                    if (nodeFileConfig.columns.length >= 1) {
                         nodeFileConfig.mapping.id = nodeFileConfig.columns[0];
-                        nodeFileConfig.mapping.cluster =
-                            nodeFileConfig.columns[1];
-                        nodeFileConfig.isReady = true;
-                    } else if (nodeFileConfig.columns.length == 1) {
-                        nodeFileConfig.mapping.id = nodeFileConfig.mapping.cluster =
-                            nodeFileConfig.columns[0];
                         nodeFileConfig.isReady = true;
                     } else {
                         Toaster.create({

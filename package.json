@@ -1,14 +1,15 @@
 {
     "name": "pipernet",
-    "version": "0.3.0-beta",
+    "version": "0.4.0-beta",
     "private": true,
+    "main": "main.js",
     "homepage": "./",
     "dependencies": {
         "@blueprintjs/core": "^3.36.0",
         "@blueprintjs/labs": "^0.16.3",
         "@blueprintjs/popover2": "^0.1.1",
         "@blueprintjs/select": "^3.15.0",
-        "@blueprintjs/table": "^3.8.18",
+        "@blueprintjs/table": "3.5.0",
         "classnames": "^2.2.6",
         "copy-anything": "^2.0.1",
         "csv-parse": "^4.14.2",
@@ -34,7 +35,10 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "electron-start": "electron .",
+        "pack-win": "electron-packager ./ pipernet-win-0.4.0-beta -win --arch=x64 --electron-version 11.2.1 --overwrite --ignore=/node_modules",
+        "pack-mac": "electron-packager ./ pipernet-mac-0.4.0-beta --platform=darwin --arch=x64 --electron-version 11.2.1 --overwrite --ignore=/node_modules"
     },
     "eslintConfig": {
         "extends": [
@@ -55,9 +59,18 @@
         ]
     },
     "devDependencies": {
-        "@types/jest": "^26.0.20",
         "@types/classnames": "^2.2.11",
+        "@types/jest": "^26.0.20",
+        "@types/pluralize": "0.0.29",
         "@types/randomcolor": "^0.5.5",
-        "@types/react": "^17.0.0"
+        "@types/react": "^17.0.0",
+        "@types/react-color": "^3.0.4",
+        "@types/react-csv": "^1.1.1",
+        "electron": "^11.2.1",
+        "electron-packager": "^15.2.0",
+        "prettier": "2.2.1"
+    },
+    "prettier": {
+        "tabWidth": 4
     }
 }

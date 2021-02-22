@@ -1,35 +1,16 @@
 import React from "react";
-import {
-    observable,
-    makeObservable,
-    computed,
-    autorun,
-    action,
-    makeAutoObservable,
-} from "mobx";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
     NodeObject,
 } from "react-force-graph-3d";
 import State from "../../state";
-import ComponentRef from "../ComponentRef";
-import GraphDelegate from "./GraphDelegate";
 
 export default observer(
     class ThreeJSVis extends React.Component {
-        constructor(props: any) {
-            super(props);
-            makeObservable(this, {
-                graphRef: observable,
-                graphMethods: computed,
-                graphDelegate: observable,
-                nodeHover: action,
-                selectedNodes: observable.ref,
-            });
-        }
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
+
         get graphMethods(): ForceGraphMethods {
             return this.graphRef.current;
         }
@@ -44,21 +25,21 @@ export default observer(
             return nodeId;
         }
 
-        graphDelegate = new GraphDelegate();
+        graphDelegate = State.graphDelegate;
 
         nodeHover = (
             node: NodeObject | null,
             previousNode: NodeObject | null
         ) => {
-            if (node != null && node != previousNode) {
+            if (State.search.isPreviewing) return;
+            if (node != null && node !== previousNode) {
                 State.graph.currentlyHoveredId = this.getNodeId(
                     node as NodeObject
                 );
-                console.log(State.graph.currentlyHoveredId);
-                ComponentRef.nodeDetail?.forceUpdate();
             }
         };
 
+        // ref of State.graph.selectedNodes
         selectedNodes: string[] = State.graph.selectedNodes;
 
         nodeSelect = (node: NodeObject, event: MouseEvent) => {
@@ -77,9 +58,22 @@ export default observer(
                 // single-selection
                 // TODO
             }
-            console.log(State.graph.selectedNodes);
-            ComponentRef.multiNodeDetail?.forceUpdate();
             this.graphMethods.refresh(); // update color of selected nodes
+        };
+
+        nodeRightClick = (node: NodeObject, event: MouseEvent) => {
+            State.graph.selectedNode = node.id as string;
+            State.preferences.rightClickPositionX = event.x;
+            State.preferences.rightClickPositionY = event.y;
+            State.preferences.rightClickBackgroundPanelOpen = false;
+            State.preferences.rightClickNodePanelOpen = true;
+        };
+
+        backgroundRightClick = (event: MouseEvent) => {
+            State.preferences.rightClickPositionX = event.x;
+            State.preferences.rightClickPositionY = event.y;
+            State.preferences.rightClickNodePanelOpen = false;
+            State.preferences.rightClickBackgroundPanelOpen = true;
         };
 
         renderGraph = () => {
@@ -96,18 +90,32 @@ export default observer(
                             node.fy = node.y;
                             node.fz = node.z;
                         }}
-                        onBackgroundClick={() => {
-                            // this.allAdded = true;
-                            // this.graphRef.current.pauseAnimation();
-                            // this.graphMethods.refresh();
-                            // this.graphDelegate.init();
+                        onBackgroundRightClick={this.backgroundRightClick}
+                        linkWidth={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                2,
+                                0.1,
+                                1
+                            );
                         }}
-                        onBackgroundRightClick={() => {
-                            // this.allAdded = true;
-                            // this.graphRef.current.pauseAnimation();
-                            // this.graphMethods.refresh();
-                            // this.graphDelegate.init();
+                        linkColor={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                "orangered",
+                                "white",
+                                "white"
+                            );
                         }}
+                        linkDirectionalParticles={(link) => {
+                            return State.graphDelegate.ifHighlightLink(
+                                link,
+                                4,
+                                0,
+                                0
+                            );
+                        }}
+                        linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
@@ -117,6 +125,11 @@ export default observer(
                                 : "grey"
                         }
                         onNodeClick={this.nodeSelect}
+                        onNodeRightClick={this.nodeRightClick}
+                        onBackgroundClick={() => {
+                            State.preferences.rightClickNodePanelOpen = false;
+                            State.preferences.rightClickBackgroundPanelOpen = false;
+                        }}
                         onNodeHover={this.nodeHover}
                     />
                 );

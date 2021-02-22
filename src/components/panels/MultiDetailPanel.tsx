@@ -9,16 +9,6 @@ import State from "../../state/index";
 export default observer(
     class MultipleNodeDetail extends React.Component {
         render() {
-            const formatLongFloat = (nodeAttributeValue: any) => {
-                const num = Number(nodeAttributeValue);
-                if (Number.isNaN(num) || num > 1 || num < 0) {
-                    // Do not format just return original
-                    return nodeAttributeValue;
-                }
-                // Format to no more than 3 significant digit.
-                return Number.parseFloat(num.toString()).toPrecision(3);
-            };
-
             return (
                 <div
                     className={classnames(

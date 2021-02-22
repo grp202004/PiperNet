@@ -1,132 +1,130 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import {
-    CustomNodeObject,
-    CustomLinkObject,
-} from "../components/visualize/GraphDelegate";
+import { Attributes } from "graphology-types";
 
-export interface IHiddenOptions {
-    show: boolean;
-}
-
+/**
+ * the class to store a raw graph as well as the related information
+ 
+ * @export
+ * @class GraphStore
+ */
 export default class GraphStore {
     constructor() {
         makeAutoObservable(this);
     }
 
-    globalConfig = {
-        nodes: {
-            colorBy: "pagerank",
-            color: {
-                scale: "Linear Scale",
-                from: "#448AFF",
-                to: "#E91E63",
-            },
-            sizeBy: "pagerank",
-            size: {
-                min: 2,
-                max: 10,
-                scale: "Linear Scale",
-            },
-            labelBy: "node_id",
-            shape: "circle",
-            labelSize: 1,
-            labelLength: 10,
-        },
-        edges: {
-            color: "#7f7f7f",
-        },
-    };
-
+    /**
+     * the graphology data structure to store a graph.
+     * has a lot of APIs to manipulate as well as iterate through the graph
+     *
+     * @see graphology
+     *
+     * @type {Graph}
+     */
     rawGraph: Graph = new Graph({
         allowSelfLoops: true,
-        multi: true,
+        multi: false,
         type: "undirected",
     });
 
+    /**
+     * should be called when individual nodes are added to the graph.
+
+     * add the CustomNodeObject to node attributes stored in the data structure
+     * @see CustomNodeObject
+     * name as @code _visualize in attributes
+     *
+     * @param {string} node
+     * @param {Attributes} attributes
+     */
+    decorateRawNode(node: string, attributes: Attributes) {
+        attributes._visualize = {
+            id: node,
+            val: 1, // to be changed, to represent the size of the node
+            isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
+        };
+    }
+
+    /**
+     * should be called when individual edges are added to the graph.
+     *
+     * add the CustomLinkObject to node attributes stored in the data structure
+     * @see CustomLinkObject
+     * name as @code _visualize in attributes
+     *
+     * @param {string} source
+     * @param {string} target
+     * @param {Attributes} attributes
+     */
+    decorateRawEdge(source: string, target: string, attributes: Attributes) {
+        attributes._visualize = {
+            source: source,
+            target: target,
+            isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
+        };
+    }
+
+    /**
+     * should be called on every graph import
+     * add the the _visualize to every links inside the specified graph
+     *
+     * the _visualize is for storing the object to be send to front-end to render the graph
+     *
+     * @param {Graph} _rawGraph
+     * @return {*}  {Graph}
+     */
     decorateRawGraph(_rawGraph: Graph): Graph {
-        _rawGraph.forEachNode((node, attributes) => {
-            // add _options and _visualize to attributes
-            let options: IHiddenOptions = {
-                show: true,
-            };
-            attributes._options = options;
+        _rawGraph.forEachNode((node, attributes) =>
+            this.decorateRawNode(node, attributes)
+        );
 
-            let visualize: CustomNodeObject = {
-                id: node,
-                name: node,
-                val: 1,
-                isClusterNode: false,
-            };
-            attributes._visualize = visualize;
-        });
-
-        _rawGraph.forEachEdge((edge, attributes, source, target) => {
-            let visualize: CustomLinkObject = {
-                source: source,
-                target: target,
-                isClusterLink: false,
-            };
-            attributes._visualize = visualize;
-        });
+        _rawGraph.forEachEdge((edge, attributes, source, target) =>
+            this.decorateRawEdge(source, target, attributes)
+        );
         return _rawGraph;
     }
 
-    public hideNode(key: string) {
-        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
-            key,
-            "_options"
-        );
-        let newOptions: IHiddenOptions = {
-            ...originalOptions,
-            show: false,
-        };
-        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
-    }
-
-    public showNode(key: string) {
-        let originalOptions: IHiddenOptions = this.rawGraph.getNodeAttribute(
-            key,
-            "_options"
-        );
-        let newOptions: IHiddenOptions = {
-            ...originalOptions,
-            show: true,
-        };
-        this.rawGraph.setNodeAttribute(key, "_options", newOptions);
-    }
-
-    nodes = this.globalConfig.nodes;
-    edges = this.globalConfig.edges;
-
-    enableDegree = true;
-    enableDensity = true;
-    enableDiameter = false;
-    enableCoefficient = true;
-    enableComponent = true;
-
-    // Updated by frame event
+    /**
+     * the currently selected node ids
+     * the singleNodeDetailPanel will render and refresh if this changes
+     *
+     * @type {string[]}
+     */
     selectedNodes: string[] = [];
 
-    //currently hovered node id
+    /**
+     * the currently selected node id
+     *
+     * @type {string}
+     */
+    selectedNode: string = "";
+
+    /**
+     * the currently hovered node id
+     * the multiNodeDetailPanel will render and refresh if this changes
+     *
+     * @type {string}
+     */
     currentlyHoveredId: string = "undefined";
 
-    // Cache the single node that's been selected last time
-    // and will not update unless exactly one node is selected again
-    // useful for NeighborDialog
-    _lastSelectedSingleNode = null;
-
+    /**
+     * if currently there is a graph in the dataset
+     *
+     * @readonly
+     */
     get hasGraph() {
-        return this.rawGraph.order && this.rawGraph.size != 0;
+        return this.rawGraph.order && this.rawGraph.size !== 0;
     }
 
+    /**
+     * the metadata related to the raw graph
+     * should be updated if a new graph is imported
+     *
+     */
     metadata = {
-        snapshotName: String,
-        numNodes: 0,
-        numEdges: 0,
+        snapshotName: "SNAPSHOT" as string,
 
-        // attributes of nodes in imported csv
-        nodeProperties: [],
-        edgeProperties: [],
+        // attributes of nodes in imported graph
+        nodeProperties: [] as string[],
     };
 }

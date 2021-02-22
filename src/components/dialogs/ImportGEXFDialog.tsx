@@ -4,16 +4,16 @@ import {
     Button,
     Classes,
     Dialog,
+    FileInput,
     Intent,
     Spinner,
-    FileInput,
 } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state";
+import State from "../../state";
 
 export default observer(
-    class GEXFImportDialog extends React.Component {
+    class ImportGEXFDialog extends React.Component {
         state = {
             fileIsSelect: false,
         };
@@ -51,7 +51,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    iconName="import"
+                    icon="import"
                     className={classnames({
                         [Classes.DARK]: State.preferences.darkMode,
                     })}
@@ -86,16 +86,19 @@ export default observer(
                                         <FileInput
                                             text={State.import.gexfFileName}
                                             onInputChange={(event) => {
+                                                let target = event.target as HTMLInputElement;
                                                 if (
-                                                    event.target.files.length <
-                                                    1
+                                                    !target.files ||
+                                                    target.files.length < 1
                                                 ) {
                                                     return;
                                                 }
                                                 State.import.gexfFileName =
-                                                    event.target.files[0].name;
+                                                    target.files[0].name;
+                                                // after setting the selectedNodeFileFromInput, it will auto render the preview table
                                                 State.import.selectedGEXFFileFromInput =
-                                                    event.target.files[0];
+                                                    target.files[0];
+
                                                 this.setState({
                                                     fileIsSelect: true,
                                                 });

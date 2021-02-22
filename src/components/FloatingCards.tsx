@@ -1,20 +1,17 @@
 import React from "react";
-import { Classes, Tab, Tabs, Button } from "@blueprintjs/core";
+import { Button, Classes, Tab, Tabs } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
-import SimpleSelect from "./utils/SimpleSelect";
-// import { addNode } from "../ipc/client";
 import NodesPanel from "./panels/NodesPanel";
 import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
 import NodeDetail from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
-// import Legends from "./Legends";
-// // import StatusBar from './StatusBar';
-// import SelectionActionPanel from "./panels/SelectionActionPanel";
-
-// TODO: migrate to simple select
+import SearchPanel from "./panels/SearchPanel";
+import RightClickNodePanel from "./panels/RightClickNodePanel";
+import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
+import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 
 let RenderOptionsCard = observer(
     class RenderOptionsCard extends React.Component {
@@ -82,7 +79,7 @@ export default observer(
                                 className="openbtn2"
                                 icon="chevron-left"
                                 onClick={this.toggleOptions}
-                            ></Button>
+                            />
                             <br />
                             <RenderOptionsCard />
                         </div>
@@ -110,7 +107,7 @@ export default observer(
                                         ? this.sideButtonVis
                                         : this.sideButtonInv
                                 }
-                            ></Button>
+                            />
                         </div>
                     </div>
 
@@ -118,22 +115,32 @@ export default observer(
                     {/* {State.graph.selectedNodes.length === 1 && (
                         <NodeDetail node={State.graph.currentlyHoveredId} />
                     )} */}
-                    {State.graph.currentlyHoveredId != "undefined" &&
-                        State.graph.selectedNodes.length == 0 && <NodeDetail />}
+                    {State.graph.currentlyHoveredId !== "undefined" &&
+                        State.graph.selectedNodes.length === 0 && (
+                            <NodeDetail />
+                        )}
 
                     {/* multiple selected */}
                     {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
                         <NodeDetail node={State.graph.currentlyHovered.data.ref} />
                     )} */}
-                    {State.graph.selectedNodes.length != 0 && (
+                    {State.graph.selectedNodes.length !== 0 && (
                         <MultiDetailPanel />
                     )}
 
-                    {/* <Legends />
-          <StatusBar /> */}
-                    {/* {// This menu only shows when there are nodes selected
-            State.graph.selectedNodes.length > 0 && !State.preferences.isNavbarInMinimalMode && <SelectionActionPanel />
-          } */}
+                    <SearchPanel />
+                    {State.preferences.rightClickNodePanelOpen && (
+                        <RightClickNodePanel />
+                    )}
+
+                    {State.preferences.rightClickBackgroundPanelOpen && (
+                        <RightClickBackgroundPanel />
+                    )}
+                    {State.preferences.deleteEdgePanelOpen && (
+                        <DeleteEdgeInteractionPanel
+                            onNode={State.graph.selectedNode}
+                        />
+                    )}
                 </div>
             );
         }

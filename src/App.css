@@ -50,6 +50,10 @@
     position: relative;
 }
 
+*:focus {
+    outline: none !important;
+    box-shadow: none;
+}
 .workspace {
     max-height: 90vh;
     padding-top: 10vh;
@@ -195,6 +199,12 @@ html {
     position: absolute;
 }
 
+.right-bottom-overlay-card {
+    right: 2em;
+    bottom: 2em;
+    position: absolute;
+}
+
 .minimal-navbar-right {
     position: absolute;
     top: 0px;
@@ -226,6 +236,11 @@ html {
 
 .bottom-status-bar__right {
     margin: 5px 10px 5px 10px;
+}
+
+.bottom-overlay-card {
+    position: absolute;
+    bottom: 5px;
 }
 
 button.pt-fill.text-align-left {
@@ -318,14 +333,23 @@ div.pt-card.sub-option.legend {
     padding: 0;
 }
 
-.nodes-details-table {
+.right-click-panel {
+    position: absolute;
+    width: 10vw;
+    pointer-events: all;
+}
+
+.search {
+    font-size: 0.4em;
+    pointer-events: all;
+}
+
+.search-menu {
     overflow-x: auto;
     overflow-y: auto;
-    max-width: 95%;
     max-height: 60vh;
     font-size: 0.4em;
     pointer-events: all;
-    padding: 0;
 }
 
 .argo-menu-list-header {
@@ -334,22 +358,10 @@ div.pt-card.sub-option.legend {
     margin-bottom: 10px;
 }
 
-.argo-table-container {
+.argo-table {
     overflow: auto;
-    max-width: 80vw;
-    max-height: 80vh;
-}
-
-.argo-table-container__table {
-    border-collapse: collapse;
-}
-
-.argo-table-container__table th {
-    white-space: normal;
-}
-
-.argo-table-container__table td {
-    white-space: normal;
+    width: 100%;
+    height: 600px;
 }
 
 .argo-selection-action-panel {

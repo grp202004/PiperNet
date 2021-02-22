@@ -1,4 +1,5 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
+import State from "../state";
 
 class ComponentRef {
     constructor() {
@@ -22,5 +23,10 @@ class ComponentRef {
         }
     }
 }
+
+reaction(
+    () => State.graph.currentlyHoveredId,
+    () => ComponentRef.instance.nodeDetail?.forceUpdate()
+);
 
 export default ComponentRef.instance;

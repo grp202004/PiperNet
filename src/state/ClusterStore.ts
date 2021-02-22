@@ -3,17 +3,43 @@ import Graph from "graphology";
 import * as THREE from "three";
 import randomcolor from "randomcolor";
 
+/**
+ * all the computed values get from the rawGraph
+ *
+ * @export
+ * @class ClusterStore
+ */
 export default class ClusterStore {
     constructor() {
         makeAutoObservable(this, {
             rawGraph: observable.ref,
         });
     }
+    /**
+     * @observable
+     * Specify which attribute to be clustered
+     * if this is changed, all get values will be updated
+     *
+     */
     clusterBy = "None";
 
+    /**
+     * @observable .ref
+     * the reference bounded to the GraphStore/rawGraph
+     *
+     * @type {Graph}
+     */
     rawGraph!: Graph;
 
-    // the map between [the id of a Node and the value of the attribute specified by $clusterBy]
+    /**
+     * @computed
+     * a auto computed map
+     * will auto-update if $rawGraph or $clusterBy is changed
+     * [the id of a Node -> the value of the attribute specified by $clusterBy]
+     *
+     * @readonly
+     * @type {(Map<string, string | number>)}
+     */
     get keyAttribute(): Map<string, string | number> {
         const attribute = this.clusterBy;
         const keyValueMap = new Map<string, string | number>();
@@ -30,6 +56,25 @@ export default class ClusterStore {
         return keyValueMap;
     }
 
+    /**
+     * the possible attribute values of the attribute defined by $clusterBy
+     *
+     * @readonly
+     * @type {((string | number)[])}
+     */
+    get getAttributeValues(): (string | number)[] {
+        return Array.from(new Set(this.keyAttribute.values()));
+    }
+
+    /**
+     * @computed
+     * a auto computed map
+     * will auto-update if $rawGraph or $clusterBy is changed
+     * [the possible values of the attribute specified by $clusterBy -> a list of Node ids]
+     *
+     * @readonly
+     * @type {(Map<string | number, string[]>)}
+     */
     get attributeKeys(): Map<string | number, string[]> {
         const attributeKeysMap = new Map<string | number, string[]>();
         this.getAttributeValues.forEach((value) => {
@@ -41,11 +86,16 @@ export default class ClusterStore {
         return attributeKeysMap;
     }
 
-    // the possible attribute values of the attribute defined by clusterBy
-    get getAttributeValues(): (string | number)[] {
-        return Array.from(new Set(this.keyAttribute.values()));
-    }
-
+    /**
+     * @computed
+     * a auto computed map
+     * will auto-update if $rawGraph or $clusterBy is changed
+     * [the possible values of the attribute specified by $clusterBy -> the random colour of this cluster]
+     * used to avoid re-compute the colours on every frame refresh
+     *
+     * @readonly
+     * @type {(Map<string | number, string>)}
+     */
     get attributeColor(): Map<string | number, string> {
         let colors = randomcolor({
             seed: 1,
@@ -53,15 +103,25 @@ export default class ClusterStore {
         });
         let position = 0;
         let map = new Map<string | number, string>();
-        this.getAttributeValues.map((attribute) => {
+        this.getAttributeValues.forEach((attribute) => {
             map.set(attribute, colors[position++]);
         });
         return map;
     }
 
+    /**
+     * @computed
+     * a auto computed map
+     * will auto-update if $rawGraph or $clusterBy is changed
+     * [the possible values of the attribute specified by $clusterBy -> the Nodes points in that cluster]
+     * will change on every frame refresh as the Node's position keeps changing.
+     *
+     * @readonly
+     * @type {(Map<string | number, THREE.Vector3[]>)}
+     */
     get attributePoints(): Map<string | number, THREE.Vector3[]> {
         let map = new Map<string | number, THREE.Vector3[]>();
-        this.getAttributeValues.map((attribute) => {
+        this.getAttributeValues.forEach((attribute) => {
             let vectorList: THREE.Vector3[] = [];
             map.set(attribute, vectorList);
         });

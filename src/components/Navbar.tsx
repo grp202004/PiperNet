@@ -1,29 +1,19 @@
 import React from "react";
-import { observer, inject } from "mobx-react";
+import { observer } from "mobx-react";
 import classnames from "classnames";
 import {
     Button,
-    Classes,
     ButtonGroup,
-    Intent,
-    Position,
-    Tooltip,
-    Popover,
+    Classes,
     Menu,
-    MenuItem,
     MenuDivider,
-    Divider,
+    MenuItem,
+    Popover,
+    Position,
 } from "@blueprintjs/core";
-// import { Popover2 as Popover } from "@blueprintjs/popover2";
 import SimpleSelect from "./utils/SimpleSelect";
 import logo from "../images/logo.png";
 import State from "../state";
-
-import {
-    GITHUB_URL,
-    SAMPLE_GRAPH_SNAPSHOTS,
-    fetchSampleGraph,
-} from "../constants";
 
 export default observer(
     class Navbar extends React.Component {
@@ -42,7 +32,8 @@ export default observer(
                             src={logo}
                             width="35"
                             height="35"
-                        ></img>
+                            alt="PiperNet Logo"
+                        />
                         <div className={classnames([Classes.NAVBAR_HEADING])}>
                             {" "}
                             PiperNet{" "}
@@ -51,8 +42,14 @@ export default observer(
                         <Popover
                             content={
                                 <Menu>
-                                    <MenuItem text="Load Sample" icon="graph">
-                                        {SAMPLE_GRAPH_SNAPSHOTS.map(
+                                    <MenuItem
+                                        text="Load Sample"
+                                        icon="graph"
+                                        onClick={() => {
+                                            State.import.importSamplesDialogOpen = true;
+                                        }}
+                                    >
+                                        {/* {SAMPLE_GRAPH_SNAPSHOTS.map(
                                             (sample) => {
                                                 const sampleSnapshotTitle =
                                                     sample[0];
@@ -88,7 +85,7 @@ export default observer(
                                                     />
                                                 );
                                             }
-                                        )}
+                                        )} */}
                                     </MenuItem>
                                     <MenuDivider />
                                     <MenuItem
@@ -131,11 +128,17 @@ export default observer(
                             content={
                                 <Menu>
                                     <MenuItem
-                                        text="Data Sheet"
-                                        icon="database"
+                                        text="Node DataSheet"
+                                        icon="ungroup-objects"
                                         onClick={() => {
-                                            // State.graph.frame.pauseLayout();
-                                            State.preferences.dataSheetDialogOpen = true;
+                                            State.preferences.nodeDataSheetDialogOpen = true;
+                                        }}
+                                    />
+                                    <MenuItem
+                                        text="Edge DataSheet"
+                                        icon="link"
+                                        onClick={() => {
+                                            State.preferences.edgeDataSheetDialogOpen = true;
                                         }}
                                     />
                                     {/* <MenuItem
@@ -225,12 +228,14 @@ export default observer(
                         Clustered by{"  "}
                         <SimpleSelect
                             items={
-                                State.graph.metadata.nodeProperties.length == 0
+                                State.graph.metadata.nodeProperties.length === 0
                                     ? ["None"]
                                     : State.graph.metadata.nodeProperties
                             }
-                            value={State.cluster.clusterBy}
-                            onSelect={(it) => (State.cluster.clusterBy = it)}
+                            text={State.cluster.clusterBy}
+                            onSelect={(it: string) =>
+                                (State.cluster.clusterBy = it)
+                            }
                         />
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button
@@ -241,7 +246,7 @@ export default observer(
                             icon="cog"
                             disabled={true}
                             onClick={() => {
-                                State.preferences.dialogOpen = true;
+                                State.preferences.preferenceDialogOpen = true;
                             }}
                         />
                         <Button

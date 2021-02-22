@@ -1,39 +1,23 @@
 import React from "react";
-import {
-    Button,
-    Classes,
-    Dialog,
-    Intent,
-    ButtonGroup,
-    Card,
-    Elevation,
-    NumericInput,
-} from "@blueprintjs/core";
-import {
-    Column,
-    Table,
-    Cell,
-    EditableCell,
-    TableLoadingOption,
-} from "@blueprintjs/table";
+import { Classes, Dialog } from "@blueprintjs/core";
+import { Column, Table, TableLoadingOption } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import classnames from "classnames";
-import State from "../state";
-import GraphDataTable from "./GraphDataTable";
-import SimpleSelect from "./utils/SimpleSelect";
+import State from "../../state";
+
+interface Props {
+    for: string;
+    children: React.ReactNode;
+}
 
 export default observer(
-    class DataSheetDialog extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                showMoreBy: "pagerank",
-                showMoreNum: 5,
-            };
-        }
+    class DataSheetDialogWrapper extends React.Component<Props, {}> {
+        state = {
+            loading: true,
+        };
 
         renderTable() {
-            if (State.preferences.dataSheetLoading) {
+            if (this.state.loading) {
                 return (
                     <div className="argo-table-container">
                         <Table
@@ -59,41 +43,41 @@ export default observer(
                     </div>
                 );
             } else {
-                return <GraphDataTable />;
+                return this.props.children;
             }
         }
 
         render() {
             return (
                 <Dialog
-                    iconName="database"
-                    isOpen={State.preferences.dataSheetDialogOpen}
+                    icon="database"
+                    isOpen={
+                        this.props.for === "node"
+                            ? State.preferences.nodeDataSheetDialogOpen
+                            : State.preferences.edgeDataSheetDialogOpen
+                    }
                     onOpened={() => {
                         setTimeout(() => {
-                            State.preferences.dataSheetLoading = false;
+                            this.setState({
+                                loading: false,
+                            });
                         }, 100);
                     }}
                     onClose={() => {
-                        State.preferences.dataSheetDialogOpen = false;
-                        State.preferences.dataSheetLoading = true;
+                        if (this.props.for === "node") {
+                            State.preferences.nodeDataSheetDialogOpen = false;
+                        } else {
+                            State.preferences.edgeDataSheetDialogOpen = false;
+                        }
+                        this.setState({
+                            loading: true,
+                        });
                     }}
                     title="Data Sheet"
                     style={{ minWidth: "80vw" }}
                 >
                     <div className={classnames(Classes.DIALOG_BODY)}>
                         {this.renderTable()}
-                    </div>
-
-                    <div className={Classes.DIALOG_FOOTER}>
-                        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                            <Button
-                                intent={Intent.PRIMARY}
-                                onClick={() => {
-                                    State.preferences.dataSheetDialogOpen = false;
-                                }}
-                                text="Done"
-                            />
-                        </div>
                     </div>
                 </Dialog>
             );

@@ -1,28 +1,32 @@
 import React from "react";
 import {
     Button,
+    Callout,
     Classes,
     Dialog,
+    Divider,
+    FileInput,
     Intent,
     Spinner,
     Switch,
-    Divider,
-    FileInput,
-    Alert,
-    Callout,
     Tag,
 } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import classnames from "classnames";
 import { observer } from "mobx-react";
-import State from "../state";
+import State from "../../state";
 
-import Collapsable from "./utils/Collapsable";
-import SimpleSelect from "./utils/SimpleSelect";
-import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../constants/index";
+import Collapsable from "../utils/Collapsable";
+import SimpleSelect from "../utils/SimpleSelect";
+import { NODE_AND_EDGE_FILE, ONLY_EDGE_FILE } from "../../constants";
+import { IEdgeFileConfig, INodeFileConfig } from "../../state/ImportStore";
+
+interface PreviewTableProps {
+    file: INodeFileConfig | IEdgeFileConfig;
+}
 
 let PreviewTable = observer(
-    class PreviewTable extends React.Component {
+    class PreviewTable extends React.Component<PreviewTableProps, {}> {
         file = this.props.file;
 
         renderWrapper = () => {
@@ -51,7 +55,8 @@ let PreviewTable = observer(
                         ))}
                     </Table>
                     <Tag>
-                        Only the top 10 lines of the selected file are displayed
+                        Only the top {this.file.topN.length} rows of the
+                        selected file are displayed.
                     </Tag>
                 </div>
             );
@@ -64,16 +69,14 @@ let PreviewTable = observer(
 );
 
 export default observer(
-    class ImportDialog extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                available: ONLY_EDGE_FILE,
-                nodesOpen: true,
-                edgesOpen: true,
-                delimiter: ",",
-            };
-        }
+    class ImportCSVDialog extends React.Component {
+        state = {
+            loading: false,
+            available: ONLY_EDGE_FILE,
+            nodesOpen: true,
+            edgesOpen: true,
+            delimiter: ",",
+        };
 
         // determine if this state is importable
         canImport = () => {
@@ -91,7 +94,7 @@ export default observer(
         renderNodesSelection = () => {
             const nodeFile = State.import.importConfig.nodeFile;
 
-            // if file not imported, show blank
+            // show blank if node file not relevant
             if (this.state.available === ONLY_EDGE_FILE) {
                 return null;
             }
@@ -115,14 +118,18 @@ export default observer(
                             <FileInput
                                 text={State.import.nodeFileName}
                                 onInputChange={(event) => {
-                                    if (event.target.files.length < 1) {
+                                    let target = event.target as HTMLInputElement;
+                                    if (
+                                        !target.files ||
+                                        target.files.length < 1
+                                    ) {
                                         return;
                                     }
                                     State.import.nodeFileName =
-                                        event.target.files[0].name;
-                                    // after setting the selectedNodeFileFromInput, other attributes will update automatically
+                                        target.files[0].name;
+                                    // after setting the selectedNodeFileFromInput, it will auto render the preview table
                                     State.import.selectedNodeFileFromInput =
-                                        event.target.files[0];
+                                        target.files[0];
                                 }}
                             />
                         </div>
@@ -142,17 +149,8 @@ export default observer(
                             Column for Node ID:
                             <SimpleSelect
                                 items={nodeFile.columns}
-                                value={nodeFile.mapping.id}
+                                text={nodeFile.mapping.id}
                                 onSelect={(it) => (nodeFile.mapping.id = it)}
-                            />
-                            <br />
-                            Column for Attribute for Cluster:
-                            <SimpleSelect
-                                items={nodeFile.columns}
-                                value={nodeFile.mapping.cluster}
-                                onSelect={(it) =>
-                                    (nodeFile.mapping.cluster = it)
-                                }
                             />
                         </div>
                     )}
@@ -181,13 +179,17 @@ export default observer(
                             <FileInput
                                 text={State.import.edgeFileName}
                                 onInputChange={(event) => {
-                                    if (event.target.files.length < 1) {
+                                    let target = event.target as HTMLInputElement;
+                                    if (
+                                        !target.files ||
+                                        target.files.length < 1
+                                    ) {
                                         return;
                                     }
                                     State.import.edgeFileName =
-                                        event.target.files[0].name;
+                                        target.files[0].name;
                                     State.import.selectedEdgeFileFromInput =
-                                        event.target.files[0];
+                                        target.files[0];
                                 }}
                             />
                         </div>
@@ -207,7 +209,7 @@ export default observer(
                             Column for Source ID:
                             <SimpleSelect
                                 items={edgeFile.columns}
-                                value={edgeFile.mapping.fromId}
+                                text={edgeFile.mapping.fromId}
                                 onSelect={(it) =>
                                     (edgeFile.mapping.fromId = it)
                                 }
@@ -216,7 +218,7 @@ export default observer(
                             Column for Target ID:
                             <SimpleSelect
                                 items={edgeFile.columns}
-                                value={edgeFile.mapping.toId}
+                                text={edgeFile.mapping.toId}
                                 onSelect={(it) => (edgeFile.mapping.toId = it)}
                             />
                         </div>
@@ -227,17 +229,17 @@ export default observer(
 
         renderDelimiterSelection() {
             return (
-                <div className="column-selection">
+                <div>
                     Selected Delimiter
                     <SimpleSelect
                         items={[",", "\\t", ";", "[SPACE]"]}
-                        value={this.state.delimiter}
+                        text={this.state.delimiter}
                         onSelect={(newDelimiter) => {
                             this.setState({ delimiter: newDelimiter });
 
-                            if (newDelimiter == "\\t") {
+                            if (newDelimiter === "\\t") {
                                 newDelimiter = "\t";
-                            } else if (newDelimiter == "[SPACE]") {
+                            } else if (newDelimiter === "[SPACE]") {
                                 newDelimiter = " ";
                             }
 
@@ -253,7 +255,7 @@ export default observer(
             return (
                 <Dialog
                     style={{ minWidth: "80vw" }}
-                    iconName="import"
+                    icon="import"
                     className={classnames({
                         [Classes.DARK]: State.preferences.darkMode,
                     })}
@@ -277,7 +279,7 @@ export default observer(
                                 I have:
                                 <SimpleSelect
                                     items={[ONLY_EDGE_FILE, NODE_AND_EDGE_FILE]}
-                                    value={this.state.available}
+                                    text={this.state.available}
                                     onSelect={(targetValue) => {
                                         State.import.importConfig.hasNodeFile = !(
                                             targetValue === ONLY_EDGE_FILE
@@ -302,10 +304,6 @@ export default observer(
                                         })}
                                         intent={Intent.PRIMARY}
                                         onClick={() => {
-                                            // requestCreateNewProject({
-                                            //     name: State.project.newProjectName,
-                                            //     createdDate: new Date().toLocaleString(),
-                                            // });
                                             State.import.isLoading = true;
                                             State.import
                                                 .importGraphFromCSV()
@@ -315,27 +313,8 @@ export default observer(
                                                     );
                                                     State.graph.metadata =
                                                         res.metadata;
-
-                                                    // runInAction(
-                                                    //     "load imported graph",
-                                                    //     () => {
-                                                    //         appState.graph.rawGraph =
-                                                    //             graph.rawGraph;
-                                                    //         appState.graph.metadata =
-                                                    //             graph.metadata;
-                                                    //         appState.graph.setUpFrame();
-                                                    //     }
-                                                    // );
-                                                    // // Reinitialize global configs
-                                                    // appState.graph.nodes =
-                                                    //     appState.graph.initialGlobalConfig.nodes;
-                                                    // appState.graph.overrides = new Map();
-
                                                     State.import.isLoading = false;
                                                     State.import.importCSVDialogOpen = false;
-
-                                                    // // Newly imported graph shouldn't have label showing
-                                                    // appState.graph.frame.turnOffLabelCSSRenderer();
                                                 });
                                         }}
                                         text="Import"
