@@ -12,7 +12,7 @@ import {
     Position,
     Switch,
 } from "@blueprintjs/core";
-import ClusterChosser from "./utils/ClusterChooser";
+import ClusterChooser from "./utils/ClusterChooser";
 import logo from "../images/logo.png";
 import State from "../state";
 
@@ -234,7 +234,7 @@ export default observer(
                         ])}
                     >
                         Clustered by
-                        <ClusterChosser
+                        <ClusterChooser
                             onSelect={(cluster) => {
                                 State.cluster.clusterBy = cluster;
                             }}

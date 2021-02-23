@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, observable } from "mobx";
 import Graph from "graphology";
 import State from ".";
 import {
@@ -59,11 +59,10 @@ export default class GraphDelegate {
      *
      * nodes and edges with the show=false will be ignored in this case
      *
-     * @readonly
      */
-    get visualizationGraph() {
+    visualizationGraph() {
         let newGraph: Graph;
-        if (State.cluster.clusterBy === "None") {
+        if (State.cluster.clusterBy === null) {
             newGraph = State.graph.rawGraph;
         } else {
             newGraph = State.graph.decorateRawGraph(
@@ -169,7 +168,7 @@ export default class GraphDelegate {
      *
      */
     clusterDelegation() {
-        if (State.cluster.clusterBy === "None") {
+        if (State.cluster.clusterBy === null) {
             return;
         }
         this.threeScene.remove(this.lastObject3D);

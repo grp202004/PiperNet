@@ -129,7 +129,7 @@ let GraphNodeTable = observer(
                     isOpen={this.state.deleteAlertOpen}
                     onCancel={() => this.setState({ deleteAlertOpen: false })}
                     onConfirm={() => {
-                        State.graph.rawGraph.dropNode(
+                        State.graph.mutating.dropNode(
                             this.state.nodeToDelete?.key as string
                         );
                         this.setState({ deleteAlertOpen: false });
