@@ -236,7 +236,7 @@ export default observer(
                         Clustered by
                         <ClusterChooser
                             onSelect={(cluster) => {
-                                State.cluster.clusterBy = cluster;
+                                State.cluster.setCluster(cluster);
                             }}
                         />
                         <span className={Classes.NAVBAR_DIVIDER} />

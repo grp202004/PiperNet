@@ -1,6 +1,7 @@
 import { Attributes, EdgeKey, NodeKey } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import GraphStore from "./GraphStore";
+import State from ".";
 
 /**
  * the wrapper mutating function that relates to the mutation of the rawGraph DS
@@ -15,16 +16,16 @@ export default class GraphMutation {
         this.that = _this;
     }
 
-    that!: GraphStore;
+    private that!: GraphStore;
 
     public addNode(node: NodeKey, attributes?: Attributes): void {
         this.that.rawGraph.addNode(node, attributes);
-        this.that.setGraph(this.that.rawGraph);
+        this.that.refreshGraph();
     }
 
     public dropNode(nodeId: string): void {
         this.that.rawGraph.dropNode(nodeId);
-        this.that.setGraph(this.that.rawGraph);
+        this.that.refreshGraph();
     }
 
     public addEdge(
@@ -33,11 +34,11 @@ export default class GraphMutation {
         attributes?: Attributes
     ): void {
         this.that.rawGraph.addEdge(source, target, attributes);
-        this.that.setGraph(this.that.rawGraph);
+        this.that.refreshGraph();
     }
 
     public dropEdge(edge: EdgeKey): void {
         this.that.rawGraph.dropEdge(edge);
-        this.that.setGraph(this.that.rawGraph);
+        this.that.refreshGraph();
     }
 }

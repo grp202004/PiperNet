@@ -113,9 +113,19 @@ export default class GraphStore {
     }
 
     /**
+     * should be called when the graph gets updated (the data inside the graph gets updated, or the attribute to be clustered has changed)
+     *
+     * @memberof GraphStore
+     */
+    public refreshGraph() {
+        this.flush();
+        ComponentRef.visualizer.updateVisualizationGraph();
+    }
+
+    /**
      * the wrapper methods to mutate the graph
      * all the mutations of the graph should go through this API rather than calling this.rawGraph.[mutate]
-     * 
+     *
      * has basic functions like addNode, dropNode, addEdge, dropEdge...
      *
      * @see {GraphMutation}
