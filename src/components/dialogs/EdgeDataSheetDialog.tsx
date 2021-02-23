@@ -84,7 +84,7 @@ let GraphEdgeTable = observer(
                     isOpen={this.state.deleteAlertOpen}
                     onCancel={() => this.setState({ deleteAlertOpen: false })}
                     onConfirm={() => {
-                        State.graph.rawGraph.dropEdge(
+                        State.graph.mutating.dropEdge(
                             this.state.edgeToDelete?.key as string
                         );
                         this.setState({ deleteAlertOpen: false });
@@ -167,7 +167,7 @@ let GraphEdgeTable = observer(
                             <Button
                                 intent={Intent.PRIMARY}
                                 onClick={() => {
-                                    State.graph.rawGraph.addEdge(
+                                    State.graph.mutating.addEdge(
                                         this.state.chosenSource!,
                                         this.state.chosenTarget!
                                     );

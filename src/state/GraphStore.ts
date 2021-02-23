@@ -1,7 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import { Attributes } from "graphology-types";
+import { Attributes, NodeKey, NodeEntry } from "graphology-types";
+import ComponentRef from "../components/ComponentRef";
 import State from ".";
+import GraphMutation from "./GraphMutation";
 
 export interface IMetaData {
     snapshotName: string;
@@ -19,6 +21,7 @@ export interface IMetaData {
 export default class GraphStore {
     constructor() {
         makeAutoObservable(this);
+        this.mutating = new GraphMutation(this);
     }
 
     /**
@@ -92,7 +95,6 @@ export default class GraphStore {
         return _rawGraph;
     }
 
-    
     /**
      * proxy method to set the new graph
      * if intend to set a new graph, please use this method instead of directly modify GraphStore
@@ -100,12 +102,25 @@ export default class GraphStore {
      * @param {Graph} newGraph
      * @param {IMetaData} metadata
      */
-    public setGraph(newGraph: Graph, metadata: IMetaData) {
-        this.rawGraph = this.decorateRawGraph(newGraph);
-        this.metadata = metadata;
+    public setGraph(_rawGraph: Graph, _metadata: IMetaData | null = null) {
+        this.rawGraph = this.decorateRawGraph(_rawGraph);
+        if (_metadata) {
+            this.metadata = _metadata;
+        }
         this.flush();
         State.cluster.clusterBy = null;
+        ComponentRef.visualizer.updateVisualizationGraph();
     }
+
+    /**
+     * the wrapper methods to mutate the graph
+     * all the mutations of the graph should go through this API rather than calling this.rawGraph.[mutate]
+     * 
+     * has basic functions like addNode, dropNode, addEdge, dropEdge...
+     *
+     * @see {GraphMutation}
+     */
+    mutating: GraphMutation;
 
     /**
      * the currently selected node ids

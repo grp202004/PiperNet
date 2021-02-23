@@ -121,7 +121,7 @@ export default observer(
                                 this.state.newNodeId,
                                 this.state.attributes
                             );
-                            State.graph.rawGraph.addNode(
+                            State.graph.mutating.addNode(
                                 this.state.newNodeId,
                                 this.state.attributes
                             );
