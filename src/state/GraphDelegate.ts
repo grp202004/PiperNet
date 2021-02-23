@@ -253,27 +253,52 @@ export default class GraphDelegate {
      * @type {(LinkObject | null)}
      */
     highlightLink: LinkObject | null = null;
+    neighborNodeids: string[] = [];
 
     ifHighlightLink<T>(link: LinkObject, _if: T, _else: T, _default: T): T {
-        if (State.graphDelegate.highlightLink == null) {
+        if ((State.graphDelegate.highlightLink == null) && (State.graphDelegate.neighborNodeids == null)) {
             return _default;
         }
         let sourceId = (link.source as NodeObject).id as string;
         let targetId = (link.target as NodeObject).id as string;
 
-        if (
-            (sourceId ===
-                (State.graphDelegate.highlightLink?.source as string) &&
-                targetId ===
+        //highlight one link
+        if (State.graphDelegate.highlightLink != null) {
+            if (
+                (sourceId ===
+                    (State.graphDelegate.highlightLink?.source as string) &&
+                    targetId ===
                     (State.graphDelegate.highlightLink?.target as string)) ||
-            (sourceId ===
-                (State.graphDelegate.highlightLink?.target as string) &&
-                targetId ===
+                (sourceId ===
+                    (State.graphDelegate.highlightLink?.target as string) &&
+                    targetId ===
                     (State.graphDelegate.highlightLink?.source as string))
-        ) {
-            return _if;
-        } else {
-            return _else;
+            ) {
+                return _if;
+            }
+            //  else {
+            //     return _else;
+            // }
         }
+
+
+        //highlight links of a hovered node
+        if (State.graphDelegate.neighborNodeids != null) {
+            if (State.graph.currentlyHoveredId == null) {
+                return _default;
+            }
+            else if (
+                (sourceId ===
+                    (State.graph.currentlyHoveredId) &&
+                    (this.neighborNodeids.includes(targetId))) ||
+                (targetId ===
+                    (State.graph.currentlyHoveredId) &&
+                    (this.neighborNodeids.includes(sourceId)))
+            ) {
+                return _if;
+            }
+        }
+
+        return _else;
     }
 }

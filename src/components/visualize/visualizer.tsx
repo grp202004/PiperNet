@@ -25,6 +25,20 @@ export default observer(
             return nodeId;
         }
 
+        getNeighbors(node: NodeObject): string[] {
+            if (node.id as string === "") {
+                return [];
+            }
+            let neighbors: string[] = [];
+            State.graph.rawGraph.forEachNeighbor(
+                node.id as string,
+                (neighbor) => {
+                    neighbors.push(neighbor);
+                }
+            );
+            return neighbors;
+        }
+
         graphDelegate = State.graphDelegate;
 
         nodeHover = (
@@ -36,6 +50,7 @@ export default observer(
                 State.graph.currentlyHoveredId = this.getNodeId(
                     node as NodeObject
                 );
+                State.graphDelegate.neighborNodeids = this.getNeighbors(node);
             }
         };
 
@@ -94,10 +109,10 @@ export default observer(
                         linkWidth={(link) => {
                             return State.graphDelegate.ifHighlightLink(
                                 link,
-                                2,
-                                0.1,
+                                4,
+                                1,
                                 1
-                            );
+                            );//the previous parameter are 2,0.1,1, change made by Zhiyuan Lyu is used to test
                         }}
                         linkColor={(link) => {
                             return State.graphDelegate.ifHighlightLink(
