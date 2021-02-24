@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 
 export default class PreferencesStore {
+
     constructor() {
         makeAutoObservable(this);
     }
@@ -20,6 +21,7 @@ export default class PreferencesStore {
     helpDialogOpen = false;
     neighborDialogOpen = false;
     AddNodeDialogOpen = false;
+    AddEdgeDialogOpen = false;
 
     nodeDataSheetDialogOpen = false;
     edgeDataSheetDialogOpen = false;
