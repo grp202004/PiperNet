@@ -10,8 +10,9 @@ import {
     MenuItem,
     Popover,
     Position,
+    Switch,
 } from "@blueprintjs/core";
-import SimpleSelect from "./utils/SimpleSelect";
+import ClusterChooser from "./utils/ClusterChooser";
 import logo from "../images/logo.png";
 import State from "../state";
 
@@ -162,6 +163,13 @@ export default observer(
                                 Tools
                             </Button>
                         </Popover>
+                        <Switch
+                            label="Graph Animation"
+                            checked={State.css.isAnimating}
+                            onChange={() =>
+                                (State.css.isAnimating = !State.css.isAnimating)
+                            }
+                        />
                     </div>
                     {/* <div
                     className={classnames([
@@ -225,17 +233,12 @@ export default observer(
                             Classes.ALIGN_RIGHT,
                         ])}
                     >
-                        Clustered by{"  "}
-                        <SimpleSelect
-                            items={
-                                State.graph.metadata.nodeProperties.length === 0
-                                    ? ["None"]
-                                    : State.graph.metadata.nodeProperties
-                            }
-                            text={State.cluster.clusterBy}
-                            onSelect={(it: string) =>
-                                (State.cluster.clusterBy = it)
-                            }
+                        Clustered by
+                        <ClusterChooser
+                            onSelect={(cluster) => {
+                                State.cluster.setCluster(cluster);
+                            }}
+                            syncWith={State.cluster.clusterBy}
                         />
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button

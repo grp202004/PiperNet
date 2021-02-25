@@ -12,6 +12,8 @@ class ComponentRef {
 
     multiNodeDetail!: any;
 
+    visualizer!: any;
+
     // add singleton to prevent creating multiple instances of the State class
     static get instance() {
         if (ComponentRef._instance === null) {

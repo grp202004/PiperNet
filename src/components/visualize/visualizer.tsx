@@ -4,10 +4,15 @@ import ForceGraph3D, {
     ForceGraphMethods,
     NodeObject,
 } from "react-force-graph-3d";
+import ComponentRef from "../ComponentRef"
 import State from "../../state";
 
 export default observer(
     class ThreeJSVis extends React.Component {
+
+        state = {
+            visualizationGraph: State.graphDelegate.visualizationGraph()
+        }
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -81,7 +86,7 @@ export default observer(
                 return (
                     <ForceGraph3D
                         ref={this.graphRef}
-                        graphData={this.graphDelegate.visualizationGraph}
+                        graphData={this.state.visualizationGraph}
                         nodeResolution={20}
                         nodeVisibility={this.graphDelegate.nodeVisibility}
                         linkVisibility={this.graphDelegate.linkVisibility}
@@ -157,8 +162,15 @@ export default observer(
             return <div>{this.renderGraph()}</div>;
         }
 
+        updateVisualizationGraph() {
+            this.setState({
+                visualizationGraph: State.graphDelegate.visualizationGraph()
+            })
+        }
+
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
+            ComponentRef.visualizer = this
         }
     }
 );

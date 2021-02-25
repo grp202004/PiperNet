@@ -6,15 +6,25 @@ import { observer } from "mobx-react";
 import State from "../../state/index";
 import ComponentRef from "../ComponentRef";
 
+interface Props {
+    /**
+     * the node id of the select node
+     *
+     * @type {string}
+     * @memberof Props
+     */
+    onNode: string;
+}
+
 export default observer(
-    class NodeDetail extends React.Component {
+    class NodeDetail extends React.Component<Props, {}> {
         cellRenderer_property = (rowIndex: number) => {
             return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>;
         };
 
         cellRenderer_value = (rowIndex: number) => {
             let data = State.graph.rawGraph.getNodeAttribute(
-                State.graph.currentlyHoveredId,
+                this.props.onNode,
                 State.graph.metadata.nodeProperties[rowIndex]
             );
             // return a Editable Cell where user can edit the value of certain property;
@@ -23,14 +33,14 @@ export default observer(
                     value={data}
                     onChange={(newVal) =>
                         State.graph.rawGraph.setNodeAttribute(
-                            State.graph.currentlyHoveredId,
+                            this.props.onNode,
                             State.graph.metadata.nodeProperties[rowIndex],
                             newVal
                         )
                     }
                     onConfirm={(newVal) =>
                         State.graph.rawGraph.setNodeAttribute(
-                            State.graph.currentlyHoveredId,
+                            this.props.onNode,
                             State.graph.metadata.nodeProperties[rowIndex],
                             newVal
                         )

@@ -10,6 +10,7 @@ import {
     RenderMode,
     Table,
 } from "@blueprintjs/table";
+import Graph from "graphology";
 
 interface Props {
     /**
@@ -70,9 +71,15 @@ export default observer(
             if (this.state.edgeToDelete === "") {
                 return null;
             }
-            let source = State.graph.rawGraph.source(this.state.edgeToDelete);
-            let target = State.graph.rawGraph.target(this.state.edgeToDelete);
 
+            let source, target;
+
+            try {
+                source = State.graph.rawGraph.source(this.state.edgeToDelete);
+                target = State.graph.rawGraph.target(this.state.edgeToDelete);
+            } catch (error) {
+                return null;
+            }
             return (
                 <Alert
                     cancelButtonText="Cancel"
@@ -82,7 +89,7 @@ export default observer(
                     isOpen={this.state.deleteAlertOpen}
                     onCancel={() => this.setState({ deleteAlertOpen: false })}
                     onConfirm={() => {
-                        State.graph.rawGraph.dropEdge(this.state.edgeToDelete);
+                        State.graph.mutating.dropEdge(this.state.edgeToDelete);
                         this.setState({ deleteAlertOpen: false });
                     }}
                 >
