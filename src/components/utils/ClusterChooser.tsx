@@ -16,11 +16,19 @@ interface Props {
 
     /**
      * function to call when a candidate is selected, will be called on every selection of candidate
-     * if None is seelcted, the item props will be set to null
+     * if None is selected, the item props will be set to null
      *
      * @memberof Props
      */
     onSelect: (item: string | null) => void;
+
+    /**
+     * the selected to display will sync with this props
+     *
+     * @type {(string | null)}
+     * @memberof Props
+     */
+    syncWith: string | null;
 }
 
 interface CustomIItemRendererProps {
@@ -32,13 +40,9 @@ interface CustomIItemRendererProps {
  * to use it, you have to specify whether to add additional None to the list and onChange function to call when a candidate is selected
  */
 export default observer(
-    class ClusterChosser extends React.Component<Props, {}> {
+    class ClusterChooser extends React.Component<Props, {}> {
         static defaultProps = {
             showNone: true,
-        };
-
-        state = {
-            choose: null as string | null,
         };
 
         get fullProperties(): string[] {
@@ -83,11 +87,10 @@ export default observer(
                     filterable={false}
                     onItemSelect={(item: string) => {
                         let selected = item === "None" ? null : item;
-                        this.setState({ choose: selected });
                         this.props.onSelect(selected);
                     }}
                 >
-                    <Button text={this.state.choose ?? "None"} />
+                    <Button text={this.props.syncWith ?? "None"} />
                 </Select>
             );
         }

@@ -60,13 +60,14 @@ export default class GraphDelegate {
      * nodes and edges with the show=false will be ignored in this case
      *
      */
+
     visualizationGraph() {
         let newGraph: Graph;
         if (State.cluster.clusterBy === null) {
             newGraph = State.graph.rawGraph;
         } else {
-            newGraph = State.graph.decorateRawGraph(
-                this.addInvisibleClusterNode(State.graph.rawGraph)
+            newGraph = this.addInvisibleClusterNode(
+                State.graph.decorateRawGraph(State.graph.rawGraph)
             );
         }
         let tempGraph = {
@@ -93,7 +94,7 @@ export default class GraphDelegate {
      * @returns {*}  {Graph}
      */
     private addInvisibleClusterNode(oldGraph: Graph): Graph {
-        let graphCopy = copy(oldGraph);
+        let graphCopy = oldGraph.copy();
         let names = [
             "_CLUSTER_1_",
             "_CLUSTER_2_",
@@ -114,6 +115,8 @@ export default class GraphDelegate {
 
                     let clusterID = names[index] + attribute;
                     let visualize: CustomNodeObject = {
+                        id: clusterID,
+                        val: 1,
                         isClusterNode: true,
                     };
                     graphCopy.addNode(clusterID, { _visualize: visualize });
@@ -123,7 +126,9 @@ export default class GraphDelegate {
                         .get(attribute)
                         ?.forEach((target) => {
                             let visualize: CustomLinkObject = {
-                                isClusterLink: true,
+                                source: clusterID,
+                                target: target,
+                                isClusterLink: true, // if is clusterLink, then the front-end will ignore this link
                             };
                             graphCopy.addEdge(clusterID, target, {
                                 _visualize: visualize,
@@ -168,10 +173,10 @@ export default class GraphDelegate {
      *
      */
     clusterDelegation() {
+        this.threeScene.remove(this.lastObject3D);
         if (State.cluster.clusterBy === null) {
             return;
         }
-        this.threeScene.remove(this.lastObject3D);
         this.lastObject3D = new THREE.Object3D();
         this.convexHullObjects.forEach((value, key) => {
             this.lastObject3D.add(value);

@@ -187,6 +187,7 @@ let GraphNodeTable = observer(
                         />
                         <Divider />
                         <InputGroup
+                            style={{ width: "40vw" }}
                             asyncControl={true}
                             leftIcon="search"
                             onChange={handleStringChange((value) => {
@@ -194,6 +195,7 @@ let GraphNodeTable = observer(
                             })}
                             placeholder="Search any Node..."
                             value={this.state.filterQuery}
+                            fill={true}
                         />
                     </ButtonGroup>
 
