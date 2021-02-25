@@ -9,7 +9,7 @@ import {
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import * as THREE from "three";
-import { copy } from "copy-anything";
+import ForceGraph3D from "3d-force-graph";
 
 export interface CustomNodeObject extends NodeObject {
     val?: number;
@@ -279,5 +279,17 @@ export default class GraphDelegate {
         } else {
             return _else;
         }
+    }
+
+    ////
+
+    updateClusterForce(force: number, _default: number) {
+        this.graphDelegateMethods
+            ?.d3Force("link")
+            //@ts-ignore
+            ?.distance((link: CustomLinkObject) => {
+                return link.isClusterLink ? State.css.clusterForce : _default;
+            });
+        this.graphDelegateMethods.d3ReheatSimulation();
     }
 }

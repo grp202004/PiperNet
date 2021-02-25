@@ -5,6 +5,7 @@ import {
     Popover,
     PopoverInteractionKind,
     RangeSlider,
+    Slider,
 } from "@blueprintjs/core";
 import { SketchPicker } from "react-color";
 import { Select } from "@blueprintjs/select";
@@ -13,6 +14,7 @@ import { observer } from "mobx-react";
 import pluralize from "pluralize";
 import Collapsable from "../utils/Collapsable";
 import SimpleSelect, { CommonItemRenderer } from "../utils/SimpleSelect";
+import State from "../../state";
 
 export default observer(
     class GlobalPanel extends React.Component {
@@ -315,7 +317,6 @@ export default observer(
                             <section>
                                 {" "}
                                 <p style={{ textAlign: "left" }}>
-                                    {" "}
                                     Node Shape:
                                     <span style={{ float: "right" }}>
                                         <Select
@@ -344,6 +345,19 @@ export default observer(
                                             />
                                         </Select>
                                     </span>
+                                </p>
+                                <p style={{ textAlign: "left" }}>
+                                    Node Resolution :
+                                    <Slider
+                                        min={6}
+                                        max={20}
+                                        stepSize={2}
+                                        onChange={(value) => {
+                                            State.css.nodeResolution = value;
+                                        }}
+                                        value={State.css.nodeResolution}
+                                        initialValue={12}
+                                    />
                                 </p>
                             </section>
                         </div>

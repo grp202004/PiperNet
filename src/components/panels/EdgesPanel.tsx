@@ -7,6 +7,7 @@ import {
     Popover,
     PopoverInteractionKind,
     Position,
+    Slider,
 } from "@blueprintjs/core";
 import { SketchPicker } from "react-color";
 import classnames from "classnames";
@@ -15,10 +16,10 @@ import Collapsable from "../utils/Collapsable";
 export default observer(
     class EdgesPanel extends React.Component {
         state = {
-            timeOutRef: null,
             sizeOptionOpen: false,
             thicknessOptionOpen: false,
             colorOptionOpen: false,
+            forceOptionOpen: false,
         };
 
         render() {
@@ -84,6 +85,38 @@ export default observer(
                                             </div>
                                         </Popover>
                                     </span>
+                                </p>
+                            </section>
+                        </div>
+                    </Collapsable>
+
+                    <Collapsable
+                        name="Cluster force"
+                        isOpen={this.state.forceOptionOpen}
+                        onToggle={() =>
+                            this.setState({
+                                forceOptionOpen: !this.state.forceOptionOpen,
+                            })
+                        }
+                    >
+                        <div className={classnames(Classes.CARD, "sub-option")}>
+                            <section>
+                                <p style={{ textAlign: "left" }}>
+                                    Toggle cluster :
+                                    <Slider
+                                        min={0}
+                                        max={100}
+                                        stepSize={10}
+                                        onChange={(value) => {
+                                            State.css.clusterForce = value;
+                                            State.graphDelegate.updateClusterForce(
+                                                value,
+                                                20
+                                            );
+                                        }}
+                                        value={State.css.clusterForce}
+                                        initialValue={20}
+                                    />
                                 </p>
                             </section>
                         </div>

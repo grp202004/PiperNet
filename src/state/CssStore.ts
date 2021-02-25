@@ -1,4 +1,5 @@
-import { makeAutoObservable } from "mobx";
+import { autorun, makeAutoObservable } from "mobx";
+import State from ".";
 
 /**
  * the configurations to set to cascade the graph
@@ -34,6 +35,10 @@ export default class CssStore {
             color: "#7f7f7f",
         },
     };
+
+    clusterForce: number = 20;
+
+    nodeResolution: number = 12;
 
     isAnimating: boolean = true;
 
