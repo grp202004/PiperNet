@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
+import State from ".";
 
 export interface INodeFileConfig {
     // the file is successfully parsed and ready for display
@@ -188,6 +189,7 @@ export default class ImportStore {
                         intent: Intent.DANGER,
                         timeout: -1,
                     });
+                    this.isLoading = false;
                 }
             };
         });

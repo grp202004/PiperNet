@@ -57,7 +57,7 @@ export default observer(
                     })}
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
-                        State.import.importGEXFDialogOpen = false;
+                        State.import.importGEXFDialogOpen = false;       
                     }}
                     title="Import GEXF"
                 >
