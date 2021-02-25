@@ -1,7 +1,6 @@
 import { Attributes, EdgeKey, NodeKey } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import GraphStore from "./GraphStore";
-import State from ".";
 
 /**
  * the wrapper mutating function that relates to the mutation of the rawGraph DS

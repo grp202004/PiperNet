@@ -226,12 +226,13 @@ let GraphEdgeTable = observer(
                         />
                         <Divider />
                         <InputGroup
+                            style={{ width: "40vw" }}
                             asyncControl={true}
                             leftIcon="search"
                             onChange={handleStringChange((value) => {
                                 this.setState({ filterQuery: value });
                             })}
-                            placeholder="Search any Source or Target of a Node..."
+                            placeholder="Search any Source or Target of an Edge..."
                             value={this.state.filterQuery ?? ""}
                         />
                     </ButtonGroup>

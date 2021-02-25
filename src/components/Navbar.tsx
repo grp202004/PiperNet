@@ -238,6 +238,7 @@ export default observer(
                             onSelect={(cluster) => {
                                 State.cluster.setCluster(cluster);
                             }}
+                            syncWith={State.cluster.clusterBy}
                         />
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button
