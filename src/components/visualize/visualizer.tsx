@@ -125,7 +125,7 @@ export default observer(
                         }}
                         linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
-                            this.graphDelegate.clusterDelegation()
+                            this.graphDelegate.clusterObject.clusterDelegation()
                         }
                         nodeColor={(node) =>
                             this.selectedNodes.includes(this.getNodeId(node))
