@@ -4,15 +4,15 @@ import ForceGraph3D, {
     ForceGraphMethods,
     NodeObject,
 } from "react-force-graph-3d";
-import ComponentRef from "../ComponentRef"
+import ComponentRef from "../ComponentRef";
 import State from "../../state";
+import { NodeKey } from "graphology-types";
 
 export default observer(
     class ThreeJSVis extends React.Component {
-
         state = {
-            visualizationGraph: State.graphDelegate.visualizationGraph()
-        }
+            visualizationGraph: State.graphDelegate.visualizationGraph(),
+        };
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -30,19 +30,19 @@ export default observer(
             return nodeId;
         }
 
-        getNeighbors(node: NodeObject): string[] {
-            if (node.id as string === "") {
-                return [];
-            }
-            let neighbors: string[] = [];
-            State.graph.rawGraph.forEachNeighbor(
-                node.id as string,
-                (neighbor) => {
-                    neighbors.push(neighbor);
-                }
-            );
-            return neighbors;
-        }
+        // getNeighbors(node: NodeObject): string[] {
+        //     if ((node.id as string) === "") {
+        //         return [];
+        //     }
+        //     let neighbors: string[] = [];
+        //     State.graph.rawGraph.forEachNeighbor(
+        //         node.id as string,
+        //         (neighbor) => {
+        //             neighbors.push(neighbor);
+        //         }
+        //     );
+        //     return neighbors;
+        // }
 
         graphDelegate = State.graphDelegate;
 
@@ -52,11 +52,42 @@ export default observer(
         ) => {
             if (State.search.isPreviewing) return;
             if (node != null && node !== previousNode) {
-                State.graph.currentlyHoveredId = this.getNodeId(
-                    node as NodeObject
+                let current: string = this.getNodeId(node as NodeObject);
+
+                State.graph.currentlyHoveredId = current;
+                //get neighbors of this node
+                State.graphDelegate.neighborNodeids = State.graph.getNeighbors(
+                    node
                 );
-                State.graphDelegate.neighborNodeids = this.getNeighbors(node);
+                State.graph.currentlyHoveredNeighbors = State.graph.getNeighbors(
+                    node
+                );
+                // State.graph.edgesOfCurrentlyHoveredNode=State.graph.findEdgesOfNode();
+                //change currentHovered node color and previouHovered node color
+                State.graph.setNodeColor(current, "white");
+
+                if (
+                    State.graph.currentlyHoveredId !==
+                    State.graph.previouslyHoverdId
+                ) {
+                    if (State.graph.previouslyHoverdId !== null) {
+                        State.graph.setNodeColor(
+                            State.graph.previouslyHoverdId,
+                            State.graph.defaultStyle.node.color
+                        );
+                    }
+                    State.graph.previouslyHoverdId = current;
+                }
+                // console.log(
+                //     State.graph.rawGraph.edge(
+                //         current,
+                //         State.graphDelegate.neighborNodeids[0]
+                //     ) //for test
+                // );
+                //change edge
+                this.graphMethods.refresh();
             }
+            // console.log(State.graph.rawGraph); //for test
         };
 
         // ref of State.graph.selectedNodes
@@ -78,7 +109,7 @@ export default observer(
                 // single-selection
                 // TODO
             }
-            this.graphMethods.refresh(); // update color of selected nodes
+            // this.graphMethods.refresh(); // update color of selected nodes
         };
 
         nodeRightClick = (node: NodeObject, event: MouseEvent) => {
@@ -111,39 +142,41 @@ export default observer(
                             node.fz = node.z;
                         }}
                         onBackgroundRightClick={this.backgroundRightClick}
-                        linkWidth={(link) => {
-                            return State.graphDelegate.ifHighlightLink(
-                                link,
-                                4,
-                                1,
-                                1
-                            );//the previous parameter are 2,0.1,1, change made by Zhiyuan Lyu is used to test
-                        }}
-                        linkColor={(link) => {
-                            return State.graphDelegate.ifHighlightLink(
-                                link,
-                                "orangered",
-                                "white",
-                                "white"
-                            );
-                        }}
-                        linkDirectionalParticles={(link) => {
-                            return State.graphDelegate.ifHighlightLink(
-                                link,
-                                4,
-                                0,
-                                0
-                            );
-                        }}
+                        // linkWidth={(link) => {
+                        //     return State.graphDelegate.ifHighlightLink(
+                        //         link,
+                        //         4,
+                        //         1,
+                        //         1
+                        //     );//the previous parameter are 2,0.1,1, change made by Zhiyuan Lyu is used to test
+                        // }}
+                        // linkColor={(link) => {
+                        //     return State.graphDelegate.ifHighlightLink(
+                        //         link,
+                        //         "orangered",
+                        //         "white",
+                        //         "white"
+                        //     );
+                        // }}
+                        linkColor="edgeColor" //used for test
+                        // linkDirectionalParticles={(link) => {
+                        //     return State.graphDelegate.ifHighlightLink(
+                        //         link,
+                        //         4,
+                        //         0,
+                        //         0
+                        //     );
+                        // }}
                         linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
-                        nodeColor={(node) =>
-                            this.selectedNodes.includes(this.getNodeId(node))
-                                ? "yellow"
-                                : "grey"
-                        }
+                        // nodeColor={(node) =>
+                        //     this.selectedNodes.includes(this.getNodeId(node))
+                        //         ? "yellow"
+                        //         : "grey"
+                        // }
+                        nodeColor="nodeColor"
                         onNodeClick={this.nodeSelect}
                         onNodeRightClick={this.nodeRightClick}
                         onBackgroundClick={() => {
@@ -179,13 +212,13 @@ export default observer(
 
         updateVisualizationGraph() {
             this.setState({
-                visualizationGraph: State.graphDelegate.visualizationGraph()
-            })
+                visualizationGraph: State.graphDelegate.visualizationGraph(),
+            });
         }
 
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
-            ComponentRef.visualizer = this
+            ComponentRef.visualizer = this;
         }
     }
 );
