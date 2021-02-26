@@ -10,7 +10,6 @@ import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import * as THREE from "three";
 import { copy } from "copy-anything";
-import { NodeKey } from "graphology-types";
 
 export interface CustomNodeObject extends NodeObject {
     val?: number;
@@ -83,10 +82,6 @@ export default class GraphDelegate {
             tempGraph.links.push(attributes["_visualize"]);
         });
         return tempGraph;
-    }
-
-    addAttribute(){
-
     }
 
     /**
@@ -265,20 +260,11 @@ export default class GraphDelegate {
     neighborNodeids: string[] = [];
 
     ifHighlightLink<T>(link: LinkObject, _if: T, _else: T, _default: T): T {
-        if (
-            State.graphDelegate.highlightLink == null &&
-            State.graphDelegate.neighborNodeids == null
-        ) {
+        if ((State.graphDelegate.highlightLink == null) && (State.graphDelegate.neighborNodeids == null)) {
             return _default;
         }
-        let sourceId =
-            typeof link.source === "string"
-                ? link.source
-                : ((link.source as NodeObject).id as string);
-        let targetId =
-            typeof link.target === "string"
-                ? link.target
-                : ((link.target as NodeObject).id as string);
+        let sourceId = (link.source as NodeObject).id as string;
+        let targetId = (link.target as NodeObject).id as string;
 
         //highlight one link
         if (State.graphDelegate.highlightLink != null) {
@@ -286,12 +272,11 @@ export default class GraphDelegate {
                 (sourceId ===
                     (State.graphDelegate.highlightLink?.source as string) &&
                     targetId ===
-                        (State.graphDelegate.highlightLink
-                            ?.target as string)) ||
+                    (State.graphDelegate.highlightLink?.target as string)) ||
                 (sourceId ===
                     (State.graphDelegate.highlightLink?.target as string) &&
                     targetId ===
-                        (State.graphDelegate.highlightLink?.source as string))
+                    (State.graphDelegate.highlightLink?.source as string))
             ) {
                 return _if;
             }
@@ -300,15 +285,19 @@ export default class GraphDelegate {
             // }
         }
 
+
         //highlight links of a hovered node
         if (State.graphDelegate.neighborNodeids != null) {
             if (State.graph.currentlyHoveredId == null) {
                 return _default;
-            } else if (
-                (sourceId === State.graph.currentlyHoveredId &&
-                    this.neighborNodeids.includes(targetId)) ||
-                (targetId === State.graph.currentlyHoveredId &&
-                    this.neighborNodeids.includes(sourceId))
+            }
+            else if (
+                (sourceId ===
+                    (State.graph.currentlyHoveredId) &&
+                    (this.neighborNodeids.includes(targetId))) ||
+                (targetId ===
+                    (State.graph.currentlyHoveredId) &&
+                    (this.neighborNodeids.includes(sourceId)))
             ) {
                 return _if;
             }

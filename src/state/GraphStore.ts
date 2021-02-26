@@ -1,10 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import { Attributes, NodeKey, NodeEntry, EdgeKey } from "graphology-types";
+import { Attributes, NodeKey, NodeEntry } from "graphology-types";
 import ComponentRef from "../components/ComponentRef";
 import State from ".";
 import GraphMutation from "./GraphMutation";
-import { NodeObject } from "_react-force-graph-3d@1.18.8@react-force-graph-3d";
 
 export interface IMetaData {
     snapshotName: string;
@@ -54,7 +53,6 @@ export default class GraphStore {
             id: node,
             val: 1, // to be changed, to represent the size of the node
             isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
-            nodeColor: this.defaultStyle.node.color, // color test
         };
     }
 
@@ -74,7 +72,6 @@ export default class GraphStore {
             source: source,
             target: target,
             isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
-            edgeColor: this.defaultStyle.edge.color, //color test
         };
     }
 
@@ -157,42 +154,6 @@ export default class GraphStore {
      * @type {string}
      */
     currentlyHoveredId: string | null = null;
-    previouslyHoverdId: string | null = null;
-    currentlyHoveredNeighbors: string[] | null = null;
-    previouslyHoveredNeighbors: string[] | null = null;
-    edgesOfCurrentlyHoveredNode: EdgeKey[] | null = null;
-    edgesOfPreviouslyHoveredNode: EdgeKey[] | null = null;
-    defaultStyle: Attributes = {
-        node: {
-            color: "orangered",
-        },
-        edge: {
-            color: "#ff11ff",
-        },
-    };
-    setNodeColor(node: NodeKey, color: string) {
-        const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
-        // console.log(visualize); //test
-        visualize.nodeColor = color;
-        // console.log(visualize); //test
-        this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
-        // State.graph.rawGraph.updateNodeAttribute(node,"_visualize",());
-    }
-
-    getNeighbors(node: NodeObject): string[] {
-        if ((node.id as string) === "") {
-            return [];
-        }
-        let neighbors: string[] = [];
-        this.rawGraph.forEachNeighbor(node.id as string, (neighbor) => {
-            neighbors.push(neighbor);
-        });
-        return neighbors;
-    }
-
-    findEdgesOfNode(): EdgeKey[] {
-        return [];
-    }
 
     /**
      * should call this on every refresh of graph DS

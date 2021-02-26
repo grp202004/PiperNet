@@ -1,6 +1,5 @@
 import { Attributes, EdgeKey, NodeKey } from "graphology-types";
 import { makeAutoObservable } from "mobx";
-import { CustomLinkObject } from "./GraphDelegate";
 import GraphStore from "./GraphStore";
 
 /**
@@ -33,14 +32,7 @@ export default class GraphMutation {
         target: NodeKey,
         attributes?: Attributes
     ): void {
-        let visualize: CustomLinkObject = {
-            isClusterLink: false,
-        };
-        this.that.rawGraph.addEdge(
-            source,
-            target,
-            attributes ?? { _visualize: visualize }
-        );
+        this.that.rawGraph.addEdge(source, target, attributes);
         this.that.refreshGraph();
     }
 
