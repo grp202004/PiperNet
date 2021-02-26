@@ -20,16 +20,6 @@ export default observer(
             return this.graphRef.current;
         }
 
-        getNodeId(node: NodeObject): string {
-            let nodeId: string;
-            if (node.id as string) {
-                nodeId = node.id as string;
-            } else {
-                nodeId = (node.id as number).toString();
-            }
-            return nodeId;
-        }
-
         // getNeighbors(node: NodeObject): string[] {
         //     if ((node.id as string) === "") {
         //         return [];
@@ -52,41 +42,85 @@ export default observer(
         ) => {
             if (State.search.isPreviewing) return;
             if (node != null && node !== previousNode) {
-                let current: string = this.getNodeId(node as NodeObject);
+                let current: string = State.graph.getNodeId(node as NodeObject);
 
                 State.graph.currentlyHoveredId = current;
                 //get neighbors of this node
                 State.graphDelegate.neighborNodeids = State.graph.getNeighbors(
-                    node
+                    current
                 );
-                State.graph.currentlyHoveredNeighbors = State.graph.getNeighbors(
-                    node
-                );
-                // State.graph.edgesOfCurrentlyHoveredNode=State.graph.findEdgesOfNode();
-                //change currentHovered node color and previouHovered node color
-                State.graph.setNodeColor(current, "white");
 
                 if (
                     State.graph.currentlyHoveredId !==
-                    State.graph.previouslyHoverdId
+                        State.graph.previouslyHoverdId ||
+                    State.graph.previouslyHoverdId === null
                 ) {
+                    State.graph.currentlyHoveredNeighbors = State.graph.getNeighbors(
+                        current
+                    );
+                    State.graph.edgesOfCurrentlyHoveredNode = State.graph.getEdgesOfNode(
+                        current
+                    );
+
                     if (State.graph.previouslyHoverdId !== null) {
                         State.graph.setNodeColor(
                             State.graph.previouslyHoverdId,
                             State.graph.defaultStyle.node.color
                         );
+
+                        //set node style of previous node
+                        if (
+                            State.graph.previouslyHoveredNeighbors !== null &&
+                            State.graph.previouslyHoveredNeighbors?.length !== 0
+                        ) {
+                            State.graph.setNodesColor(
+                                State.graph.previouslyHoveredNeighbors,
+                                State.graph.defaultStyle.node.color
+                            );
+                        }
+                        //set edge style of previous node
+                        if (
+                            State.graph.edgesOfPreviouslyHoveredNode !== null &&
+                            State.graph.edgesOfPreviouslyHoveredNode?.length !==
+                                0
+                        ) {
+                            State.graph.setEdgesColor(
+                                State.graph.edgesOfPreviouslyHoveredNode,
+                                State.graph.defaultStyle.edge.color
+                            );
+                            State.graph.setEdgesWidth(
+                                State.graph.edgesOfPreviouslyHoveredNode,
+                                State.graph.defaultStyle.edge.width
+                            );
+                        }
                     }
+                    //set node and edge style of current hovered node
+                    State.graph.setNodeColor(current, "white");
+                    // State.graph.setNeighborColor(current, "#3399FF");
+                    State.graph.setNodesColor(
+                        State.graph.currentlyHoveredNeighbors,
+                        "#3399FF"
+                    );
+                    State.graph.setEdgesColor(
+                        State.graph.edgesOfCurrentlyHoveredNode,
+                        "yellow"
+                    );
+                    State.graph.setEdgesWidth(
+                        State.graph.edgesOfCurrentlyHoveredNode,
+                        4
+                    );
+
+                    //update the data
                     State.graph.previouslyHoverdId = current;
+                    State.graph.previouslyHoveredNeighbors =
+                        State.graph.currentlyHoveredNeighbors;
+                    State.graph.edgesOfPreviouslyHoveredNode =
+                        State.graph.edgesOfCurrentlyHoveredNode;
                 }
-                // console.log(
-                //     State.graph.rawGraph.edge(
-                //         current,
-                //         State.graphDelegate.neighborNodeids[0]
-                //     ) //for test
-                // );
-                //change edge
+
                 this.graphMethods.refresh();
             }
+
             // console.log(State.graph.rawGraph); //for test
         };
 
@@ -94,7 +128,7 @@ export default observer(
         selectedNodes: string[] = State.graph.selectedNodes;
 
         nodeSelect = (node: NodeObject, event: MouseEvent) => {
-            let nodeId = this.getNodeId(node as NodeObject);
+            let nodeId = State.graph.getNodeId(node as NodeObject);
             if (event.ctrlKey || event.shiftKey) {
                 // multi-selection
                 if (this.selectedNodes.includes(nodeId)) {
@@ -142,14 +176,7 @@ export default observer(
                             node.fz = node.z;
                         }}
                         onBackgroundRightClick={this.backgroundRightClick}
-                        // linkWidth={(link) => {
-                        //     return State.graphDelegate.ifHighlightLink(
-                        //         link,
-                        //         4,
-                        //         1,
-                        //         1
-                        //     );//the previous parameter are 2,0.1,1, change made by Zhiyuan Lyu is used to test
-                        // }}
+                        linkWidth="edgeWidth"
                         // linkColor={(link) => {
                         //     return State.graphDelegate.ifHighlightLink(
                         //         link,

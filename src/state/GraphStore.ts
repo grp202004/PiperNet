@@ -75,6 +75,7 @@ export default class GraphStore {
             target: target,
             isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
             edgeColor: this.defaultStyle.edge.color, //color test
+            edgeWidth: this.defaultStyle.edge.width,
         };
     }
 
@@ -160,16 +161,29 @@ export default class GraphStore {
     previouslyHoverdId: string | null = null;
     currentlyHoveredNeighbors: string[] | null = null;
     previouslyHoveredNeighbors: string[] | null = null;
-    edgesOfCurrentlyHoveredNode: EdgeKey[] | null = null;
-    edgesOfPreviouslyHoveredNode: EdgeKey[] | null = null;
+    edgesOfCurrentlyHoveredNode: EdgeKey[] = [];
+    edgesOfPreviouslyHoveredNode: EdgeKey[] = [];
     defaultStyle: Attributes = {
         node: {
             color: "orangered",
         },
         edge: {
             color: "#ff11ff",
+            width: 1,
         },
     };
+    ishovered: boolean = false;
+
+    getNodeId(node: NodeObject): string {
+        let nodeId: string;
+        if (node.id as string) {
+            nodeId = node.id as string;
+        } else {
+            nodeId = (node.id as number).toString();
+        }
+        return nodeId;
+    }
+
     setNodeColor(node: NodeKey, color: string) {
         const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
         // console.log(visualize); //test
@@ -179,19 +193,119 @@ export default class GraphStore {
         // State.graph.rawGraph.updateNodeAttribute(node,"_visualize",());
     }
 
-    getNeighbors(node: NodeObject): string[] {
-        if ((node.id as string) === "") {
+    getNeighbors(node: NodeKey): string[] {
+        if (node === "") {
             return [];
         }
         let neighbors: string[] = [];
-        this.rawGraph.forEachNeighbor(node.id as string, (neighbor) => {
+        this.rawGraph.forEachNeighbor(node, (neighbor) => {
             neighbors.push(neighbor);
         });
         return neighbors;
     }
 
-    findEdgesOfNode(): EdgeKey[] {
-        return [];
+    getEdgesOfNode(node: NodeKey): EdgeKey[] {
+        let edges: EdgeKey[] = [];
+        let nodeNeighbors: string[] = this.getNeighbors(node);
+        if (nodeNeighbors.length === 0) {
+            return [];
+        }
+        nodeNeighbors.forEach((neighborNode) => {
+            if (
+                typeof this.rawGraph.edge(
+                    this.currentlyHoveredId as NodeKey,
+                    neighborNode as NodeKey
+                ) === "undefined"
+            ) {
+                edges.push(
+                    this.rawGraph.edge(
+                        neighborNode as NodeKey,
+                        this.currentlyHoveredId as NodeKey
+                    ) as string
+                );
+            } else {
+                edges.push(
+                    this.rawGraph.edge(
+                        this.currentlyHoveredId as NodeKey,
+                        neighborNode as NodeKey
+                    ) as string
+                );
+            }
+        });
+
+        return edges;
+    }
+
+    setNeighborColor(node: NodeKey, color: string) {
+        let nodeNeighbors: string[] = this.getNeighbors(node);
+        if (nodeNeighbors !== null && nodeNeighbors.length !== 0) {
+            nodeNeighbors.forEach((neighborNode) => {
+                this.setNodeColor(neighborNode, color);
+            });
+        }
+    }
+
+    setNodesColor(nodes: NodeKey[], color: string) {
+        if (nodes.length !== 0) {
+            nodes.forEach((node) => {
+                this.setNodeColor(node, color);
+            });
+        }
+    }
+
+    setEdgeColor(edge: EdgeKey, color: string) {
+        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
+        // console.log(visualize); //test
+        visualize.edgeColor = color;
+        // console.log(visualize); //test
+        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
+    }
+
+    setEdgesColor(edges: EdgeKey[], color: string) {
+        if (edges.length !== 0) {
+            edges.forEach((edge) => {
+                this.setEdgeColor(edge, color);
+            });
+        }
+    }
+
+    setEdgeWidth(edge: EdgeKey, width: number) {
+        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
+        // console.log(visualize); //test
+        visualize.edgeWidth = width;
+        // console.log(visualize); //test
+        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
+    }
+
+    setEdgesWidth(edges: EdgeKey[], width: number) {
+        if (edges.length !== 0) {
+            edges.forEach((edge) => this.setEdgeWidth(edge, width));
+        }
+    }
+    notHovered() {
+        if (this.previouslyHoverdId !== null) {
+            this.setNodeColor(
+                this.previouslyHoverdId,
+                this.defaultStyle.node.color
+            );
+        }
+        if (this.previouslyHoveredNeighbors !== null) {
+            this.setNodesColor(
+                this.previouslyHoveredNeighbors,
+                this.defaultStyle.node.color
+            );
+        }
+        if (this.edgesOfPreviouslyHoveredNode.length !== 0) {
+            this.setEdgesColor(
+                this.edgesOfPreviouslyHoveredNode,
+                this.defaultStyle.edge.color
+            );
+            this.setEdgesWidth(
+                this.edgesOfPreviouslyHoveredNode,
+                this.defaultStyle.edge.width
+            );
+        }
+        this.ishovered = false;
     }
 
     /**
