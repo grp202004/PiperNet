@@ -6,7 +6,7 @@ import ForceGraph3D, {
 } from "react-force-graph-3d";
 import ComponentRef from "../ComponentRef";
 import State from "../../state";
-import { NodeKey } from "graphology-types";
+import { Attributes, NodeKey } from "graphology-types";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -33,7 +33,18 @@ export default observer(
         //     );
         //     return neighbors;
         // }
-
+        highlightNodeAttributes: Attributes = {
+            nodeStyle: {
+                color: "white",
+                neighborColor: "#4499FF",
+                // opacity: 0.75,
+            },
+            edgeStyle: {
+                color: "yellow",
+                width: 4,
+                linkDirectionalParticles: 4,
+            },
+        };
         graphDelegate = State.graphDelegate;
 
         nodeHover = (
@@ -113,20 +124,10 @@ export default observer(
                     //         State.graph.currentlyHoveredNeighbors;
                     //     State.graph.edgesOfPreviouslyHoveredNode =
                     //         State.graph.edgesOfCurrentlyHoveredNode;
-                    State.graph.highlightNodeHovered(current, {
-                        nodeStyle: {
-                            color: "white",
-                            neighborColor: "#4499FF",
-                            // opacity: 0.75,
-                            refreshLevel: 1,
-                        },
-                        edgeStyle: {
-                            color: "yellow",
-                            width: 4,
-                            linkDirectionalParticles: 4,
-                            refreshLevel: 1,
-                        },
-                    });
+                    State.graph.highlightNodeHovered(
+                        current,
+                        this.highlightNodeAttributes
+                    );
                 }
 
                 this.graphMethods.refresh();
@@ -145,23 +146,27 @@ export default observer(
                 if (this.selectedNodes.includes(nodeId)) {
                     let index = this.selectedNodes.indexOf(nodeId);
                     if (index > -1) {
-                        State.graph.setNodeStyleDefault(nodeId, 2);
                         this.selectedNodes.splice(index, 1);
                         State.graph.selectedNodes.splice(index, 1);
+                        State.graph.highlightNodeHovered(
+                            nodeId,
+                            this.highlightNodeAttributes
+                        );
+                        this.graphMethods.refresh();
                     }
                 } else {
                     this.selectedNodes.push(nodeId);
                     State.graph.selectedNodes.push(nodeId);
                     State.graph.setNodeStyle(nodeId, {
                         color: "#3333FF",
-                        refreshLevel: 2,
                     });
-                    console.log(
-                        State.graph.rawGraph.getNodeAttribute(
-                            State.graph.selectedNodes[0],
-                            "_visualize"
-                        )
-                    );
+                    this.graphMethods.refresh();
+                    // console.log(
+                    //     State.graph.rawGraph.getNodeAttribute(
+                    //         State.graph.selectedNodes[0],
+                    //         "_visualize"
+                    //     )
+                    // );
                 }
             } else {
                 // single-selection
@@ -169,7 +174,7 @@ export default observer(
             }
             console.log(this.selectedNodes);
             console.log(State.graph.selectedNodes);
-            this.graphMethods.refresh(); // update color of selected nodes
+            // update color of selected nodes
         };
 
         nodeRightClick = (node: NodeObject, event: MouseEvent) => {
