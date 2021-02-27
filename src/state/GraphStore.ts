@@ -56,6 +56,7 @@ export default class GraphStore {
             isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
             nodeColor: this.defaultStyle.node.color, // color test
             nodeOpacity: this.defaultStyle.node.opacity,
+            refreshLevel: this.defaultStyle.node.refreshLevel,
         };
     }
 
@@ -78,6 +79,7 @@ export default class GraphStore {
             edgeColor: this.defaultStyle.edge.color, //color test
             edgeWidth: this.defaultStyle.edge.width,
             linkDirectionalParticles: 0,
+            refreshLevel: this.defaultStyle.edge.refreshLevel,
         };
     }
 
@@ -165,15 +167,23 @@ export default class GraphStore {
     previouslyHoveredNeighbors: string[] | null = null;
     edgesOfCurrentlyHoveredNode: EdgeKey[] = [];
     edgesOfPreviouslyHoveredNode: EdgeKey[] = [];
+    /**
+     * Current refreshLevel
+     * default:0
+     * nodeHovered: 1
+     * nodeSelected:2
+     */
     defaultStyle: Attributes = {
         node: {
             color: "orangered",
             opacity: 0.8,
+            refreshLevel: 0, //the style will be refreshed only if the refreshlevel of current action is higher than previous one stored here
         },
         edge: {
             color: "#ff11ff",
             width: 1,
             linkDirectionalParticles: 0,
+            refreshLevel: 0, //the style will be refreshed only if the refreshlevel of current action is higher than previous one stored here
         },
     };
     ishovered: boolean = false;
@@ -190,11 +200,8 @@ export default class GraphStore {
 
     setNodeColor(node: NodeKey, color: string) {
         const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
-        // console.log(visualize); //test
         visualize.nodeColor = color;
-        // console.log(visualize); //test
         this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
-        // this.rawGraph.updateNodeAttribute(node,"_visualize",());
     }
 
     getNeighbors(node: NodeKey): string[] {
@@ -267,6 +274,22 @@ export default class GraphStore {
             nodes.forEach((node) => {
                 this.setNodeOpacity(node, opacity);
             });
+        }
+    }
+    setNodeRefreshLevel(node: NodeKey, level: number) {
+        const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
+        visualize.refreshLevel = level;
+        this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
+    }
+    setEdgeRefreshLevel(edge: EdgeKey, level: number) {
+        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
+        visualize.refreshLevel = level;
+        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
+    }
+
+    setNodeStyleDefault(node: NodeKey, refreshLevel: number) {
+        if (node !== null) {
+            this.setNodeStyle(node, this.defaultStyle.node, refreshLevel);
         }
     }
 
@@ -347,7 +370,11 @@ export default class GraphStore {
             //     this.previouslyHoverdId,
             //     this.defaultStyle.node.color
             // );
-            this.setNodeStyle(this.previouslyHoverdId, this.defaultStyle.node);
+            this.setNodeStyle(
+                this.previouslyHoverdId,
+                this.defaultStyle.node,
+                1
+            );
             //set node style of previous node
             if (
                 this.previouslyHoveredNeighbors !== null &&
@@ -359,7 +386,8 @@ export default class GraphStore {
                 // );
                 this.setNodesStyle(
                     this.previouslyHoveredNeighbors,
-                    this.defaultStyle.node
+                    this.defaultStyle.node,
+                    1
                 );
             }
             //set edge style of previous node
@@ -378,7 +406,8 @@ export default class GraphStore {
                 // );
                 this.setEdgesStyle(
                     this.edgesOfPreviouslyHoveredNode,
-                    this.defaultStyle.edge
+                    this.defaultStyle.edge,
+                    1
                 );
             }
         }
@@ -407,9 +436,24 @@ export default class GraphStore {
         this.previouslyHoverdId = currentNode as string;
         this.previouslyHoveredNeighbors = this.currentlyHoveredNeighbors;
         this.edgesOfPreviouslyHoveredNode = this.edgesOfCurrentlyHoveredNode;
+        console.log(this.rawGraph.getNodeAttribute(currentNode, "_visualize"));
     }
 
-    setNodeStyle(node: NodeKey, style: Attributes) {
+    setNodeStyle(node: NodeKey, style: Attributes, refreshLevel: number = -1) {
+        if (style.hasOwnProperty("refreshLevel")) {
+            let currentRefreshLevel = this.rawGraph.getNodeAttribute(
+                node,
+                "_visualize"
+            ).refreshLevel;
+            // if (currentRefreshLevel > refreshLevel) return; //debug
+            if (refreshLevel !== -1) {
+                if (currentRefreshLevel > refreshLevel) return;
+            } else {
+                if (currentRefreshLevel > style.refreshLevel) return;
+            }
+            this.setNodeRefreshLevel(node, style.refreshLevel);
+        }
+
         if (style.hasOwnProperty("color")) {
             this.setNodeColor(node, style.color);
         }
@@ -417,19 +461,44 @@ export default class GraphStore {
             this.setNodeOpacity(node, style.opacity);
         }
         if (style.hasOwnProperty("neighborColor")) {
-            this.setNodesColor(this.getNeighbors(node), style.neighborColor);
+            // this.setNodesColor(this.getNeighbors(node), style.neighborColor);
+            this.setNodesStyle(
+                this.getNeighbors(node),
+                {
+                    color: style.neighborColor,
+                    refreshLevel: style.refreshLevel,
+                },
+                refreshLevel
+            );
         }
     }
 
-    setNodesStyle(nodes: NodeKey[], style: Attributes) {
+    setNodesStyle(
+        nodes: NodeKey[],
+        style: Attributes,
+        refreshLevel: number = -1
+    ) {
         if (nodes.length > 0) {
             nodes.map((node) => {
-                this.setNodeStyle(node, style);
+                this.setNodeStyle(node, style, refreshLevel);
             });
         }
     }
 
-    setEdgeStyle(edge: EdgeKey, style: Attributes) {
+    setEdgeStyle(edge: EdgeKey, style: Attributes, refreshLevel: number = -1) {
+        if (style.hasOwnProperty("refreshLevel")) {
+            let currentRefreshLevel = this.rawGraph.getEdgeAttribute(
+                edge,
+                "_visualize"
+            ).refreshLevel;
+            if (refreshLevel !== -1) {
+                if (currentRefreshLevel > refreshLevel) return;
+            } else {
+                if (currentRefreshLevel > style.refreshLevel) return;
+            }
+            this.setEdgeRefreshLevel(edge, style.refreshLevel);
+        }
+
         if (style.hasOwnProperty("color")) {
             this.setEdgeColor(edge, style.color);
         }
@@ -444,13 +513,18 @@ export default class GraphStore {
         }
     }
 
-    setEdgesStyle(edges: EdgeKey[], style: Attributes) {
+    setEdgesStyle(
+        edges: EdgeKey[],
+        style: Attributes,
+        refreshLevel: number = -1
+    ) {
         if (edges.length > 0) {
             edges.map((edge) => {
-                this.setEdgeStyle(edge, style);
+                this.setEdgeStyle(edge, style, refreshLevel);
             });
         }
     }
+
     /**
      * should call this on every refresh of graph DS
      *

@@ -116,13 +116,15 @@ export default observer(
                     State.graph.highlightNodeHovered(current, {
                         nodeStyle: {
                             color: "white",
-                            neighborColor: "#3399FF",
+                            neighborColor: "#4499FF",
                             // opacity: 0.75,
+                            refreshLevel: 1,
                         },
                         edgeStyle: {
                             color: "yellow",
                             width: 4,
                             linkDirectionalParticles: 4,
+                            refreshLevel: 1,
                         },
                     });
                 }
@@ -143,16 +145,31 @@ export default observer(
                 if (this.selectedNodes.includes(nodeId)) {
                     let index = this.selectedNodes.indexOf(nodeId);
                     if (index > -1) {
+                        State.graph.setNodeStyleDefault(nodeId, 2);
                         this.selectedNodes.splice(index, 1);
+                        State.graph.selectedNodes.splice(index, 1);
                     }
                 } else {
                     this.selectedNodes.push(nodeId);
+                    State.graph.selectedNodes.push(nodeId);
+                    State.graph.setNodeStyle(nodeId, {
+                        color: "#3333FF",
+                        refreshLevel: 2,
+                    });
+                    console.log(
+                        State.graph.rawGraph.getNodeAttribute(
+                            State.graph.selectedNodes[0],
+                            "_visualize"
+                        )
+                    );
                 }
             } else {
                 // single-selection
                 // TODO
             }
-            // this.graphMethods.refresh(); // update color of selected nodes
+            console.log(this.selectedNodes);
+            console.log(State.graph.selectedNodes);
+            this.graphMethods.refresh(); // update color of selected nodes
         };
 
         nodeRightClick = (node: NodeObject, event: MouseEvent) => {
