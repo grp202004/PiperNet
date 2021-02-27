@@ -29,10 +29,22 @@ export default observer(
                     )}
                     style={this.stylePosition}
                 >
-                    <MenuItem icon="graph-remove" text="Delete Node" onClick={() =>{
-                        State.graph.mutating.dropNode(State.graph.currentlyHoveredId as string);
-                        State.preferences.rightClickNodePanelOpen = false;
-                    }}/>
+                    <MenuDivider
+                        title={
+                            ("Node ID: " +
+                                State.graph.currentlyHoveredId) as string
+                        }
+                    />
+                    <MenuItem
+                        icon="graph-remove"
+                        text="Delete Node"
+                        onClick={() => {
+                            State.graph.mutating.dropNode(
+                                State.graph.currentlyHoveredId as string
+                            );
+                            State.preferences.rightClickNodePanelOpen = false;
+                        }}
+                    />
                     <MenuDivider />
                     <MenuItem icon="new-link" text="Add Edge" />
                     <MenuItem

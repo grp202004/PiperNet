@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, FormGroup, MenuItem } from "@blueprintjs/core";
-import { Tooltip2 } from "@blueprintjs/popover2";
+import { Button, FormGroup, MenuItem, Tooltip } from "@blueprintjs/core";
 import { Select } from "@blueprintjs/select";
 import { Attributes, SerializedNode } from "graphology-types";
 import { observer } from "mobx-react";
@@ -57,7 +56,7 @@ export default observer(
                         }}
                         itemRenderer={(item: SerializedNode<Attributes>) => {
                             return (
-                                <Tooltip2
+                                <Tooltip
                                     content={stringifyNodeDetail(
                                         item.attributes ?? {}
                                     )}
@@ -71,7 +70,7 @@ export default observer(
                                             this.props.onChange(key);
                                         }}
                                     />
-                                </Tooltip2>
+                                </Tooltip>
                             );
                         }}
                         noResults={

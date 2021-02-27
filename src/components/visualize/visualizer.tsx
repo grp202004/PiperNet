@@ -76,6 +76,7 @@ export default observer(
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickBackgroundPanelOpen = false;
             State.preferences.rightClickNodePanelOpen = true;
+            this.closeAllPanel();
         };
 
         backgroundRightClick = (event: MouseEvent) => {
@@ -83,6 +84,7 @@ export default observer(
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickNodePanelOpen = false;
             State.preferences.rightClickBackgroundPanelOpen = true;
+            this.closeAllPanel();
         };
 
         renderGraph = () => {
@@ -149,6 +151,7 @@ export default observer(
                         onBackgroundClick={() => {
                             State.preferences.rightClickNodePanelOpen = false;
                             State.preferences.rightClickBackgroundPanelOpen = false;
+                            this.closeAllPanel();
                         }}
                         onNodeHover={this.nodeHover}
                         controlType={this.props.controlType}
@@ -182,6 +185,10 @@ export default observer(
             this.setState({
                 visualizationGraph: State.graphDelegate.visualizationGraph(),
             });
+        }
+
+        closeAllPanel() {
+            State.preferences.deleteEdgePanelOpen = false;
         }
 
         componentDidMount() {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Button, Card, Code, Intent } from "@blueprintjs/core";
+import { Alert, Button, Card, Code, H4, H6, Intent } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
@@ -10,7 +10,6 @@ import {
     RenderMode,
     Table,
 } from "@blueprintjs/table";
-import Graph from "graphology";
 
 interface Props {
     /**
@@ -25,7 +24,7 @@ interface Props {
 export default observer(
     class DeleteEdgeInteractionPanel extends React.Component<Props, {}> {
         state = {
-            edgeToDelete: "",
+            targetNode: null as string | null,
             deleteAlertOpen: false,
         };
 
@@ -45,16 +44,12 @@ export default observer(
 
         deleteEdgeRenderer: ICellRenderer = (rowIndex) => {
             let targetNode = this.neighbors[rowIndex];
-            let edgeKey = State.graph.rawGraph.edge(
-                this.props.onNode,
-                targetNode
-            );
             return (
                 <Cell>
                     <Button
                         onClick={() => {
                             this.setState({
-                                edgeToDelete: edgeKey as string,
+                                targetNode: targetNode,
                                 deleteAlertOpen: true,
                             });
                         }}
@@ -68,18 +63,28 @@ export default observer(
         };
 
         deleteEdgeAlert = () => {
-            if (this.state.edgeToDelete === "") {
+            console.log(
+                "source" + this.state.targetNode + "target" + this.props.onNode
+            );
+            if (this.state.targetNode === null) {
                 return null;
             }
 
-            let source, target;
+            let edgeToDelete: string | undefined;
 
-            try {
-                source = State.graph.rawGraph.source(this.state.edgeToDelete);
-                target = State.graph.rawGraph.target(this.state.edgeToDelete);
-            } catch (error) {
-                return null;
+            if (
+                (edgeToDelete = State.graph.rawGraph.edge(
+                    this.state.targetNode,
+                    this.props.onNode
+                )) === undefined
+            ) {
+                edgeToDelete = State.graph.rawGraph.edge(
+                    this.props.onNode,
+                    this.state.targetNode
+                );
             }
+            console.log("edge" + edgeToDelete);
+
             return (
                 <Alert
                     cancelButtonText="Cancel"
@@ -89,15 +94,17 @@ export default observer(
                     isOpen={this.state.deleteAlertOpen}
                     onCancel={() => this.setState({ deleteAlertOpen: false })}
                     onConfirm={() => {
-                        State.graph.mutating.dropEdge(this.state.edgeToDelete);
+                        State.graph.mutating.dropEdge(edgeToDelete as string);
                         this.setState({ deleteAlertOpen: false });
+                        State.preferences.deleteEdgePanelOpen = false;
                     }}
                 >
                     <p>
-                        Are you sure you want to delete the edge with ID{" "}
-                        <Code>{this.state.edgeToDelete}</Code> between Node ID{" "}
-                        <Code>{source}</Code> and Node ID <Code>{target}</Code>.
-                        This action cannot be reversed.
+                        Are you sure you want to delete the edge with Key{" "}
+                        <Code>{edgeToDelete as string}</Code> between Node ID{" "}
+                        <Code>{this.state.targetNode}</Code> and Node ID{" "}
+                        <Code>{this.props.onNode}</Code>. This action cannot be
+                        reversed.
                     </p>
                 </Alert>
             );
@@ -144,6 +151,7 @@ export default observer(
                         >
                             Close
                         </Button>
+                        <H6> Node ID: {this.props.onNode}</H6>
                         <Table
                             numRows={this.neighbors.length}
                             defaultRowHeight={30}
