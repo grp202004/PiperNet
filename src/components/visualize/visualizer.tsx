@@ -6,6 +6,7 @@ import ForceGraph3D, {
 } from "react-force-graph-3d";
 import ComponentRef from "../ComponentRef";
 import State from "../../state";
+import SpriteText from "three-spritetext";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -90,7 +91,16 @@ export default observer(
                     <ForceGraph3D
                         ref={this.graphRef}
                         graphData={this.state.visualizationGraph}
-                        nodeResolution={State.css.nodeResolution}
+                        nodeLabel="id"
+                        nodeThreeObjectExtend={true}
+                        nodeThreeObject={(node) => {
+                            // extend link with text sprite
+                            const sprite = new SpriteText(`${node.id}`);
+                            sprite.color = "lightgrey";
+                            sprite.textHeight = 5;
+                            return sprite;
+                        }}
+                        nodeResolution={State.css.node.resolution}
                         nodeVisibility={this.graphDelegate.nodeVisibility}
                         linkVisibility={this.graphDelegate.linkVisibility}
                         onNodeDragEnd={(node) => {
@@ -129,8 +139,8 @@ export default observer(
                         }
                         nodeColor={(node) =>
                             this.selectedNodes.includes(this.getNodeId(node))
-                                ? "yellow"
-                                : "grey"
+                                ? State.css.node.selectedColor
+                                : State.css.node.defaultColor
                         }
                         onNodeClick={this.nodeSelect}
                         onNodeRightClick={this.nodeRightClick}

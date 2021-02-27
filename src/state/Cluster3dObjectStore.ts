@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
+import { SphereGeometry } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import State from ".";
@@ -128,10 +129,24 @@ export default class Cluster3dObjectStore {
      */
     convexHullObject(key: string | number): THREE.BufferGeometry {
         let points = State.cluster.attributePoints.get(key) as THREE.Vector3[];
-        if (!points || points.length < 4) {
-            return new THREE.BufferGeometry();
+        if (State.css.cluster.shape === "convexHull") {
+            if (!points || points.length < 4) {
+                return new THREE.BufferGeometry();
+            } else {
+                return new ConvexGeometry(Array.from(points));
+            }
         } else {
-            return new ConvexGeometry(Array.from(points));
+            // State.css.clusterShape === "Sphere"
+            let convexGeometry = new ConvexGeometry(Array.from(points));
+            convexGeometry.computeBoundingSphere();
+            let sphereGeo = convexGeometry.boundingSphere as THREE.Sphere;
+            let sphere = new SphereGeometry(sphereGeo.radius, 20, 20);
+            sphere.translate(
+                sphereGeo.center.x,
+                sphereGeo.center.y,
+                sphereGeo.center.z
+            );
+            return sphere;
         }
     }
 
@@ -155,13 +170,14 @@ export default class Cluster3dObjectStore {
             opacity: 0.15,
         });
         meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
+        meshMaterial.depthWrite = false;
         const wireFrameMat = new THREE.MeshBasicMaterial();
-        wireFrameMat.wireframe = true; //把材质渲染成线框
-        wireFrameMat.wireframeLinecap = "round";
+        // wireFrameMat.wireframe = true; //把材质渲染成线框
+        // wireFrameMat.wireframeLinecap = "round";
 
         let group = SceneUtils.createMultiMaterialObject(geom, [
             meshMaterial,
-            wireFrameMat,
+            // wireFrameMat,
         ]);
         group.name = "THREE_CLUSTER_" + name;
         return group;

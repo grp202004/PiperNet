@@ -219,12 +219,14 @@ export default class GraphDelegate {
      * @param {number} force the force to be set
      * @param {number} _default default force of other links
      */
-    updateClusterForce(force: number, _default: number) {
+    updateClusterForce() {
         this.graphDelegateMethods
             ?.d3Force("link")
             //@ts-ignore
             ?.distance((link: CustomLinkObject) => {
-                return link.isClusterLink ? State.css.clusterForce : _default;
+                return link.isClusterLink
+                    ? State.css.cluster.clusterForce
+                    : State.css.cluster.normalForce;
             });
         this.graphDelegateMethods.d3ReheatSimulation();
     }
