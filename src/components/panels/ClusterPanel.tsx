@@ -1,18 +1,9 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import {
-    Button,
-    Classes,
-    Popover,
-    PopoverInteractionKind,
-    Position,
-    Slider,
-} from "@blueprintjs/core";
-import { SketchPicker } from "react-color";
+import { Classes, Slider } from "@blueprintjs/core";
 import classnames from "classnames";
 import Collapsable from "../utils/Collapsable";
-import { COLOR_LIST } from "../../constants";
 import SimpleSelect from "../utils/SimpleSelect";
 
 export default observer(
@@ -34,7 +25,7 @@ export default observer(
                     }
                 >
                     <div className={classnames(Classes.CARD, "sub-option")}>
-                        Cluster Force:
+                        Cluster Force Distance:
                         <br />
                         <Slider
                             min={0}
@@ -49,7 +40,7 @@ export default observer(
                         />
                     </div>
                     <div className={classnames(Classes.CARD, "sub-option")}>
-                        Normal Force:
+                        Normal Force Distance:
                         <br />
                         <Slider
                             min={0}
@@ -79,21 +70,6 @@ export default observer(
                     }
                 >
                     <div className={classnames(Classes.CARD, "sub-option")}>
-                        Cluster Resolution:
-                        <br />
-                        <Slider
-                            min={2}
-                            max={20}
-                            stepSize={1}
-                            labelStepSize={5}
-                            onChange={(value) => {
-                                State.css.cluster.resolution = value;
-                            }}
-                            value={State.css.cluster.resolution}
-                        />
-                    </div>
-
-                    <div className={classnames(Classes.CARD, "sub-option")}>
                         <p style={{ textAlign: "left" }}>
                             Cluster Shape:
                             <span style={{ float: "right" }}>
@@ -107,9 +83,23 @@ export default observer(
                                 />
                             </span>
                         </p>
-
-                        <br />
                     </div>
+                    {State.css.cluster.shape === "sphere" && (
+                        <div className={classnames(Classes.CARD, "sub-option")}>
+                            Cluster Resolution:
+                            <br />
+                            <Slider
+                                min={2}
+                                max={20}
+                                stepSize={1}
+                                labelStepSize={5}
+                                onChange={(value) => {
+                                    State.css.cluster.resolution = value;
+                                }}
+                                value={State.css.cluster.resolution}
+                            />
+                        </div>
+                    )}
                 </Collapsable>
             );
         };

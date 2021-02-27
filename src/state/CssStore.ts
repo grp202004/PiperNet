@@ -8,7 +8,7 @@ class NodeConfig {
     selectedColor: string = "#ffff00";
     highlightColor: string = "#ff0000";
 
-    size = 10;
+    size = 4;
     resolution = 12;
 }
 

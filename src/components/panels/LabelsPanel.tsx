@@ -15,6 +15,7 @@ export default observer(
                         checked={State.css.label.show}
                         onChange={() => {
                             State.css.label.show = !State.css.label.show;
+                            State.graphDelegate.graphDelegateMethods.refresh();
                         }}
                     />
                     <br />
@@ -28,6 +29,7 @@ export default observer(
                             labelStepSize={2}
                             onChange={(value) => {
                                 State.css.label.size = value;
+                                State.graphDelegate.graphDelegateMethods.refresh();
                             }}
                             value={State.css.label.size}
                         />
@@ -39,6 +41,7 @@ export default observer(
                                     color={State.css.label.color}
                                     onChange={(it) => {
                                         State.css.label.color = it.hex;
+                                        State.graphDelegate.graphDelegateMethods.refresh();
                                     }}
                                 />
                             </span>

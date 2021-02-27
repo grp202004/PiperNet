@@ -97,6 +97,7 @@ export default observer(
                             labelStepSize={5}
                             onChange={(value) => {
                                 State.css.node.size = value;
+                                State.graphDelegate.graphDelegateMethods.refresh();
                             }}
                             value={State.css.node.size}
                         />

@@ -92,12 +92,14 @@ export default observer(
                         ref={this.graphRef}
                         graphData={this.state.visualizationGraph}
                         nodeLabel="id"
+                        nodeRelSize={State.css.node.size}
                         nodeThreeObjectExtend={true}
                         nodeThreeObject={(node) => {
                             // extend link with text sprite
                             const sprite = new SpriteText(`${node.id}`);
-                            sprite.color = "lightgrey";
-                            sprite.textHeight = 5;
+                            sprite.color = State.css.label.color;
+                            sprite.textHeight = State.css.label.size;
+                            sprite.visible = State.css.label.show;
                             return sprite;
                         }}
                         nodeResolution={State.css.node.resolution}
