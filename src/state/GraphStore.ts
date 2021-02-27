@@ -55,6 +55,7 @@ export default class GraphStore {
             val: 1, // to be changed, to represent the size of the node
             isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
             nodeColor: this.defaultStyle.node.color, // color test
+            nodeOpacity: this.defaultStyle.node.opacity,
         };
     }
 
@@ -76,6 +77,7 @@ export default class GraphStore {
             isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
             edgeColor: this.defaultStyle.edge.color, //color test
             edgeWidth: this.defaultStyle.edge.width,
+            linkDirectionalParticles: 0,
         };
     }
 
@@ -166,10 +168,12 @@ export default class GraphStore {
     defaultStyle: Attributes = {
         node: {
             color: "orangered",
+            opacity: 0.8,
         },
         edge: {
             color: "#ff11ff",
             width: 1,
+            linkDirectionalParticles: 0,
         },
     };
     ishovered: boolean = false;
@@ -190,7 +194,7 @@ export default class GraphStore {
         visualize.nodeColor = color;
         // console.log(visualize); //test
         this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
-        // State.graph.rawGraph.updateNodeAttribute(node,"_visualize",());
+        // this.rawGraph.updateNodeAttribute(node,"_visualize",());
     }
 
     getNeighbors(node: NodeKey): string[] {
@@ -253,6 +257,19 @@ export default class GraphStore {
         }
     }
 
+    setNodeOpacity(node: NodeKey, opacity: number) {
+        const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
+        visualize.nodeOpacity = opacity;
+        this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
+    }
+    setNodesOpacity(nodes: NodeKey[], opacity: number) {
+        if (nodes.length !== 0) {
+            nodes.forEach((node) => {
+                this.setNodeOpacity(node, opacity);
+            });
+        }
+    }
+
     setEdgeColor(edge: EdgeKey, color: string) {
         const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
         // console.log(visualize); //test
@@ -282,6 +299,19 @@ export default class GraphStore {
             edges.forEach((edge) => this.setEdgeWidth(edge, width));
         }
     }
+    setEdgelinkDirectionalParticles(edge: EdgeKey, particle: number) {
+        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
+        visualize.linkDirectionalParticles = particle;
+        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
+    }
+    setEdgeslinkDirectionalParticles(edges: EdgeKey[], particle: number) {
+        if (edges.length !== 0) {
+            edges.forEach((edge) =>
+                this.setEdgelinkDirectionalParticles(edge, particle)
+            );
+        }
+    }
+
     notHovered() {
         if (this.previouslyHoverdId !== null) {
             this.setNodeColor(
@@ -308,6 +338,119 @@ export default class GraphStore {
         this.ishovered = false;
     }
 
+    highlightNodeHovered(currentNode: NodeKey, style: Attributes) {
+        this.currentlyHoveredNeighbors = this.getNeighbors(currentNode);
+        this.edgesOfCurrentlyHoveredNode = this.getEdgesOfNode(currentNode);
+        let { nodeStyle, edgeStyle } = style;
+        if (this.previouslyHoverdId !== null) {
+            // this.setNodeColor(
+            //     this.previouslyHoverdId,
+            //     this.defaultStyle.node.color
+            // );
+            this.setNodeStyle(this.previouslyHoverdId, this.defaultStyle.node);
+            //set node style of previous node
+            if (
+                this.previouslyHoveredNeighbors !== null &&
+                this.previouslyHoveredNeighbors?.length !== 0
+            ) {
+                // this.setNodesColor(
+                //     this.previouslyHoveredNeighbors,
+                //     this.defaultStyle.node.color
+                // );
+                this.setNodesStyle(
+                    this.previouslyHoveredNeighbors,
+                    this.defaultStyle.node
+                );
+            }
+            //set edge style of previous node
+            if (
+                this.edgesOfPreviouslyHoveredNode !== null &&
+                this.edgesOfPreviouslyHoveredNode?.length !== 0
+            ) {
+                // this.setEdgesColor(
+                //     this.edgesOfPreviouslyHoveredNode,
+                //     this.defaultStyle.edge.color
+                // );
+
+                // this.setEdgesWidth(
+                //     this.edgesOfPreviouslyHoveredNode,
+                //     this.defaultStyle.edge.width
+                // );
+                this.setEdgesStyle(
+                    this.edgesOfPreviouslyHoveredNode,
+                    this.defaultStyle.edge
+                );
+            }
+        }
+        // // //set node and edge style of current hovered node
+        // this.setNodeColor(currentNode, nodeStyle.nodeColor);
+
+        // this.setNodesColor(
+        //     this.currentlyHoveredNeighbors,
+        //     // style.neighborColor
+        //     nodeStyle.neighborColor
+        // );
+        this.setNodeStyle(currentNode as NodeKey, nodeStyle);
+
+        // this.setEdgesColor(
+        //     this.edgesOfCurrentlyHoveredNode,
+        //     edgeStyle.edgeColor
+        // );
+
+        // this.setEdgesWidth(
+        //     this.edgesOfCurrentlyHoveredNode,
+        //     edgeStyle.edgeWidth
+        // );
+        this.setEdgesStyle(this.edgesOfCurrentlyHoveredNode, edgeStyle);
+
+        //update the data
+        this.previouslyHoverdId = currentNode as string;
+        this.previouslyHoveredNeighbors = this.currentlyHoveredNeighbors;
+        this.edgesOfPreviouslyHoveredNode = this.edgesOfCurrentlyHoveredNode;
+    }
+
+    setNodeStyle(node: NodeKey, style: Attributes) {
+        if (style.hasOwnProperty("color")) {
+            this.setNodeColor(node, style.color);
+        }
+        if (style.hasOwnProperty("opacity")) {
+            this.setNodeOpacity(node, style.opacity);
+        }
+        if (style.hasOwnProperty("neighborColor")) {
+            this.setNodesColor(this.getNeighbors(node), style.neighborColor);
+        }
+    }
+
+    setNodesStyle(nodes: NodeKey[], style: Attributes) {
+        if (nodes.length > 0) {
+            nodes.map((node) => {
+                this.setNodeStyle(node, style);
+            });
+        }
+    }
+
+    setEdgeStyle(edge: EdgeKey, style: Attributes) {
+        if (style.hasOwnProperty("color")) {
+            this.setEdgeColor(edge, style.color);
+        }
+        if (style.hasOwnProperty("width")) {
+            this.setEdgeWidth(edge, style.width);
+        }
+        if (style.hasOwnProperty("linkDirectionalParticles")) {
+            this.setEdgelinkDirectionalParticles(
+                edge,
+                style.linkDirectionalParticles
+            );
+        }
+    }
+
+    setEdgesStyle(edges: EdgeKey[], style: Attributes) {
+        if (edges.length > 0) {
+            edges.map((edge) => {
+                this.setEdgeStyle(edge, style);
+            });
+        }
+    }
     /**
      * should call this on every refresh of graph DS
      *

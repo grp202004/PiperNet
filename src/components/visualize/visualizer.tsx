@@ -55,67 +55,76 @@ export default observer(
                         State.graph.previouslyHoverdId ||
                     State.graph.previouslyHoverdId === null
                 ) {
-                    State.graph.currentlyHoveredNeighbors = State.graph.getNeighbors(
-                        current
-                    );
-                    State.graph.edgesOfCurrentlyHoveredNode = State.graph.getEdgesOfNode(
-                        current
-                    );
-
-                    if (State.graph.previouslyHoverdId !== null) {
-                        State.graph.setNodeColor(
-                            State.graph.previouslyHoverdId,
-                            State.graph.defaultStyle.node.color
-                        );
-
-                        //set node style of previous node
-                        if (
-                            State.graph.previouslyHoveredNeighbors !== null &&
-                            State.graph.previouslyHoveredNeighbors?.length !== 0
-                        ) {
-                            State.graph.setNodesColor(
-                                State.graph.previouslyHoveredNeighbors,
-                                State.graph.defaultStyle.node.color
-                            );
-                        }
-                        //set edge style of previous node
-                        if (
-                            State.graph.edgesOfPreviouslyHoveredNode !== null &&
-                            State.graph.edgesOfPreviouslyHoveredNode?.length !==
-                                0
-                        ) {
-                            State.graph.setEdgesColor(
-                                State.graph.edgesOfPreviouslyHoveredNode,
-                                State.graph.defaultStyle.edge.color
-                            );
-                            State.graph.setEdgesWidth(
-                                State.graph.edgesOfPreviouslyHoveredNode,
-                                State.graph.defaultStyle.edge.width
-                            );
-                        }
-                    }
-                    //set node and edge style of current hovered node
-                    State.graph.setNodeColor(current, "white");
-                    // State.graph.setNeighborColor(current, "#3399FF");
-                    State.graph.setNodesColor(
-                        State.graph.currentlyHoveredNeighbors,
-                        "#3399FF"
-                    );
-                    State.graph.setEdgesColor(
-                        State.graph.edgesOfCurrentlyHoveredNode,
-                        "yellow"
-                    );
-                    State.graph.setEdgesWidth(
-                        State.graph.edgesOfCurrentlyHoveredNode,
-                        4
-                    );
-
-                    //update the data
-                    State.graph.previouslyHoverdId = current;
-                    State.graph.previouslyHoveredNeighbors =
-                        State.graph.currentlyHoveredNeighbors;
-                    State.graph.edgesOfPreviouslyHoveredNode =
-                        State.graph.edgesOfCurrentlyHoveredNode;
+                    //     State.graph.currentlyHoveredNeighbors = State.graph.getNeighbors(
+                    //         current
+                    //     );
+                    //     State.graph.edgesOfCurrentlyHoveredNode = State.graph.getEdgesOfNode(
+                    //         current
+                    //     );
+                    //     if (State.graph.previouslyHoverdId !== null) {
+                    //         State.graph.setNodeColor(
+                    //             State.graph.previouslyHoverdId,
+                    //             State.graph.defaultStyle.node.color
+                    //         );
+                    //         //set node style of previous node
+                    //         if (
+                    //             State.graph.previouslyHoveredNeighbors !== null &&
+                    //             State.graph.previouslyHoveredNeighbors?.length !== 0
+                    //         ) {
+                    //             State.graph.setNodesColor(
+                    //                 State.graph.previouslyHoveredNeighbors,
+                    //                 State.graph.defaultStyle.node.color
+                    //             );
+                    //         }
+                    //         //set edge style of previous node
+                    //         if (
+                    //             State.graph.edgesOfPreviouslyHoveredNode !== null &&
+                    //             State.graph.edgesOfPreviouslyHoveredNode?.length !==
+                    //                 0
+                    //         ) {
+                    //             State.graph.setEdgesColor(
+                    //                 State.graph.edgesOfPreviouslyHoveredNode,
+                    //                 State.graph.defaultStyle.edge.color
+                    //             );
+                    //             State.graph.setEdgesWidth(
+                    //                 State.graph.edgesOfPreviouslyHoveredNode,
+                    //                 State.graph.defaultStyle.edge.width
+                    //             );
+                    //         }
+                    //     }
+                    //     //set node and edge style of current hovered node
+                    //     State.graph.setNodeColor(current, "white");
+                    //     // State.graph.setNeighborColor(current, "#3399FF");
+                    //     State.graph.setNodesColor(
+                    //         State.graph.currentlyHoveredNeighbors,
+                    //         "#3399FF"
+                    //     );
+                    //     State.graph.setEdgesColor(
+                    //         State.graph.edgesOfCurrentlyHoveredNode,
+                    //         "yellow"
+                    //     );
+                    //     State.graph.setEdgesWidth(
+                    //         State.graph.edgesOfCurrentlyHoveredNode,
+                    //         4
+                    //     );
+                    //     //update the data
+                    //     State.graph.previouslyHoverdId = current;
+                    //     State.graph.previouslyHoveredNeighbors =
+                    //         State.graph.currentlyHoveredNeighbors;
+                    //     State.graph.edgesOfPreviouslyHoveredNode =
+                    //         State.graph.edgesOfCurrentlyHoveredNode;
+                    State.graph.highlightNodeHovered(current, {
+                        nodeStyle: {
+                            color: "white",
+                            neighborColor: "#3399FF",
+                            // opacity: 0.75,
+                        },
+                        edgeStyle: {
+                            color: "yellow",
+                            width: 4,
+                            linkDirectionalParticles: 4,
+                        },
+                    });
                 }
 
                 this.graphMethods.refresh();
@@ -186,14 +195,7 @@ export default observer(
                         //     );
                         // }}
                         linkColor="edgeColor" //used for test
-                        // linkDirectionalParticles={(link) => {
-                        //     return State.graphDelegate.ifHighlightLink(
-                        //         link,
-                        //         4,
-                        //         0,
-                        //         0
-                        //     );
-                        // }}
+                        linkDirectionalParticles="linkDirectionalParticles"
                         linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
@@ -203,6 +205,7 @@ export default observer(
                         //         ? "yellow"
                         //         : "grey"
                         // }
+
                         nodeColor="nodeColor"
                         onNodeClick={this.nodeSelect}
                         onNodeRightClick={this.nodeRightClick}
