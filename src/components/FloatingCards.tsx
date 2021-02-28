@@ -3,39 +3,13 @@ import { Button, Classes, Tab, Tabs } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
-import NodesPanel from "./panels/NodesPanel";
-import EdgesPanel from "./panels/EdgesPanel";
-import LabelsPanel from "./panels/LabelsPanel";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
 import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
-
-let RenderOptionsCard = observer(
-    class RenderOptionsCard extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h2>Graph Options</h2>
-                    <Tabs animate={true}>
-                        <Tab id="nodes" title="Nodes" panel={<NodesPanel />} />
-                        <Tab id="edges" title="Edges" panel={<EdgesPanel />} />
-                        <Tab
-                            id="labels"
-                            title="Labels"
-                            panel={<LabelsPanel />}
-                        />
-                        {/* <Tab2 id="layout" title="Layout" panel={<LayoutPanel />} /> */}
-                        <Tabs.Expander />
-                    </Tabs>
-                </div>
-            );
-        }
-    }
-);
-//
+import GraphOptionsCard from "./panels/GraphOptionsCard";
 
 export default observer(
     class FloatingCards extends React.Component {
@@ -64,7 +38,6 @@ export default observer(
                                 Classes.CARD,
                                 Classes.ELEVATION_2,
                                 "overlay-card",
-                                "left-overlay-card",
                                 "transparent-frame",
                                 "left-cards"
                             )}
@@ -81,7 +54,7 @@ export default observer(
                                 onClick={this.toggleOptions}
                             />
                             <br />
-                            <RenderOptionsCard />
+                            <GraphOptionsCard />
                         </div>
                         <div
                             className={classnames(
@@ -149,5 +122,3 @@ export default observer(
         }
     }
 );
-
-// export default FloatingCards;

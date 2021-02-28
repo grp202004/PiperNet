@@ -93,8 +93,6 @@ html {
 }
 
 .overlay-card {
-    padding-right: 27px;
-    width: 300px;
     pointer-events: all;
 }
 
@@ -106,19 +104,15 @@ html {
 
 .left-cards {
     position: absolute;
-    border-top: 4px;
     left: 0em;
     opacity: 1;
-    top: 25px;
-    background-color: white;
+    top: 15px;
     transition: left 0.3s;
 }
 
 .left-overlay-card {
-    margin-top: -1em;
     padding-top: 1.1em;
     overflow-y: auto;
-    max-height: 530px;
 }
 
 /* width */

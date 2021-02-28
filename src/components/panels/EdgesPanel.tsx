@@ -1,24 +1,18 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import {
-    Button,
-    Classes,
-    Popover,
-    PopoverInteractionKind,
-    Position,
-} from "@blueprintjs/core";
-import { SketchPicker } from "react-color";
+import { Classes } from "@blueprintjs/core";
 import classnames from "classnames";
 import Collapsable from "../utils/Collapsable";
+import ColorPicker from "../utils/ColorPicker";
 
 export default observer(
     class EdgesPanel extends React.Component {
         state = {
-            timeOutRef: null,
             sizeOptionOpen: false,
             thicknessOptionOpen: false,
             colorOptionOpen: false,
+            forceOptionOpen: false,
         };
 
         render() {
@@ -39,78 +33,54 @@ export default observer(
                         <div className={classnames(Classes.CARD, "sub-option")}>
                             <section>
                                 <p style={{ textAlign: "left" }}>
-                                    Select Edge Color:
+                                    Default Color:
                                     <span style={{ float: "right" }}>
-                                        <Popover
-                                            interactionKind={
-                                                PopoverInteractionKind.CLICK
+                                        <ColorPicker
+                                            color={State.css.edge.defaultColor}
+                                            onChange={(it) => {
+                                                State.css.edge.defaultColor =
+                                                    it.hex;
+                                            }}
+                                        />
+                                    </span>
+                                </p>
+                            </section>
+
+                            <section>
+                                <p style={{ textAlign: "left" }}>
+                                    Selected Color:
+                                    <span style={{ float: "right" }}>
+                                        <ColorPicker
+                                            color={State.css.edge.selectedColor}
+                                            onChange={(it) => {
+                                                State.css.edge.selectedColor =
+                                                    it.hex;
+                                            }}
+                                        />
+                                    </span>
+                                </p>
+                            </section>
+
+                            <section>
+                                <p style={{ textAlign: "left" }}>
+                                    Highlight Color:
+                                    <span style={{ float: "right" }}>
+                                        <ColorPicker
+                                            color={
+                                                State.css.edge.highlightColor
                                             }
-                                            popoverClassName="bp3-popover-content-sizing"
-                                            position={Position.RIGHT}
-                                        >
-                                            <Button
-                                                text="  "
-                                                style={{
-                                                    backgroundImage: "inherit",
-                                                    backgroundColor:
-                                                        State.css.config.edges
-                                                            .color,
-                                                }}
-                                            />
-                                            <div>
-                                                <SketchPicker
-                                                    color={
-                                                        State.css.config.edges
-                                                            .color
-                                                    }
-                                                    onChange={(it) => {
-                                                        // State.graph.process.graph.forEachNode(n => {
-
-                                                        //     let red = new THREE.Color(State.graph.edges.color).r;
-                                                        //     let blue = new THREE.Color(State.graph.edges.color).g;
-                                                        //     let green = new THREE.Color(State.graph.edges.color).b;
-                                                        //     n.renderData.linecolor.r = red;
-                                                        //     n.renderData.linecolor.g = blue;
-                                                        //     n.renderData.linecolor.b = green;
-                                                        // });
-
-                                                        State.css.config.edges.color =
-                                                            it.hex;
-                                                        console.log(it.hex);
-                                                        /**update edge color in real time*/
-                                                        // State.graph.process.onHover();
-                                                    }}
-                                                />
-                                            </div>
-                                        </Popover>
+                                            onChange={(it) => {
+                                                State.css.edge.highlightColor =
+                                                    it.hex;
+                                            }}
+                                        />
                                     </span>
                                 </p>
                             </section>
                         </div>
                     </Collapsable>
-
-                    {/* Collapsable Option: Thickness */}
-                    {/* <Collapsable
-                    name="Thickness"
-                    isOpen={this.state.thicknessOptionOpen}
-                    onToggle={() =>
-                        this.setState({
-                            thicknessOptionOpen: !this.state.thicknessOptionOpen
-                        })
-                    }
-                    >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
-                        <section>
-                            <p>Select Edge Thickness: </p>
-                            <div style={{display: "inline", float: "right"}}>
-
-                            </div>
-                        </section>
-                    </div>
-                </Collapsable> */}
                 </div>
             );
         }
     }
 );
-// export default EdgesPanel;

@@ -15,6 +15,8 @@ import {
 import ClusterChooser from "./utils/ClusterChooser";
 import logo from "../images/logo.png";
 import State from "../state";
+import SimpleSelect from "./utils/SimpleSelect";
+import ComponentRef from "./ComponentRef";
 
 export default observer(
     class Navbar extends React.Component {
@@ -239,6 +241,15 @@ export default observer(
                                 State.cluster.setCluster(cluster);
                             }}
                             syncWith={State.cluster.clusterBy}
+                        />
+                        <span className={Classes.NAVBAR_DIVIDER} />
+                        <SimpleSelect
+                            items={["trackball", "orbit", "fly"]}
+                            text={State.preferences.controlType}
+                            onSelect={(it) => {
+                                State.preferences.controlType = it;
+                                ComponentRef.visualizer.updateVisualizationGraph();
+                            }}
                         />
                         <span className={Classes.NAVBAR_DIVIDER} />
                         <Button

@@ -4,15 +4,19 @@ import ForceGraph3D, {
     ForceGraphMethods,
     NodeObject,
 } from "react-force-graph-3d";
-import ComponentRef from "../ComponentRef"
+import ComponentRef from "../ComponentRef";
 import State from "../../state";
+import SpriteText from "three-spritetext";
+
+interface Props {
+    controlType: "trackball" | "orbit" | "fly";
+}
 
 export default observer(
-    class ThreeJSVis extends React.Component {
-
+    class ThreeJSVis extends React.Component<Props, {}> {
         state = {
-            visualizationGraph: State.graphDelegate.visualizationGraph()
-        }
+            visualizationGraph: State.graphDelegate.visualizationGraph(),
+        };
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -72,6 +76,7 @@ export default observer(
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickBackgroundPanelOpen = false;
             State.preferences.rightClickNodePanelOpen = true;
+            this.closeAllPanel();
         };
 
         backgroundRightClick = (event: MouseEvent) => {
@@ -79,6 +84,7 @@ export default observer(
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickNodePanelOpen = false;
             State.preferences.rightClickBackgroundPanelOpen = true;
+            this.closeAllPanel();
         };
 
         renderGraph = () => {
@@ -87,7 +93,18 @@ export default observer(
                     <ForceGraph3D
                         ref={this.graphRef}
                         graphData={this.state.visualizationGraph}
-                        nodeResolution={20}
+                        nodeLabel="id"
+                        nodeRelSize={State.css.node.size}
+                        nodeThreeObjectExtend={true}
+                        nodeThreeObject={(node) => {
+                            // extend link with text sprite
+                            const sprite = new SpriteText(`${node.id}`);
+                            sprite.color = State.css.label.color;
+                            sprite.textHeight = State.css.label.size;
+                            sprite.visible = State.css.label.show;
+                            return sprite;
+                        }}
+                        nodeResolution={State.css.node.resolution}
                         nodeVisibility={this.graphDelegate.nodeVisibility}
                         linkVisibility={this.graphDelegate.linkVisibility}
                         onNodeDragEnd={(node) => {
@@ -122,20 +139,22 @@ export default observer(
                         }}
                         linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
-                            this.graphDelegate.clusterDelegation()
+                            this.graphDelegate.clusterObject.clusterDelegation()
                         }
                         nodeColor={(node) =>
                             this.selectedNodes.includes(this.getNodeId(node))
-                                ? "yellow"
-                                : "grey"
+                                ? State.css.node.selectedColor
+                                : State.css.node.defaultColor
                         }
                         onNodeClick={this.nodeSelect}
                         onNodeRightClick={this.nodeRightClick}
                         onBackgroundClick={() => {
                             State.preferences.rightClickNodePanelOpen = false;
                             State.preferences.rightClickBackgroundPanelOpen = false;
+                            this.closeAllPanel();
                         }}
                         onNodeHover={this.nodeHover}
+                        controlType={this.props.controlType}
                     />
                 );
                 // } else {
@@ -164,13 +183,17 @@ export default observer(
 
         updateVisualizationGraph() {
             this.setState({
-                visualizationGraph: State.graphDelegate.visualizationGraph()
-            })
+                visualizationGraph: State.graphDelegate.visualizationGraph(),
+            });
+        }
+
+        closeAllPanel() {
+            State.preferences.deleteEdgePanelOpen = false;
         }
 
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
-            ComponentRef.visualizer = this
+            ComponentRef.visualizer = this;
         }
     }
 );

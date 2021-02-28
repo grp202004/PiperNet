@@ -27,4 +27,5 @@ export default class PreferencesStore {
     isRenderOptionsCardHidden = true;
 
     view = "3D";
+    controlType: "trackball" | "orbit" | "fly" = "trackball";
 }
