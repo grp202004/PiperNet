@@ -12,7 +12,7 @@ import ExportDialog from "./dialogs/ExportDialog";
 import NodeDataSheetDialog from "./dialogs/NodeDataSheetDialog";
 import EdgeDataSheetDialog from "./dialogs/EdgeDataSheetDialog";
 import AddNodeDialog from "./dialogs/AddNodeDialog";
-// import AddEdgeDialog from "./dialogs/AddEdgeDialog";
+import AddEdgeDialog from "./dialogs/AddEdgeDialog";
 
 export default class Dialogs extends React.Component {
     render() {
@@ -30,7 +30,7 @@ export default class Dialogs extends React.Component {
                 <NeighborDialog />\
                 */}
                 <AddNodeDialog />
-                {/* <AddEdgeDialog /> */}
+                <AddEdgeDialog />
                 <NodeDataSheetDialog />
                 <EdgeDataSheetDialog />
                 <ExportDialog />

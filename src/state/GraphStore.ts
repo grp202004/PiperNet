@@ -80,6 +80,7 @@ export default class GraphStore {
             edgeWidth: this.defaultStyle.edge.width,
             linkDirectionalParticles: 0,
             refreshLevel: this.defaultStyle.edge.refreshLevel,
+            linkOpacity: this.defaultStyle.edge.opacity,
         };
     }
 
@@ -167,6 +168,7 @@ export default class GraphStore {
     previouslyHoveredNeighbors: string[] | null = null;
     edgesOfCurrentlyHoveredNode: EdgeKey[] = [];
     edgesOfPreviouslyHoveredNode: EdgeKey[] = [];
+    selectedEdgeWhenDelete: string[] = [];
     /**
      * Current refreshLevel
      * default:0
@@ -180,10 +182,11 @@ export default class GraphStore {
             refreshLevel: 0, //the style will be refreshed only if the refreshlevel of current action is higher than previous one stored here
         },
         edge: {
-            color: "#ff11ff",
+            color: "white",
             width: 1,
             linkDirectionalParticles: 0,
             refreshLevel: 0, //the style will be refreshed only if the refreshlevel of current action is higher than previous one stored here
+            opacity: 0.2,
         },
     };
     ishovered: boolean = false;
@@ -222,29 +225,40 @@ export default class GraphStore {
             return [];
         }
         nodeNeighbors.forEach((neighborNode) => {
-            if (
-                typeof this.rawGraph.edge(
-                    this.currentlyHoveredId as NodeKey,
-                    neighborNode as NodeKey
-                ) === "undefined"
-            ) {
-                edges.push(
-                    this.rawGraph.edge(
-                        neighborNode as NodeKey,
-                        this.currentlyHoveredId as NodeKey
-                    ) as string
-                );
-            } else {
-                edges.push(
-                    this.rawGraph.edge(
-                        this.currentlyHoveredId as NodeKey,
-                        neighborNode as NodeKey
-                    ) as string
-                );
-            }
+            // if (
+            //     typeof this.rawGraph.edge(
+            //         this.currentlyHoveredId as NodeKey,
+            //         neighborNode as NodeKey
+            //     ) === "undefined"
+            // ) {
+            //     edges.push(
+            //         this.rawGraph.edge(
+            //             neighborNode as NodeKey,
+            //             this.currentlyHoveredId as NodeKey
+            //         ) as string
+            //     );
+            // } else {
+            //     edges.push(
+            //         this.rawGraph.edge(
+            //             this.currentlyHoveredId as NodeKey,
+            //             neighborNode as NodeKey
+            //         ) as string
+            //     );
+            // }
+            edges.push(
+                this.getEdgeId(this.currentlyHoveredId as NodeKey, neighborNode)
+            );
         });
 
         return edges;
+    }
+    getEdgeId(node1: NodeKey, node2: NodeKey): string {
+        let retEdge: string | undefined = this.rawGraph.edge(node1, node2);
+        if (typeof retEdge === "undefined") {
+            return this.rawGraph.edge(node2, node1) as string;
+        } else {
+            return retEdge as string;
+        }
     }
 
     setNeighborColor(node: NodeKey, color: string) {
@@ -273,6 +287,18 @@ export default class GraphStore {
         if (nodes.length !== 0) {
             nodes.forEach((node) => {
                 this.setNodeOpacity(node, opacity);
+            });
+        }
+    }
+    setEdgeOpacity(edge: EdgeKey, opacity: number) {
+        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
+        visualize.linkOpacity = opacity;
+        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
+    }
+    setEdgesOpacity(edges: EdgeKey[], opacity: number) {
+        if (edges.length !== 0) {
+            edges.forEach((edge) => {
+                this.setEdgeOpacity(edge, opacity);
             });
         }
     }
@@ -504,6 +530,9 @@ export default class GraphStore {
         //     }
         //     this.setEdgeRefreshLevel(edge, style.refreshLevel);
         // }
+
+        if (this.selectedEdgeWhenDelete.includes(edge as string)) return;
+
         if (style.hasOwnProperty("color")) {
             this.setEdgeColor(edge, style.color);
         }
@@ -515,6 +544,9 @@ export default class GraphStore {
                 edge,
                 style.linkDirectionalParticles
             );
+        }
+        if (style.hasOwnProperty("opacity")) {
+            this.setEdgeOpacity(edge, style.opacity);
         }
     }
 

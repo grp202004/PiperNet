@@ -11,6 +11,7 @@ import {
     Table,
 } from "@blueprintjs/table";
 import Graph from "graphology";
+import { Attributes } from "graphology-types";
 
 interface Props {
     /**
@@ -28,6 +29,33 @@ export default observer(
             edgeToDelete: "",
             deleteAlertOpen: false,
         };
+
+        selectedEdgeStyle: Attributes = {
+            color: "#FF9900",
+            width: 4,
+            linkDirectionalParticles: 5,
+        };
+        setEdgeStye(nodeIndex: number) {
+            let edgeId = State.graph.getEdgeId(
+                this.props.onNode,
+                this.neighbors[nodeIndex]
+            );
+            if (State.graph.selectedEdgeWhenDelete.includes(edgeId)) {
+                let index = State.graph.selectedEdgeWhenDelete.indexOf(edgeId);
+                if (index > -1) {
+                    State.graph.selectedEdgeWhenDelete.splice(index, 1);
+                    State.graph.setEdgeStyle(
+                        edgeId,
+                        State.graph.defaultStyle.edge
+                    );
+                    State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+                }
+            } else {
+                State.graph.setEdgeStyle(edgeId, this.selectedEdgeStyle);
+                State.graph.selectedEdgeWhenDelete.push(edgeId);
+                State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+            }
+        }
 
         get neighbors(): string[] {
             if (this.props.onNode === "") {
@@ -112,11 +140,13 @@ export default observer(
                                 this.props.onNode,
                                 400
                             );
-                            State.graphDelegate.highlightLink = {
-                                source: this.props.onNode,
-                                target: this.neighbors[rowIndex],
-                            };
-                            State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+                            // State.graphDelegate.highlightLink = {
+                            //     source: this.props.onNode,
+                            //     target: this.neighbors[rowIndex],
+                            // };
+                            // State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+
+                            this.setEdgeStye(rowIndex);
                         }}
                     >
                         {this.neighbors[rowIndex]}

@@ -45,6 +45,10 @@ export default observer(
                 linkDirectionalParticles: 4,
             },
         };
+
+        selectedNodeStyle: Attributes = {
+            color: "#3333FF",
+        };
         graphDelegate = State.graphDelegate;
 
         nodeHover = (
@@ -138,42 +142,35 @@ export default observer(
 
         // ref of State.graph.selectedNodes
         selectedNodes: string[] = State.graph.selectedNodes;
-
+        highlightSelectedNode(nodeId: string) {
+            if (this.selectedNodes.includes(nodeId)) {
+                let index = this.selectedNodes.indexOf(nodeId);
+                if (index > -1) {
+                    this.selectedNodes.splice(index, 1);
+                    State.graph.selectedNodes.splice(index, 1);
+                    State.graph.highlightNodeHovered(
+                        nodeId,
+                        this.highlightNodeAttributes
+                    );
+                    this.graphMethods.refresh();
+                }
+            } else {
+                this.selectedNodes.push(nodeId);
+                State.graph.selectedNodes.push(nodeId);
+                State.graph.setNodeStyle(nodeId, this.selectedNodeStyle);
+            }
+        }
         nodeSelect = (node: NodeObject, event: MouseEvent) => {
             let nodeId = State.graph.getNodeId(node as NodeObject);
             if (event.ctrlKey || event.shiftKey) {
                 // multi-selection
-                if (this.selectedNodes.includes(nodeId)) {
-                    let index = this.selectedNodes.indexOf(nodeId);
-                    if (index > -1) {
-                        this.selectedNodes.splice(index, 1);
-                        State.graph.selectedNodes.splice(index, 1);
-                        State.graph.highlightNodeHovered(
-                            nodeId,
-                            this.highlightNodeAttributes
-                        );
-                        this.graphMethods.refresh();
-                    }
-                } else {
-                    this.selectedNodes.push(nodeId);
-                    State.graph.selectedNodes.push(nodeId);
-                    State.graph.setNodeStyle(nodeId, {
-                        color: "#3333FF",
-                    });
-                    this.graphMethods.refresh();
-                    // console.log(
-                    //     State.graph.rawGraph.getNodeAttribute(
-                    //         State.graph.selectedNodes[0],
-                    //         "_visualize"
-                    //     )
-                    // );
-                }
+                this.highlightSelectedNode(nodeId);
+                this.graphMethods.refresh();
             } else {
                 // single-selection
                 // TODO
             }
-            console.log(this.selectedNodes);
-            console.log(State.graph.selectedNodes);
+
             // update color of selected nodes
         };
 
@@ -208,26 +205,12 @@ export default observer(
                         }}
                         onBackgroundRightClick={this.backgroundRightClick}
                         linkWidth="edgeWidth"
-                        // linkColor={(link) => {
-                        //     return State.graphDelegate.ifHighlightLink(
-                        //         link,
-                        //         "orangered",
-                        //         "white",
-                        //         "white"
-                        //     );
-                        // }}
-                        linkColor="edgeColor" //used for test
+                        linkColor="edgeColor"
                         linkDirectionalParticles="linkDirectionalParticles"
                         linkDirectionalParticleWidth={4}
                         onEngineTick={() =>
                             this.graphDelegate.clusterDelegation()
                         }
-                        // nodeColor={(node) =>
-                        //     this.selectedNodes.includes(this.getNodeId(node))
-                        //         ? "yellow"
-                        //         : "grey"
-                        // }
-
                         nodeColor="nodeColor"
                         onNodeClick={this.nodeSelect}
                         onNodeRightClick={this.nodeRightClick}
