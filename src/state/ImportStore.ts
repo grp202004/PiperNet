@@ -287,14 +287,14 @@ export default class ImportStore {
             nodeProperties.push(key);
         }
 
-        // graph.setAttribute('cluster','label');
+        graph.setAttribute('cluster','label');
 
         return {
             graph: graph,
             metadata: {
                 snapshotName: "Untitled",
                 nodeProperties: nodeProperties,
-                clusterProperties: graph.getAttribute('cluster'),
+                clusterProperties: null,
                 edgeProperties: ["source_id", "target_id"],
             },
         };

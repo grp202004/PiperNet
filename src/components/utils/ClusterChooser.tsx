@@ -92,7 +92,7 @@ export default observer(
                     onItemSelect={(item: string) => {
                         // let selected : string | null
                         // if (State.graph.rawGraph.hasAttribute('cluster')){
-                        //     selected = State.graph.rawGraph.getAttribute('cluster')
+                        //     selected = this.fullProperties[1];
                         // }else{
                         //     selected = item === "None" ? null : item;
                         // }
