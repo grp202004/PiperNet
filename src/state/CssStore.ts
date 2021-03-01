@@ -35,6 +35,8 @@ export default class CssStore {
         },
     };
 
+    isAnimating: boolean = true;
+
     enableDegree = true;
     enableDensity = true;
     enableDiameter = false;

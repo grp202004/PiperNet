@@ -64,4 +64,12 @@ autorun(
         (State.cluster.rawGraph = State.search.rawGraph = State.graph.rawGraph)
 );
 
+autorun(() => {
+    if (State.css.isAnimating === true) {
+        State.graphDelegate.graphDelegateMethods?.resumeAnimation();
+    } else {
+        State.graphDelegate.graphDelegateMethods?.pauseAnimation();
+    }
+});
+
 export default State;

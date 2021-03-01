@@ -6,7 +6,7 @@ import State from "../state";
 import NodesPanel from "./panels/NodesPanel";
 import EdgesPanel from "./panels/EdgesPanel";
 import LabelsPanel from "./panels/LabelsPanel";
-import NodeDetail from "./panels/NodeDetailPanel";
+import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
@@ -115,9 +115,11 @@ export default observer(
                     {/* {State.graph.selectedNodes.length === 1 && (
                         <NodeDetail node={State.graph.currentlyHoveredId} />
                     )} */}
-                    {State.graph.currentlyHoveredId !== "undefined" &&
+                    {State.graph.currentlyHoveredId &&
                         State.graph.selectedNodes.length === 0 && (
-                            <NodeDetail />
+                            <NodeDetailPanel
+                                onNode={State.graph.currentlyHoveredId}
+                            />
                         )}
 
                     {/* multiple selected */}
@@ -136,11 +138,12 @@ export default observer(
                     {State.preferences.rightClickBackgroundPanelOpen && (
                         <RightClickBackgroundPanel />
                     )}
-                    {State.preferences.deleteEdgePanelOpen && (
-                        <DeleteEdgeInteractionPanel
-                            onNode={State.graph.selectedNode}
-                        />
-                    )}
+                    {State.preferences.deleteEdgePanelOpen &&
+                        State.graph.selectedNode && (
+                            <DeleteEdgeInteractionPanel
+                                onNode={State.graph.selectedNode}
+                            />
+                        )}
                 </div>
             );
         }
