@@ -40,4 +40,11 @@ export default class GraphMutation {
         this.that.rawGraph.dropEdge(edge);
         this.that.refreshGraph();
     }
+
+    public dropedge(source: string, target: string): void {
+        if (source != null && target != null){
+            this.that.rawGraph.dropEdge(source,target);
+            this.that.refreshGraph();
+        }
+    }
 }

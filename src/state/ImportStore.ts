@@ -188,6 +188,7 @@ export default class ImportStore {
                         intent: Intent.DANGER,
                         timeout: -1,
                     });
+                    this.isLoading = false;
                 }
             };
         });
@@ -248,7 +249,7 @@ export default class ImportStore {
 
         // parse Edge file and store into the Graph DS
         tempEdges = await this.readEdgeCSV();
-        tempEdges.forEach((edge) => {
+        tempEdges.forEach((edge,idx) => {
             let fromId = edge[fromColumn].toString();
             let toId = edge[toColumn].toString();
 
@@ -258,7 +259,7 @@ export default class ImportStore {
             if (!graph.hasNode(toId)) {
                 graph.addNode(toId, { id: toId });
             }
-            graph.addEdge(fromId, toId);
+            graph.addEdgeWithKey(idx,fromId, toId);
         });
 
         config.edgeFile.isReady = true;
