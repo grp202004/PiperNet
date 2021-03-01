@@ -47,7 +47,10 @@ export default observer(
 
         get fullProperties(): string[] {
             let propertiesWithNone = copy(State.graph.metadata.nodeProperties);
-            propertiesWithNone.unshift("None");
+            if (State.graph.rawGraph.hasAttribute('cluster')){
+                propertiesWithNone.unshift(State.graph.rawGraph.getAttribute('cluster'));
+            }else{
+            propertiesWithNone.unshift("None");}
             return propertiesWithNone;
         }
 
@@ -86,11 +89,17 @@ export default observer(
                     itemRenderer={this.itemRenderer}
                     filterable={false}
                     onItemSelect={(item: string) => {
+                        // let selected : string | null
+                        // if (State.graph.rawGraph.hasAttribute('cluster')){
+                        //     selected = State.graph.rawGraph.getAttribute('cluster')
+                        // }else{
+                        //     selected = item === "None" ? null : item;
+                        // }
                         let selected = item === "None" ? null : item;
                         this.props.onSelect(selected);
                     }}
                 >
-                    <Button text={this.props.syncWith ?? "None"} />
+                    <Button text={this.props.syncWith ?? this.fullProperties[0]} />
                 </Select>
             );
         }
