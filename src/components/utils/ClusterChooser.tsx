@@ -49,6 +49,7 @@ export default observer(
             let propertiesWithNone = copy(State.graph.metadata.nodeProperties);
             if (State.graph.rawGraph.hasAttribute('cluster')){
                 propertiesWithNone.unshift(State.graph.rawGraph.getAttribute('cluster'));
+                propertiesWithNone.unshift("None");
             }else{
             propertiesWithNone.unshift("None");}
             return propertiesWithNone;
