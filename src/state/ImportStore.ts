@@ -267,6 +267,8 @@ export default class ImportStore {
             ? Object.keys(tempNodes[0])
             : ["id"];
 
+            // graph.setAttribute('cluster','label');
+
         return {
             graph: graph,
             metadata: {
@@ -287,7 +289,7 @@ export default class ImportStore {
             nodeProperties.push(key);
         }
 
-        graph.setAttribute('cluster','label');
+        // graph.setAttribute('cluster','label');
 
         return {
             graph: graph,

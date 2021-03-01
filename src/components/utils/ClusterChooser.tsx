@@ -90,12 +90,6 @@ export default observer(
                     itemRenderer={this.itemRenderer}
                     filterable={false}
                     onItemSelect={(item: string) => {
-                        // let selected : string | null
-                        // if (State.graph.rawGraph.hasAttribute('cluster')){
-                        //     selected = this.fullProperties[1];
-                        // }else{
-                        //     selected = item === "None" ? null : item;
-                        // }
                         let selected = item === "None" ? null : item;
                         this.props.onSelect(selected);
                     }}

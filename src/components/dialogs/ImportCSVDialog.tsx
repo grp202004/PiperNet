@@ -312,6 +312,12 @@ export default observer(
                                                         res.graph,
                                                         res.metadata
                                                     );
+
+                                                    if(State.cluster.rawGraph.hasAttribute('cluster')){
+                                                        State.cluster
+                                                        .setCluster(State.graph.rawGraph.getAttribute('cluster'));
+                                                    }
+
                                                     State.import.isLoading = false;
                                                     State.import.importCSVDialogOpen = false;
                                                 });
