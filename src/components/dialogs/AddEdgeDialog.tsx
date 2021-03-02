@@ -1,36 +1,19 @@
 import React from "react";
 import {
-    Alert,
     Button,
     ButtonGroup,
     Callout,
     Classes,
-    Code,
     Dialog,
     Divider,
-    InputGroup,
     Intent,
 } from "@blueprintjs/core";
-import {
-    Cell,
-    Column,
-    ICellRenderer,
-    RenderMode,
-    Table,
-} from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import State from "../../state";
-import DataSheetDialogWrapper from "../utils/DataSheetDialogWrapper";
-import { Attributes, SerializedEdge } from "graphology-types";
-import { handleStringChange } from "../utils/InputFormUtils";
 import NodeChooser from "../utils/NodeChooser";
 export default observer(
     class AddEdgeDialog extends React.Component {
         state = {
-            // addEdgeDialogOpen: false,
-            // deleteAlertOpen: false,
-            // edgeToDelete: null as null | SerializedEdge<Attributes>,
-            // filterQuery: null as null | string,
             chosenSource: null as null | string,
             chosenTarget: null as null | string,
         };

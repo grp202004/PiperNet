@@ -2,14 +2,23 @@ import React from "react";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
+    LinkObject,
     NodeObject,
 } from "react-force-graph-3d";
 import ComponentRef from "../ComponentRef";
 import State from "../../state";
-import { Attributes, NodeKey } from "graphology-types";
+import SpriteText from "three-spritetext";
+import {
+    ICustomLinkObject,
+    ICustomNodeObject,
+} from "../../state/GraphDelegate";
+
+interface Props {
+    controlType: "trackball" | "orbit" | "fly";
+}
 
 export default observer(
-    class ThreeJSVis extends React.Component {
+    class ThreeJSVis extends React.Component<Props, {}> {
         state = {
             visualizationGraph: State.graphDelegate.visualizationGraph(),
         };
@@ -20,205 +29,147 @@ export default observer(
             return this.graphRef.current;
         }
 
-        // getNeighbors(node: NodeObject): string[] {
-        //     if ((node.id as string) === "") {
-        //         return [];
-        //     }
-        //     let neighbors: string[] = [];
-        //     State.graph.rawGraph.forEachNeighbor(
-        //         node.id as string,
-        //         (neighbor) => {
-        //             neighbors.push(neighbor);
-        //         }
-        //     );
-        //     return neighbors;
-        // }
-        highlightNodeAttributes: Attributes = {
-            nodeStyle: {
-                color: "white",
-                neighborColor: "#4499FF",
-                // opacity: 0.75,
-            },
-            edgeStyle: {
-                color: "yellow",
-                width: 4,
-                linkDirectionalParticles: 4,
-            },
-        };
-
-        selectedNodeStyle: Attributes = {
-            color: "#3333FF",
-        };
         graphDelegate = State.graphDelegate;
 
-        nodeHover = (
+        hoverNodeCallback = (
             node: NodeObject | null,
             previousNode: NodeObject | null
         ) => {
             if (State.search.isPreviewing) return;
-            if (node != null && node !== previousNode) {
-                let current: string = State.graph.getNodeId(node as NodeObject);
+            // to avoid frequent refresh
 
-                State.graph.currentlyHoveredId = current;
-                //get neighbors of this node
-                State.graphDelegate.neighborNodeids = State.graph.getNeighbors(
-                    current
-                );
-
-                if (
-                    State.graph.currentlyHoveredId !==
-                        State.graph.previouslyHoverdId ||
-                    State.graph.previouslyHoverdId === null
-                ) {
-                    //     State.graph.currentlyHoveredNeighbors = State.graph.getNeighbors(
-                    //         current
-                    //     );
-                    //     State.graph.edgesOfCurrentlyHoveredNode = State.graph.getEdgesOfNode(
-                    //         current
-                    //     );
-                    //     if (State.graph.previouslyHoverdId !== null) {
-                    //         State.graph.setNodeColor(
-                    //             State.graph.previouslyHoverdId,
-                    //             State.graph.defaultStyle.node.color
-                    //         );
-                    //         //set node style of previous node
-                    //         if (
-                    //             State.graph.previouslyHoveredNeighbors !== null &&
-                    //             State.graph.previouslyHoveredNeighbors?.length !== 0
-                    //         ) {
-                    //             State.graph.setNodesColor(
-                    //                 State.graph.previouslyHoveredNeighbors,
-                    //                 State.graph.defaultStyle.node.color
-                    //             );
-                    //         }
-                    //         //set edge style of previous node
-                    //         if (
-                    //             State.graph.edgesOfPreviouslyHoveredNode !== null &&
-                    //             State.graph.edgesOfPreviouslyHoveredNode?.length !==
-                    //                 0
-                    //         ) {
-                    //             State.graph.setEdgesColor(
-                    //                 State.graph.edgesOfPreviouslyHoveredNode,
-                    //                 State.graph.defaultStyle.edge.color
-                    //             );
-                    //             State.graph.setEdgesWidth(
-                    //                 State.graph.edgesOfPreviouslyHoveredNode,
-                    //                 State.graph.defaultStyle.edge.width
-                    //             );
-                    //         }
-                    //     }
-                    //     //set node and edge style of current hovered node
-                    //     State.graph.setNodeColor(current, "white");
-                    //     // State.graph.setNeighborColor(current, "#3399FF");
-                    //     State.graph.setNodesColor(
-                    //         State.graph.currentlyHoveredNeighbors,
-                    //         "#3399FF"
-                    //     );
-                    //     State.graph.setEdgesColor(
-                    //         State.graph.edgesOfCurrentlyHoveredNode,
-                    //         "yellow"
-                    //     );
-                    //     State.graph.setEdgesWidth(
-                    //         State.graph.edgesOfCurrentlyHoveredNode,
-                    //         4
-                    //     );
-                    //     //update the data
-                    //     State.graph.previouslyHoverdId = current;
-                    //     State.graph.previouslyHoveredNeighbors =
-                    //         State.graph.currentlyHoveredNeighbors;
-                    //     State.graph.edgesOfPreviouslyHoveredNode =
-                    //         State.graph.edgesOfCurrentlyHoveredNode;
-                    State.graph.highlightNodeHovered(
-                        current,
-                        this.highlightNodeAttributes
-                    );
-                }
-
-                this.graphMethods.refresh();
+            if (node === null) {
+                State.interaction.currentlyHoveredNodeId = null;
+            } else if (node !== previousNode) {
+                let current: string = node.id as string;
+                State.interaction.previouslyHoveredNodeId =
+                    State.interaction.currentlyHoveredNodeId;
+                State.interaction.currentlyHoveredNodeId = current;
             }
-
-            // console.log(State.graph.rawGraph); //for test
         };
 
-        // ref of State.graph.selectedNodes
-        selectedNodes: string[] = State.graph.selectedNodes;
-        highlightSelectedNode(nodeId: string) {
-            if (this.selectedNodes.includes(nodeId)) {
-                let index = this.selectedNodes.indexOf(nodeId);
-                if (index > -1) {
-                    this.selectedNodes.splice(index, 1);
-                    State.graph.selectedNodes.splice(index, 1);
-                    State.graph.highlightNodeHovered(
-                        nodeId,
-                        this.highlightNodeAttributes
-                    );
-                    this.graphMethods.refresh();
-                }
-            } else {
-                this.selectedNodes.push(nodeId);
-                State.graph.selectedNodes.push(nodeId);
-                State.graph.setNodeStyle(nodeId, this.selectedNodeStyle);
-            }
-        }
-        nodeSelect = (node: NodeObject, event: MouseEvent) => {
-            let nodeId = State.graph.getNodeId(node as NodeObject);
+        nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {
+            let nodeId = node.id as string;
             if (event.ctrlKey || event.shiftKey) {
                 // multi-selection
-                this.highlightSelectedNode(nodeId);
-                this.graphMethods.refresh();
+                let index;
+                // if already in the list of selected, remove
+                if (
+                    (index = State.interaction.selectedNodes.indexOf(
+                        nodeId
+                    )) !== -1
+                ) {
+                    State.interaction.selectedNodes.splice(index, 1);
+                } else {
+                    // if not in the list, add
+                    State.interaction.selectedNodes.push(nodeId);
+                }
             } else {
-                // single-selection
-                // TODO
+                // single select
+                State.interaction.selectedNode = node.id as string;
             }
-
-            // update color of selected nodes
         };
 
-        nodeRightClick = (node: NodeObject, event: MouseEvent) => {
-            State.graph.selectedNode = node.id as string;
+        nodeRightClickCallback = (node: NodeObject, event: MouseEvent) => {
+            State.interaction.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickBackgroundPanelOpen = false;
             State.preferences.rightClickNodePanelOpen = true;
+            this.closeAllPanel();
         };
 
-        backgroundRightClick = (event: MouseEvent) => {
+        backgroundClickCallback = (event: MouseEvent) => {
+            // cancel all selection
+            State.interaction.selectedNodes = [];
+            State.preferences.rightClickNodePanelOpen = false;
+            State.preferences.rightClickBackgroundPanelOpen = false;
+            this.closeAllPanel();
+        };
+
+        backgroundRightClickCallback = (event: MouseEvent) => {
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickNodePanelOpen = false;
             State.preferences.rightClickBackgroundPanelOpen = true;
+            this.closeAllPanel();
         };
 
+        computeNodeColor(_node: NodeObject) {
+            let node = _node as ICustomNodeObject;
+            if (node.hovered) {
+                return State.css.node.highlightColor;
+            } else if (node.selected) {
+                return State.css.node.selectedColor;
+            } else {
+                return State.css.node.defaultColor;
+            }
+        }
+
+        computeEdgeColor(_edge: LinkObject) {
+            let edge = _edge as ICustomLinkObject;
+            if (edge.hovered) {
+                return State.css.edge.highlightColor;
+            } else if (edge.selected) {
+                return State.css.edge.selectedColor;
+            } else {
+                return State.css.edge.defaultColor;
+            }
+        }
+        computeEdgeWidth(_edge: LinkObject) {
+            let edge = _edge as ICustomLinkObject;
+            if (edge.hovered) {
+                return State.css.edge.highlightWidth;
+            } else if (edge.selected) {
+                return State.css.edge.highlightWidth;
+            } else {
+                return State.css.edge.defaultWidth;
+            }
+        }
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
                     <ForceGraph3D
+                        // Data Segment
                         ref={this.graphRef}
                         graphData={this.state.visualizationGraph}
-                        nodeResolution={20}
+                        controlType={this.props.controlType}
+                        // Node Visualization Segment
+                        nodeLabel="id"
+                        nodeRelSize={State.css.node.size}
+                        nodeColor={this.computeNodeColor}
                         nodeVisibility={this.graphDelegate.nodeVisibility}
-                        linkVisibility={this.graphDelegate.linkVisibility}
+                        nodeResolution={State.css.node.resolution}
+                        nodeThreeObjectExtend={true}
+                        nodeThreeObject={(node) => {
+                            const sprite = new SpriteText(`${node.id}`);
+                            sprite.color = State.css.label.color;
+                            sprite.textHeight = State.css.label.size;
+                            sprite.visible = State.css.label.show;
+                            return sprite;
+                        }}
+                        // Node Manipulation Segment
+                        onNodeHover={this.hoverNodeCallback}
+                        onNodeClick={this.nodeLeftClickCallback}
+                        onNodeRightClick={this.nodeRightClickCallback}
                         onNodeDragEnd={(node) => {
                             node.fx = node.x;
                             node.fy = node.y;
                             node.fz = node.z;
                         }}
-                        onBackgroundRightClick={this.backgroundRightClick}
-                        linkWidth="edgeWidth"
-                        linkColor="edgeColor"
-                        linkDirectionalParticles="linkDirectionalParticles"
-                        linkDirectionalParticleWidth={4}
-                        onEngineTick={() =>
-                            this.graphDelegate.clusterDelegation()
+                        // Link Visualization Segment
+                        linkVisibility={this.graphDelegate.linkVisibility}
+                        linkWidth={this.computeEdgeWidth}
+                        linkColor={this.computeEdgeColor}
+                        // Graph Manipulation Segment
+                        onBackgroundRightClick={
+                            this.backgroundRightClickCallback
                         }
-                        nodeColor="nodeColor"
-                        onNodeClick={this.nodeSelect}
-                        onNodeRightClick={this.nodeRightClick}
-                        onBackgroundClick={() => {
-                            State.preferences.rightClickNodePanelOpen = false;
-                            State.preferences.rightClickBackgroundPanelOpen = false;
-                        }}
-                        onNodeHover={this.nodeHover}
+                        onBackgroundClick={this.backgroundClickCallback}
+                        // Engine
+                        onEngineTick={() =>
+                            this.graphDelegate.clusterObject.clusterDelegation()
+                        }
                     />
                 );
                 // } else {
@@ -249,6 +200,11 @@ export default observer(
             this.setState({
                 visualizationGraph: State.graphDelegate.visualizationGraph(),
             });
+            // this.graphMethods.refresh();
+        }
+
+        closeAllPanel() {
+            State.preferences.deleteEdgePanelOpen = false;
         }
 
         componentDidMount() {

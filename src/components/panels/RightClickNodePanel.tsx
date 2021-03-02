@@ -29,12 +29,20 @@ export default observer(
                     )}
                     style={this.stylePosition}
                 >
+                    <MenuDivider
+                        title={
+                            ("Node ID: " +
+                                State.interaction
+                                    .currentlyHoveredNodeId) as string
+                        }
+                    />
                     <MenuItem
                         icon="graph-remove"
                         text="Delete Node"
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.graph.currentlyHoveredId as string
+                                State.interaction
+                                    .currentlyHoveredNodeId as string
                             );
                             State.preferences.rightClickNodePanelOpen = false;
                         }}

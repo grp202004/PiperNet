@@ -256,9 +256,6 @@ export default observer(
                 <Dialog
                     style={{ minWidth: "80vw" }}
                     icon="import"
-                    className={classnames({
-                        [Classes.DARK]: State.preferences.darkMode,
-                    })}
                     isOpen={State.import.importCSVDialogOpen}
                     onClose={() => {
                         State.import.importCSVDialogOpen = false;

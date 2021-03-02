@@ -27,7 +27,7 @@ class ComponentRef {
 }
 
 reaction(
-    () => State.graph.currentlyHoveredId,
+    () => State.interaction.currentlyHoveredNodeId,
     () => ComponentRef.instance.nodeDetail?.forceUpdate()
 );
 

@@ -1,32 +1,37 @@
 import { makeAutoObservable } from "mobx";
 
 export default class PreferencesStore {
-
     constructor() {
         makeAutoObservable(this);
     }
 
-    rightClickBackgroundPanelOpen = false;
-    rightClickNodePanelOpen = false;
+    // Right Click Position
+
     rightClickPositionX = 30;
     rightClickPositionY = 30;
 
-    deleteEdgePanelOpen = false;
+    // Dialog
 
     preferenceDialogOpen = false;
-
-    darkMode = true;
-
     statisticsDialogOpen = false;
     helpDialogOpen = false;
-    neighborDialogOpen = false;
+
     AddNodeDialogOpen = false;
     AddEdgeDialogOpen = false;
 
     nodeDataSheetDialogOpen = false;
     edgeDataSheetDialogOpen = false;
 
-    isRenderOptionsCardHidden = true;
+    // Panel
+
+    rightClickBackgroundPanelOpen = false;
+    rightClickNodePanelOpen = false;
+    deleteEdgePanelOpen = false;
+
+    isGraphOptionsCardHidden = true;
+
+    // 3D Graph
 
     view = "3D";
+    controlType: "trackball" | "orbit" | "fly" = "trackball";
 }

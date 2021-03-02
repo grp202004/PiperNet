@@ -1,10 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import { Attributes, NodeKey, NodeEntry, EdgeKey } from "graphology-types";
+import { Attributes } from "graphology-types";
+import {
+    createCustomNodeObject,
+    createCustomLinkObject,
+} from "./GraphDelegate";
 import ComponentRef from "../components/ComponentRef";
 import State from ".";
 import GraphMutation from "./GraphMutation";
-import { NodeObject } from "_react-force-graph-3d@1.18.8@react-force-graph-3d";
 
 export interface IMetaData {
     snapshotName: string;
@@ -50,14 +53,7 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawNode(node: string, attributes: Attributes) {
-        attributes._visualize = {
-            id: node,
-            val: 1, // to be changed, to represent the size of the node
-            isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
-            nodeColor: this.defaultStyle.node.color, // color test
-            nodeOpacity: this.defaultStyle.node.opacity,
-            refreshLevel: this.defaultStyle.node.refreshLevel,
-        };
+        attributes._visualize = createCustomNodeObject(node, false);
     }
 
     /**
@@ -72,16 +68,7 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawEdge(source: string, target: string, attributes: Attributes) {
-        attributes._visualize = {
-            source: source,
-            target: target,
-            isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
-            edgeColor: this.defaultStyle.edge.color, //color test
-            edgeWidth: this.defaultStyle.edge.width,
-            linkDirectionalParticles: 0,
-            refreshLevel: this.defaultStyle.edge.refreshLevel,
-            linkOpacity: this.defaultStyle.edge.opacity,
-        };
+        attributes._visualize = createCustomLinkObject(source, target, false);
     }
 
     /**
@@ -116,7 +103,7 @@ export default class GraphStore {
         if (_metadata) {
             this.metadata = _metadata;
         }
-        this.flush();
+        State.interaction.flush();
         State.cluster.clusterBy = null;
         ComponentRef.visualizer.updateVisualizationGraph();
     }
@@ -127,7 +114,7 @@ export default class GraphStore {
      * @memberof GraphStore
      */
     public refreshGraph() {
-        this.flush();
+        State.interaction.flush();
         ComponentRef.visualizer.updateVisualizationGraph();
     }
 
@@ -140,433 +127,6 @@ export default class GraphStore {
      * @see {GraphMutation}
      */
     mutating: GraphMutation;
-
-    /**
-     * the currently selected node ids
-     * the singleNodeDetailPanel will render and refresh if this changes
-     *
-     * @type {string[]}
-     */
-    selectedNodes: string[] = [];
-
-    /**
-     * the currently selected node id
-     *
-     * @type {string}
-     */
-    selectedNode: string | null = null;
-
-    /**
-     * the currently hovered node id
-     * the multiNodeDetailPanel will render and refresh if this changes
-     *
-     * @type {string}
-     */
-    currentlyHoveredId: string | null = null;
-    previouslyHoverdId: string | null = null;
-    currentlyHoveredNeighbors: string[] | null = null;
-    previouslyHoveredNeighbors: string[] | null = null;
-    edgesOfCurrentlyHoveredNode: EdgeKey[] = [];
-    edgesOfPreviouslyHoveredNode: EdgeKey[] = [];
-    selectedEdgeWhenDelete: string[] = [];
-    /**
-     * Current refreshLevel
-     * default:0
-     * nodeHovered: 1
-     * nodeSelected:2
-     */
-    defaultStyle: Attributes = {
-        node: {
-            color: "orangered",
-            opacity: 0.8,
-            refreshLevel: 0, //the style will be refreshed only if the refreshlevel of current action is higher than previous one stored here
-        },
-        edge: {
-            color: "white",
-            width: 1,
-            linkDirectionalParticles: 0,
-            refreshLevel: 0, //the style will be refreshed only if the refreshlevel of current action is higher than previous one stored here
-            opacity: 0.2,
-        },
-    };
-    ishovered: boolean = false;
-
-    getNodeId(node: NodeObject): string {
-        let nodeId: string;
-        if (node.id as string) {
-            nodeId = node.id as string;
-        } else {
-            nodeId = (node.id as number).toString();
-        }
-        return nodeId;
-    }
-
-    setNodeColor(node: NodeKey, color: string) {
-        const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
-        visualize.nodeColor = color;
-        this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
-    }
-
-    getNeighbors(node: NodeKey): string[] {
-        if (node === "") {
-            return [];
-        }
-        let neighbors: string[] = [];
-        this.rawGraph.forEachNeighbor(node, (neighbor) => {
-            neighbors.push(neighbor);
-        });
-        return neighbors;
-    }
-
-    getEdgesOfNode(node: NodeKey): EdgeKey[] {
-        let edges: EdgeKey[] = [];
-        let nodeNeighbors: string[] = this.getNeighbors(node);
-        if (nodeNeighbors.length === 0) {
-            return [];
-        }
-        nodeNeighbors.forEach((neighborNode) => {
-            // if (
-            //     typeof this.rawGraph.edge(
-            //         this.currentlyHoveredId as NodeKey,
-            //         neighborNode as NodeKey
-            //     ) === "undefined"
-            // ) {
-            //     edges.push(
-            //         this.rawGraph.edge(
-            //             neighborNode as NodeKey,
-            //             this.currentlyHoveredId as NodeKey
-            //         ) as string
-            //     );
-            // } else {
-            //     edges.push(
-            //         this.rawGraph.edge(
-            //             this.currentlyHoveredId as NodeKey,
-            //             neighborNode as NodeKey
-            //         ) as string
-            //     );
-            // }
-            edges.push(
-                this.getEdgeId(this.currentlyHoveredId as NodeKey, neighborNode)
-            );
-        });
-
-        return edges;
-    }
-    getEdgeId(node1: NodeKey, node2: NodeKey): string {
-        let retEdge: string | undefined = this.rawGraph.edge(node1, node2);
-        if (typeof retEdge === "undefined") {
-            return this.rawGraph.edge(node2, node1) as string;
-        } else {
-            return retEdge as string;
-        }
-    }
-
-    setNeighborColor(node: NodeKey, color: string) {
-        let nodeNeighbors: string[] = this.getNeighbors(node);
-        if (nodeNeighbors !== null && nodeNeighbors.length !== 0) {
-            nodeNeighbors.forEach((neighborNode) => {
-                this.setNodeColor(neighborNode, color);
-            });
-        }
-    }
-
-    setNodesColor(nodes: NodeKey[], color: string) {
-        if (nodes.length !== 0) {
-            nodes.forEach((node) => {
-                this.setNodeColor(node, color);
-            });
-        }
-    }
-
-    setNodeOpacity(node: NodeKey, opacity: number) {
-        const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
-        visualize.nodeOpacity = opacity;
-        this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
-    }
-    setNodesOpacity(nodes: NodeKey[], opacity: number) {
-        if (nodes.length !== 0) {
-            nodes.forEach((node) => {
-                this.setNodeOpacity(node, opacity);
-            });
-        }
-    }
-    setEdgeOpacity(edge: EdgeKey, opacity: number) {
-        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
-        visualize.linkOpacity = opacity;
-        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
-    }
-    setEdgesOpacity(edges: EdgeKey[], opacity: number) {
-        if (edges.length !== 0) {
-            edges.forEach((edge) => {
-                this.setEdgeOpacity(edge, opacity);
-            });
-        }
-    }
-    setNodeRefreshLevel(node: NodeKey, level: number) {
-        const visualize = this.rawGraph.getNodeAttribute(node, "_visualize");
-        visualize.refreshLevel = level;
-        this.rawGraph.setNodeAttribute(node, "_visualize", visualize);
-    }
-    setEdgeRefreshLevel(edge: EdgeKey, level: number) {
-        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
-        visualize.refreshLevel = level;
-        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
-    }
-
-    setNodeStyleDefault(node: NodeKey) {
-        if (node !== null) {
-            this.setNodeStyle(node, this.defaultStyle.node);
-        }
-    }
-
-    setEdgeColor(edge: EdgeKey, color: string) {
-        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
-        // console.log(visualize); //test
-        visualize.edgeColor = color;
-        // console.log(visualize); //test
-        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
-    }
-
-    setEdgesColor(edges: EdgeKey[], color: string) {
-        if (edges.length !== 0) {
-            edges.forEach((edge) => {
-                this.setEdgeColor(edge, color);
-            });
-        }
-    }
-
-    setEdgeWidth(edge: EdgeKey, width: number) {
-        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
-        // console.log(visualize); //test
-        visualize.edgeWidth = width;
-        // console.log(visualize); //test
-        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
-    }
-
-    setEdgesWidth(edges: EdgeKey[], width: number) {
-        if (edges.length !== 0) {
-            edges.forEach((edge) => this.setEdgeWidth(edge, width));
-        }
-    }
-    setEdgelinkDirectionalParticles(edge: EdgeKey, particle: number) {
-        const visualize = this.rawGraph.getEdgeAttribute(edge, "_visualize");
-        visualize.linkDirectionalParticles = particle;
-        this.rawGraph.setEdgeAttribute(edge, "_visualize", visualize);
-    }
-    setEdgeslinkDirectionalParticles(edges: EdgeKey[], particle: number) {
-        if (edges.length !== 0) {
-            edges.forEach((edge) =>
-                this.setEdgelinkDirectionalParticles(edge, particle)
-            );
-        }
-    }
-
-    notHovered() {
-        if (this.previouslyHoverdId !== null) {
-            this.setNodeColor(
-                this.previouslyHoverdId,
-                this.defaultStyle.node.color
-            );
-        }
-        if (this.previouslyHoveredNeighbors !== null) {
-            this.setNodesColor(
-                this.previouslyHoveredNeighbors,
-                this.defaultStyle.node.color
-            );
-        }
-        if (this.edgesOfPreviouslyHoveredNode.length !== 0) {
-            this.setEdgesColor(
-                this.edgesOfPreviouslyHoveredNode,
-                this.defaultStyle.edge.color
-            );
-            this.setEdgesWidth(
-                this.edgesOfPreviouslyHoveredNode,
-                this.defaultStyle.edge.width
-            );
-        }
-        this.ishovered = false;
-    }
-
-    highlightNodeHovered(currentNode: NodeKey, style: Attributes) {
-        this.currentlyHoveredNeighbors = this.getNeighbors(currentNode);
-        this.edgesOfCurrentlyHoveredNode = this.getEdgesOfNode(currentNode);
-        let { nodeStyle, edgeStyle } = style;
-        let keepStyleNodes: string[] = [...this.selectedNodes];
-        console.log(keepStyleNodes.includes(currentNode as string));
-        if (this.previouslyHoverdId !== null) {
-            // this.setNodeColor(
-            //     this.previouslyHoverdId,
-            //     this.defaultStyle.node.color
-            // );
-            if (!keepStyleNodes.includes(this.previouslyHoverdId)) {
-                this.setNodeStyle(
-                    this.previouslyHoverdId,
-                    this.defaultStyle.node
-                );
-            }
-
-            //set node style of previous node
-            if (
-                this.previouslyHoveredNeighbors !== null &&
-                this.previouslyHoveredNeighbors?.length !== 0
-            ) {
-                // this.setNodesColor(
-                //     this.previouslyHoveredNeighbors,
-                //     this.defaultStyle.node.color
-                // );
-                let neighbors: NodeKey[] = this.previouslyHoveredNeighbors;
-                neighbors = neighbors.filter(
-                    (node) => !keepStyleNodes.includes(node as string)
-                );
-                // console.log(neighbors);
-                this.setNodesStyle(neighbors, this.defaultStyle.node);
-            }
-            //set edge style of previous node
-            if (
-                this.edgesOfPreviouslyHoveredNode !== null &&
-                this.edgesOfPreviouslyHoveredNode?.length !== 0
-            ) {
-                // this.setEdgesColor(
-                //     this.edgesOfPreviouslyHoveredNode,
-                //     this.defaultStyle.edge.color
-                // );
-
-                // this.setEdgesWidth(
-                //     this.edgesOfPreviouslyHoveredNode,
-                //     this.defaultStyle.edge.width
-                // );
-                this.setEdgesStyle(
-                    this.edgesOfPreviouslyHoveredNode,
-                    this.defaultStyle.edge
-                );
-            }
-        }
-        // // //set node and edge style of current hovered node
-        // this.setNodeColor(currentNode, nodeStyle.nodeColor);
-
-        // this.setNodesColor(
-        //     this.currentlyHoveredNeighbors,
-        //     // style.neighborColor
-        //     nodeStyle.neighborColor
-        // );
-        if (!keepStyleNodes.includes(currentNode as string)) {
-            this.setNodeStyle(currentNode as NodeKey, nodeStyle);
-        }
-
-        if (style.nodeStyle.hasOwnProperty("neighborColor")) {
-            let neighbors: NodeKey[] = this.getNeighbors(currentNode);
-            neighbors = neighbors.filter(
-                (node) => !keepStyleNodes.includes(node as string)
-            );
-            // console.log(neighbors);
-            this.setNodesStyle(neighbors, { color: nodeStyle.neighborColor });
-        }
-
-        // this.setEdgesColor(
-        //     this.edgesOfCurrentlyHoveredNode,
-        //     edgeStyle.edgeColor
-        // );
-
-        // this.setEdgesWidth(
-        //     this.edgesOfCurrentlyHoveredNode,
-        //     edgeStyle.edgeWidth
-        // );
-        this.setEdgesStyle(this.edgesOfCurrentlyHoveredNode, edgeStyle);
-
-        //update the data
-        this.previouslyHoverdId = currentNode as string;
-        this.previouslyHoveredNeighbors = this.currentlyHoveredNeighbors;
-        this.edgesOfPreviouslyHoveredNode = this.edgesOfCurrentlyHoveredNode;
-        console.log(this.rawGraph.getNodeAttribute(currentNode, "_visualize"));
-    }
-
-    setNodeStyle(node: NodeKey, style: Attributes) {
-        // if (style.hasOwnProperty("refreshLevel")) {
-        //     let currentRefreshLevel = this.rawGraph.getNodeAttribute(
-        //         node,
-        //         "_visualize"
-        //     ).refreshLevel;
-        //     // if (currentRefreshLevel > refreshLevel) return; //debug
-        //     if (refreshLevel !== -1) {
-        //         if (currentRefreshLevel > refreshLevel) return;
-        //     } else {
-        //         if (currentRefreshLevel > style.refreshLevel) return;
-        //     }
-        //     this.setNodeRefreshLevel(node, style.refreshLevel);
-        // }
-
-        if (style.hasOwnProperty("color")) {
-            this.setNodeColor(node, style.color);
-        }
-        if (style.hasOwnProperty("opacity")) {
-            this.setNodeOpacity(node, style.opacity);
-        }
-        // if (style.hasOwnProperty("neighborColor")) {
-        //     // this.setNodesColor(this.getNeighbors(node), style.neighborColor);
-        //     this.setNodesStyle(this.getNeighbors(node), {
-        //         color: style.neighborColor,
-        //     });
-        // }
-    }
-
-    setNodesStyle(nodes: NodeKey[], style: Attributes) {
-        if (nodes.length > 0) {
-            nodes.map((node) => {
-                this.setNodeStyle(node, style);
-            });
-        }
-    }
-
-    setEdgeStyle(edge: EdgeKey, style: Attributes) {
-        // if (style.hasOwnProperty("refreshLevel")) {
-        //     let currentRefreshLevel = this.rawGraph.getEdgeAttribute(
-        //         edge,
-        //         "_visualize"
-        //     ).refreshLevel;
-        //     if (refreshLevel !== -1) {
-        //         if (currentRefreshLevel > refreshLevel) return;
-        //     } else {
-        //         if (currentRefreshLevel > style.refreshLevel) return;
-        //     }
-        //     this.setEdgeRefreshLevel(edge, style.refreshLevel);
-        // }
-
-        if (this.selectedEdgeWhenDelete.includes(edge as string)) return;
-
-        if (style.hasOwnProperty("color")) {
-            this.setEdgeColor(edge, style.color);
-        }
-        if (style.hasOwnProperty("width")) {
-            this.setEdgeWidth(edge, style.width);
-        }
-        if (style.hasOwnProperty("linkDirectionalParticles")) {
-            this.setEdgelinkDirectionalParticles(
-                edge,
-                style.linkDirectionalParticles
-            );
-        }
-        if (style.hasOwnProperty("opacity")) {
-            this.setEdgeOpacity(edge, style.opacity);
-        }
-    }
-
-    setEdgesStyle(edges: EdgeKey[], style: Attributes) {
-        if (edges.length > 0) {
-            edges.map((edge) => {
-                this.setEdgeStyle(edge, style);
-            });
-        }
-    }
-
-    /**
-     * should call this on every refresh of graph DS
-     *
-     */
-    flush() {
-        this.selectedNodes = [];
-        this.selectedNode = null;
-        this.currentlyHoveredId = null;
-    }
 
     /**
      * if currently there is a graph in the dataset
