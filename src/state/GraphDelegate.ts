@@ -8,13 +8,63 @@ import {
 } from "react-force-graph-3d";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
 
-export interface CustomNodeObject extends NodeObject {
-    val?: number;
+/**
+ * hovered: false, selected: false: DefaultColor;
+ * hovered: false, selected: true: SelectedColor;
+ * hovered: true, selected: false: HighlightColor;
+ * hovered: true, selected: true: HighlightColor;
+ *
+ *
+ * @interface ICustomNodeObject
+ * @extends {NodeObject}
+ */
+export interface ICustomNodeObject extends NodeObject {
+    hovered: boolean;
+    selected: boolean;
     isClusterNode?: boolean;
 }
-
-export interface CustomLinkObject extends LinkObject {
+/**
+ * hovered: false, selected: false: DefaultColor;
+ * hovered: false, selected: true: SelectedColor;
+ * hovered: true, selected: false: HighlightColor;
+ * hovered: true, selected: true: HighlightColor;
+ *
+ *
+ * @interface ICustomLinkObject
+ * @extends {LinkObject}
+ */
+export interface ICustomLinkObject extends LinkObject {
+    hovered: boolean;
+    selected: boolean;
     isClusterLink?: boolean;
+}
+
+export function createCustomNodeObject(
+    _id: string,
+    _cluster: boolean = false
+): ICustomNodeObject {
+    let result: ICustomNodeObject = {
+        id: _id,
+        hovered: false,
+        selected: false,
+        isClusterNode: _cluster,
+    };
+    return result;
+}
+
+export function createCustomLinkObject(
+    _source: string,
+    _target: string,
+    _cluster: boolean = false
+): ICustomLinkObject {
+    let result: ICustomLinkObject = {
+        source: _source,
+        target: _target,
+        hovered: false,
+        selected: false,
+        isClusterLink: _cluster,
+    };
+    return result;
 }
 
 export default class GraphDelegate {
@@ -62,8 +112,8 @@ export default class GraphDelegate {
             );
         }
         let tempGraph = {
-            nodes: [] as CustomNodeObject[],
-            links: [] as LinkObject[],
+            nodes: [] as ICustomLinkObject[],
+            links: [] as ICustomLinkObject[],
         };
         newGraph.forEachNode((node, attributes) => {
             tempGraph.nodes.push(attributes["_visualize"]);
@@ -105,24 +155,20 @@ export default class GraphDelegate {
                     if (attribute === "undefined") return;
 
                     let clusterID = names[index] + attribute;
-                    let visualize: CustomNodeObject = {
-                        id: clusterID,
-                        val: 1,
-                        isClusterNode: true,
-                    };
-                    graphCopy.addNode(clusterID, { _visualize: visualize });
+                    graphCopy.addNode(clusterID, {
+                        _visualize: createCustomNodeObject(clusterID, true),
+                    });
 
                     // add edges to simulate the force of the same cluster
                     State.cluster.attributeKeys
                         .get(attribute)
                         ?.forEach((target) => {
-                            let visualize: CustomLinkObject = {
-                                source: clusterID,
-                                target: target,
-                                isClusterLink: true, // if is clusterLink, then the front-end will ignore this link
-                            };
                             graphCopy.addEdge(clusterID, target, {
-                                _visualize: visualize,
+                                _visualize: createCustomLinkObject(
+                                    clusterID,
+                                    target,
+                                    true
+                                ),
                             });
                         });
                 }
@@ -137,8 +183,9 @@ export default class GraphDelegate {
      *
      * @param {CustomNodeObject} nodeObject
      */
-    nodeVisibility = (nodeObject: CustomNodeObject) => {
-        return !nodeObject.isClusterNode;
+    nodeVisibility = (nodeObject: NodeObject) => {
+        let node = nodeObject as ICustomNodeObject;
+        return !node.isClusterNode;
     };
 
     /**
@@ -146,8 +193,9 @@ export default class GraphDelegate {
      *
      * @param {CustomLinkObject} nodeObject
      */
-    linkVisibility = (nodeObject: CustomLinkObject) => {
-        return !nodeObject.isClusterLink;
+    linkVisibility = (linkObject: LinkObject) => {
+        let link = linkObject as ICustomLinkObject;
+        return !link.isClusterLink;
     };
 
     ////
@@ -179,36 +227,6 @@ export default class GraphDelegate {
             { x: node.x, y: node.y, z: node.z }, // lookAt ({ x, y, z })
             3000 // ms transition duration
         );
-    }
-
-    /**
-     * which link to be highlighted
-     *
-     * @type {(LinkObject | null)}
-     */
-    highlightLink: LinkObject | null = null;
-
-    ifHighlightLink<T>(link: LinkObject, _if: T, _else: T, _default: T): T {
-        if (State.graphDelegate.highlightLink == null) {
-            return _default;
-        }
-        let sourceId = (link.source as NodeObject).id as string;
-        let targetId = (link.target as NodeObject).id as string;
-
-        if (
-            (sourceId ===
-                (State.graphDelegate.highlightLink?.source as string) &&
-                targetId ===
-                    (State.graphDelegate.highlightLink?.target as string)) ||
-            (sourceId ===
-                (State.graphDelegate.highlightLink?.target as string) &&
-                targetId ===
-                    (State.graphDelegate.highlightLink?.source as string))
-        ) {
-            return _if;
-        } else {
-            return _else;
-        }
     }
 
     ////

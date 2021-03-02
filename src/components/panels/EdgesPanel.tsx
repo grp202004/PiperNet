@@ -40,6 +40,8 @@ export default observer(
                                             onChange={(it) => {
                                                 State.css.edge.defaultColor =
                                                     it.hex;
+
+                                                State.graphDelegate.graphDelegateMethods.refresh();
                                             }}
                                         />
                                     </span>
@@ -55,6 +57,8 @@ export default observer(
                                             onChange={(it) => {
                                                 State.css.edge.selectedColor =
                                                     it.hex;
+
+                                                State.graphDelegate.graphDelegateMethods.refresh();
                                             }}
                                         />
                                     </span>
@@ -72,6 +76,8 @@ export default observer(
                                             onChange={(it) => {
                                                 State.css.edge.highlightColor =
                                                     it.hex;
+
+                                                State.graphDelegate.graphDelegateMethods.refresh();
                                             }}
                                         />
                                     </span>

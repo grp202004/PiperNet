@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Classes, Slider, Switch } from "@blueprintjs/core";
+import { Classes, Slider, Switch } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import State from "../../state";
 import classnames from "classnames";

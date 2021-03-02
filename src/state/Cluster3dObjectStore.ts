@@ -140,7 +140,11 @@ export default class Cluster3dObjectStore {
             let convexGeometry = new ConvexGeometry(Array.from(points));
             convexGeometry.computeBoundingSphere();
             let sphereGeo = convexGeometry.boundingSphere as THREE.Sphere;
-            let sphere = new SphereGeometry(sphereGeo.radius, 20, 20);
+            let sphere = new SphereGeometry(
+                sphereGeo.radius,
+                State.css.cluster.resolution,
+                State.css.cluster.resolution
+            );
             sphere.translate(
                 sphereGeo.center.x,
                 sphereGeo.center.y,
@@ -171,14 +175,12 @@ export default class Cluster3dObjectStore {
         });
         meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
         meshMaterial.depthWrite = false;
-        const wireFrameMat = new THREE.MeshBasicMaterial();
+        // const wireFrameMat = new THREE.MeshBasicMaterial();
         // wireFrameMat.wireframe = true; //把材质渲染成线框
         // wireFrameMat.wireframeLinecap = "round";
 
-        let group = SceneUtils.createMultiMaterialObject(geom, [
-            meshMaterial,
-            // wireFrameMat,
-        ]);
+        let group = SceneUtils.createMultiMaterialObject(geom, [meshMaterial]);
+        // wireFrameMat,
         group.name = "THREE_CLUSTER_" + name;
         return group;
     }

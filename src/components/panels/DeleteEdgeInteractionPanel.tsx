@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Button, Card, Code, H4, H6, Intent } from "@blueprintjs/core";
+import { Alert, Button, Card, Code, H6, Intent } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
@@ -29,17 +29,7 @@ export default observer(
         };
 
         get neighbors(): string[] {
-            if (this.props.onNode === "") {
-                return [];
-            }
-            let neighbors: string[] = [];
-            State.graph.rawGraph.forEachNeighbor(
-                this.props.onNode,
-                (neighbor) => {
-                    neighbors.push(neighbor);
-                }
-            );
-            return neighbors;
+            return State.graph.rawGraph.neighbors(this.props.onNode);
         }
 
         deleteEdgeRenderer: ICellRenderer = (rowIndex) => {
@@ -63,9 +53,6 @@ export default observer(
         };
 
         deleteEdgeAlert = () => {
-            console.log(
-                "source" + this.state.targetNode + "target" + this.props.onNode
-            );
             if (this.state.targetNode === null) {
                 return null;
             }
@@ -83,7 +70,6 @@ export default observer(
                     this.state.targetNode
                 );
             }
-            console.log("edge" + edgeToDelete);
 
             return (
                 <Alert
@@ -114,16 +100,15 @@ export default observer(
             return (
                 <Cell interactive={true}>
                     <div
-                        onClick={() => {
+                        onMouseEnter={() => {
                             State.graphDelegate.cameraFocusOn(
                                 this.props.onNode,
                                 400
                             );
-                            State.graphDelegate.highlightLink = {
-                                source: this.props.onNode,
-                                target: this.neighbors[rowIndex],
-                            };
-                            State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+                            State.interaction.selectedEdge = State.interaction.getEdgeKey(
+                                this.props.onNode,
+                                this.neighbors[rowIndex]
+                            ) as string;
                         }}
                     >
                         {this.neighbors[rowIndex]}
@@ -145,7 +130,7 @@ export default observer(
                             icon="cross"
                             onClick={() => {
                                 State.preferences.deleteEdgePanelOpen = false;
-                                State.graphDelegate.highlightLink = null;
+                                State.interaction.selectedEdge = null;
                                 State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
                             }}
                         >

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Classes, Tab, Tabs } from "@blueprintjs/core";
+import { Button, Classes } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
@@ -26,8 +26,8 @@ export default observer(
             marginLeft: "-15px",
         };
         toggleOptions = () => {
-            State.preferences.isRenderOptionsCardHidden = !State.preferences
-                .isRenderOptionsCardHidden;
+            State.preferences.isGraphOptionsCardHidden = !State.preferences
+                .isGraphOptionsCardHidden;
         };
         render() {
             return (
@@ -42,7 +42,7 @@ export default observer(
                                 "left-cards"
                             )}
                             style={
-                                State.preferences.isRenderOptionsCardHidden
+                                State.preferences.isGraphOptionsCardHidden
                                     ? this.optionsInvisible
                                     : this.optionsVisible
                             }
@@ -76,7 +76,7 @@ export default observer(
                                 className="openbtn"
                                 onClick={this.toggleOptions}
                                 style={
-                                    State.preferences.isRenderOptionsCardHidden
+                                    State.preferences.isGraphOptionsCardHidden
                                         ? this.sideButtonVis
                                         : this.sideButtonInv
                                 }
@@ -88,10 +88,12 @@ export default observer(
                     {/* {State.graph.selectedNodes.length === 1 && (
                         <NodeDetail node={State.graph.currentlyHoveredId} />
                     )} */}
-                    {State.graph.currentlyHoveredId &&
-                        State.graph.selectedNodes.length === 0 && (
+                    {State.interaction.currentlyHoveredNodeId &&
+                        State.interaction.selectedNodes.length === 0 && (
                             <NodeDetailPanel
-                                onNode={State.graph.currentlyHoveredId}
+                                onNode={
+                                    State.interaction.currentlyHoveredNodeId
+                                }
                             />
                         )}
 
@@ -99,7 +101,7 @@ export default observer(
                     {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
                         <NodeDetail node={State.graph.currentlyHovered.data.ref} />
                     )} */}
-                    {State.graph.selectedNodes.length !== 0 && (
+                    {State.interaction.selectedNodes.length !== 0 && (
                         <MultiDetailPanel />
                     )}
 
@@ -112,9 +114,9 @@ export default observer(
                         <RightClickBackgroundPanel />
                     )}
                     {State.preferences.deleteEdgePanelOpen &&
-                        State.graph.selectedNode && (
+                        State.interaction.selectedNode && (
                             <DeleteEdgeInteractionPanel
-                                onNode={State.graph.selectedNode}
+                                onNode={State.interaction.selectedNode}
                             />
                         )}
                 </div>

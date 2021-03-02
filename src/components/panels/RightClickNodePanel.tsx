@@ -32,7 +32,8 @@ export default observer(
                     <MenuDivider
                         title={
                             ("Node ID: " +
-                                State.graph.currentlyHoveredId) as string
+                                State.interaction
+                                    .currentlyHoveredNodeId) as string
                         }
                     />
                     <MenuItem
@@ -40,13 +41,20 @@ export default observer(
                         text="Delete Node"
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.graph.currentlyHoveredId as string
+                                State.interaction
+                                    .currentlyHoveredNodeId as string
                             );
                             State.preferences.rightClickNodePanelOpen = false;
                         }}
                     />
                     <MenuDivider />
-                    <MenuItem icon="new-link" text="Add Edge" />
+                    <MenuItem
+                        icon="new-link"
+                        text="Add Edge"
+                        onClick={() => {
+                            State.preferences.AddEdgeDialogOpen = true;
+                        }}
+                    />
                     <MenuItem
                         icon="cross"
                         text="Delete Edge"

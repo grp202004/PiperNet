@@ -1,31 +1,47 @@
 import { makeAutoObservable } from "mobx";
-class NodeConfig {
+
+/**
+ * changing the config inside .global will cause to change every config of every node iteratively
+ *
+ * but changing the else does not
+ *
+ * @class NodeGlobalConfig
+ */
+class NodeGlobalConfig {
     constructor() {
         makeAutoObservable(this);
     }
-
     defaultColor: string = "#808080";
-    selectedColor: string = "#ffff00";
-    highlightColor: string = "#ff0000";
+    selectedColor: string = "#ffffAA";
+    highlightColor: string = "#ff6060";
+
+    resolution = 12;
 
     size = 4;
-    resolution = 12;
 }
 
-class EdgeConfig {
+/**
+ * changing the config inside .global will cause to change every config of every edge iteratively
+ *
+ * but changing the else does not
+ *
+ * @class EdgeGlobalConfig
+ */ class EdgeGlobalConfig {
     constructor() {
         makeAutoObservable(this);
     }
 
-    defaultColor: string = "#ffffff";
-    selectedColor: string = "#ffff00";
-    highlightColor: string = "#ff0000";
+    defaultColor = "#ffffff";
+
+    selectedColor = "#ffff00";
+    highlightColor = "#ff8E8E";
+
+    defaultWidth: number = 1;
+
+    highlightWidth: number = 2;
 
     resolution = 6;
-    width = 1;
-    opacity = 0.2;
 }
-
 class LabelConfig {
     constructor() {
         makeAutoObservable(this);
@@ -55,15 +71,15 @@ class ClusterConfig {
 export default class CssStore {
     constructor() {
         makeAutoObservable(this);
-        this.node = new NodeConfig();
-        this.edge = new EdgeConfig();
+        this.node = new NodeGlobalConfig();
+        this.edge = new EdgeGlobalConfig();
         this.label = new LabelConfig();
         this.cluster = new ClusterConfig();
     }
 
-    node!: NodeConfig;
+    node!: NodeGlobalConfig;
 
-    edge!: EdgeConfig;
+    edge!: EdgeGlobalConfig;
 
     label!: LabelConfig;
 
