@@ -36,6 +36,12 @@ export default observer(
                                             res.graph,
                                             res.metadata
                                         );
+
+                                        if(State.cluster.rawGraph.hasAttribute('cluster')){
+                                            State.cluster
+                                            .setCluster(State.graph.rawGraph.getAttribute('cluster'));
+                                        }
+
                                         State.import.isLoading = false;
                                         State.import.importGEXFDialogOpen = false;
                                     });
@@ -53,7 +59,7 @@ export default observer(
                     icon="import"
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
-                        State.import.importGEXFDialogOpen = false;
+                        State.import.importGEXFDialogOpen = false;       
                     }}
                     title="Import GEXF"
                 >
