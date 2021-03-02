@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import State from ".";
 import {
@@ -6,23 +6,71 @@ import {
     LinkObject,
     NodeObject,
 } from "react-force-graph-3d";
-import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
-import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
-import * as THREE from "three";
-import { copy } from "copy-anything";
+import Cluster3dObjectStore from "./Cluster3dObjectStore";
 
-export interface CustomNodeObject extends NodeObject {
-    val?: number;
+/**
+ * hovered: false, selected: false: DefaultColor;
+ * hovered: false, selected: true: SelectedColor;
+ * hovered: true, selected: false: HighlightColor;
+ * hovered: true, selected: true: HighlightColor;
+ *
+ *
+ * @interface ICustomNodeObject
+ * @extends {NodeObject}
+ */
+export interface ICustomNodeObject extends NodeObject {
+    hovered: boolean;
+    selected: boolean;
     isClusterNode?: boolean;
 }
-
-export interface CustomLinkObject extends LinkObject {
+/**
+ * hovered: false, selected: false: DefaultColor;
+ * hovered: false, selected: true: SelectedColor;
+ * hovered: true, selected: false: HighlightColor;
+ * hovered: true, selected: true: HighlightColor;
+ *
+ *
+ * @interface ICustomLinkObject
+ * @extends {LinkObject}
+ */
+export interface ICustomLinkObject extends LinkObject {
+    hovered: boolean;
+    selected: boolean;
     isClusterLink?: boolean;
+}
+
+export function createCustomNodeObject(
+    _id: string,
+    _cluster: boolean = false
+): ICustomNodeObject {
+    let result: ICustomNodeObject = {
+        id: _id,
+        hovered: false,
+        selected: false,
+        isClusterNode: _cluster,
+    };
+    return result;
+}
+
+export function createCustomLinkObject(
+    _source: string,
+    _target: string,
+    _cluster: boolean = false
+): ICustomLinkObject {
+    let result: ICustomLinkObject = {
+        source: _source,
+        target: _target,
+        hovered: false,
+        selected: false,
+        isClusterLink: _cluster,
+    };
+    return result;
 }
 
 export default class GraphDelegate {
     constructor() {
         makeAutoObservable(this);
+        this.clusterObject = new Cluster3dObjectStore();
     }
 
     /**
@@ -33,7 +81,7 @@ export default class GraphDelegate {
      */
     mountDelegateMethods(_graphDelegateMethods: ForceGraphMethods) {
         this.graphDelegateMethods = _graphDelegateMethods;
-        this.threeScene = this.graphDelegateMethods.scene();
+        this.clusterObject.threeScene = this.graphDelegateMethods.scene();
     }
 
     /**
@@ -44,13 +92,6 @@ export default class GraphDelegate {
      * @type {ForceGraphMethods}
      */
     graphDelegateMethods!: ForceGraphMethods;
-
-    /**
-     * the THREE.js WebGL Scene of the visualization
-     *
-     * @type {THREE.Scene}
-     */
-    threeScene!: THREE.Scene;
 
     /**
      * compute the delegate graph that will be used by the ForceGraph3D
@@ -71,8 +112,8 @@ export default class GraphDelegate {
             );
         }
         let tempGraph = {
-            nodes: [] as CustomNodeObject[],
-            links: [] as LinkObject[],
+            nodes: [] as ICustomLinkObject[],
+            links: [] as ICustomLinkObject[],
         };
         newGraph.forEachNode((node, attributes) => {
             tempGraph.nodes.push(attributes["_visualize"]);
@@ -114,24 +155,20 @@ export default class GraphDelegate {
                     if (attribute === "undefined") return;
 
                     let clusterID = names[index] + attribute;
-                    let visualize: CustomNodeObject = {
-                        id: clusterID,
-                        val: 1,
-                        isClusterNode: true,
-                    };
-                    graphCopy.addNode(clusterID, { _visualize: visualize });
+                    graphCopy.addNode(clusterID, {
+                        _visualize: createCustomNodeObject(clusterID, true),
+                    });
 
                     // add edges to simulate the force of the same cluster
                     State.cluster.attributeKeys
                         .get(attribute)
                         ?.forEach((target) => {
-                            let visualize: CustomLinkObject = {
-                                source: clusterID,
-                                target: target,
-                                isClusterLink: true, // if is clusterLink, then the front-end will ignore this link
-                            };
                             graphCopy.addEdge(clusterID, target, {
-                                _visualize: visualize,
+                                _visualize: createCustomLinkObject(
+                                    clusterID,
+                                    target,
+                                    true
+                                ),
                             });
                         });
                 }
@@ -146,8 +183,9 @@ export default class GraphDelegate {
      *
      * @param {CustomNodeObject} nodeObject
      */
-    nodeVisibility = (nodeObject: CustomNodeObject) => {
-        return !nodeObject.isClusterNode;
+    nodeVisibility = (nodeObject: NodeObject) => {
+        let node = nodeObject as ICustomNodeObject;
+        return !node.isClusterNode;
     };
 
     /**
@@ -155,74 +193,14 @@ export default class GraphDelegate {
      *
      * @param {CustomLinkObject} nodeObject
      */
-    linkVisibility = (nodeObject: CustomLinkObject) => {
-        return !nodeObject.isClusterLink;
+    linkVisibility = (linkObject: LinkObject) => {
+        let link = linkObject as ICustomLinkObject;
+        return !link.isClusterLink;
     };
 
-    /**
-     * all the clusters will form a 3D object to be imported into Scene
-     * and this indicates the formed 3d object in the last refresh
-     *
-     * @type {THREE.Object3D}
-     */
-    lastObject3D!: THREE.Object3D;
+    ////
 
-    /**
-     * add the computed clusters 3d object to the Scene
-     * always keep the Scene with only 1 cluster object by first deleting the last one then add
-     *
-     */
-    clusterDelegation() {
-        this.threeScene.remove(this.lastObject3D);
-        if (State.cluster.clusterBy === null) {
-            return;
-        }
-        this.lastObject3D = new THREE.Object3D();
-        this.convexHullObjects.forEach((value, key) => {
-            this.lastObject3D.add(value);
-        });
-        this.threeScene.add(this.lastObject3D);
-    }
-
-    /**
-     * the map between the value of the cluster and the 3d object that this cluster created
-     *
-     * @readonly
-     * @type {(Map<string | number, THREE.Object3D>)}
-     */
-    get convexHullObjects(): Map<string | number, THREE.Object3D> {
-        let newMap = new Map<string | number, THREE.Object3D>();
-        State.cluster.attributePoints.forEach((value, key) => {
-            if (value.length < 4) {
-                newMap.set(key, new THREE.Object3D());
-            } else {
-                let convexHull = new ConvexGeometry(Array.from(value));
-                newMap.set(key, GraphDelegate.createMesh(convexHull, key));
-            }
-        });
-        return newMap;
-    }
-
-    private static createMesh(
-        geom: ConvexGeometry,
-        name: string | number
-    ): THREE.Object3D {
-        // 实例化一个绿色的半透明的材质
-        const meshMaterial = new THREE.MeshBasicMaterial({
-            color: State.cluster.attributeColor.get(name),
-            transparent: true,
-            opacity: 0.2,
-        });
-        meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
-        const wireFrameMat = new THREE.MeshBasicMaterial();
-        wireFrameMat.wireframe = true; //把材质渲染成线框
-
-        // 将两种材质都赋给几何体
-        return SceneUtils.createMultiMaterialObject(geom, [
-            meshMaterial,
-            wireFrameMat,
-        ]);
-    }
+    clusterObject: Cluster3dObjectStore;
 
     ////
 
@@ -251,33 +229,23 @@ export default class GraphDelegate {
         );
     }
 
+    ////
+
     /**
-     * which link to be highlighted
+     * set the force inside each cluster in the ForceGraph
      *
-     * @type {(LinkObject | null)}
+     * @param {number} force the force to be set
+     * @param {number} _default default force of other links
      */
-    highlightLink: LinkObject | null = null;
-
-    ifHighlightLink<T>(link: LinkObject, _if: T, _else: T, _default: T): T {
-        if (State.graphDelegate.highlightLink == null) {
-            return _default;
-        }
-        let sourceId = (link.source as NodeObject).id as string;
-        let targetId = (link.target as NodeObject).id as string;
-
-        if (
-            (sourceId ===
-                (State.graphDelegate.highlightLink?.source as string) &&
-                targetId ===
-                    (State.graphDelegate.highlightLink?.target as string)) ||
-            (sourceId ===
-                (State.graphDelegate.highlightLink?.target as string) &&
-                targetId ===
-                    (State.graphDelegate.highlightLink?.source as string))
-        ) {
-            return _if;
-        } else {
-            return _else;
-        }
+    updateClusterForce() {
+        this.graphDelegateMethods
+            ?.d3Force("link")
+            //@ts-ignore
+            ?.distance((link: CustomLinkObject) => {
+                return link.isClusterLink
+                    ? State.css.cluster.clusterForce
+                    : State.css.cluster.normalForce;
+            });
+        this.graphDelegateMethods.d3ReheatSimulation();
     }
 }

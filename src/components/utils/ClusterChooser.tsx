@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from "react";
-import { Button, FormGroup, MenuItem } from "@blueprintjs/core";
+import { Button, MenuItem } from "@blueprintjs/core";
 import { Select } from "@blueprintjs/select";
 import { observer } from "mobx-react";
 import State from "../../state";
@@ -59,7 +59,7 @@ export default observer(
             item: any,
             props: CustomIItemRendererProps
         ): JSX.Element | null => {
-            if (item == "None") {
+            if (item === "None") {
                 return (
                     <MenuItem
                         intent="primary"

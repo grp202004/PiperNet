@@ -1,6 +1,10 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
-import { Attributes, NodeKey, NodeEntry } from "graphology-types";
+import { Attributes } from "graphology-types";
+import {
+    createCustomNodeObject,
+    createCustomLinkObject,
+} from "./GraphDelegate";
 import ComponentRef from "../components/ComponentRef";
 import State from ".";
 import GraphMutation from "./GraphMutation";
@@ -49,11 +53,7 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawNode(node: string, attributes: Attributes) {
-        attributes._visualize = {
-            id: node,
-            val: 1, // to be changed, to represent the size of the node
-            isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
-        };
+        attributes._visualize = createCustomNodeObject(node, false);
     }
 
     /**
@@ -68,11 +68,7 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawEdge(source: string, target: string, attributes: Attributes) {
-        attributes._visualize = {
-            source: source,
-            target: target,
-            isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
-        };
+        attributes._visualize = createCustomLinkObject(source, target, false);
     }
 
     /**
@@ -107,7 +103,7 @@ export default class GraphStore {
         if (_metadata) {
             this.metadata = _metadata;
         }
-        this.flush();
+        State.interaction.flush();
         State.cluster.clusterBy = null;
         ComponentRef.visualizer.updateVisualizationGraph();
     }
@@ -118,7 +114,7 @@ export default class GraphStore {
      * @memberof GraphStore
      */
     public refreshGraph() {
-        this.flush();
+        State.interaction.flush();
         ComponentRef.visualizer.updateVisualizationGraph();
     }
 
@@ -131,39 +127,6 @@ export default class GraphStore {
      * @see {GraphMutation}
      */
     mutating: GraphMutation;
-
-    /**
-     * the currently selected node ids
-     * the singleNodeDetailPanel will render and refresh if this changes
-     *
-     * @type {string[]}
-     */
-    selectedNodes: string[] = [];
-
-    /**
-     * the currently selected node id
-     *
-     * @type {string}
-     */
-    selectedNode: string | null = null;
-
-    /**
-     * the currently hovered node id
-     * the multiNodeDetailPanel will render and refresh if this changes
-     *
-     * @type {string}
-     */
-    currentlyHoveredId: string | null = null;
-
-    /**
-     * should call this on every refresh of graph DS
-     *
-     */
-    flush() {
-        this.selectedNodes = [];
-        this.selectedNode = null;
-        this.currentlyHoveredId = null;
-    }
 
     /**
      * if currently there is a graph in the dataset

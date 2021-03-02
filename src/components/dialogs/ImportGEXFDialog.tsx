@@ -57,9 +57,6 @@ export default observer(
             return (
                 <Dialog
                     icon="import"
-                    className={classnames({
-                        [Classes.DARK]: State.preferences.darkMode,
-                    })}
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
                         State.import.importGEXFDialogOpen = false;       

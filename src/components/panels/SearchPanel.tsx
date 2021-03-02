@@ -14,7 +14,7 @@ export default observer(
                         text={it}
                         onMouseOver={() => {
                             State.search.isPreviewing = true;
-                            State.graph.currentlyHoveredId = it;
+                            State.interaction.currentlyHoveredNodeId = it;
                             State.graphDelegate.cameraFocusOn(it);
                         }}
                     />

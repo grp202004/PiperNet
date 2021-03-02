@@ -1,41 +1,15 @@
 import React from "react";
-import { Button, Classes, Tab, Tabs } from "@blueprintjs/core";
+import { Button, Classes } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
-import NodesPanel from "./panels/NodesPanel";
-import EdgesPanel from "./panels/EdgesPanel";
-import LabelsPanel from "./panels/LabelsPanel";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
 import RightClickNodePanel from "./panels/RightClickNodePanel";
 import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
-
-let RenderOptionsCard = observer(
-    class RenderOptionsCard extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h2>Graph Options</h2>
-                    <Tabs animate={true}>
-                        <Tab id="nodes" title="Nodes" panel={<NodesPanel />} />
-                        <Tab id="edges" title="Edges" panel={<EdgesPanel />} />
-                        <Tab
-                            id="labels"
-                            title="Labels"
-                            panel={<LabelsPanel />}
-                        />
-                        {/* <Tab2 id="layout" title="Layout" panel={<LayoutPanel />} /> */}
-                        <Tabs.Expander />
-                    </Tabs>
-                </div>
-            );
-        }
-    }
-);
-//
+import GraphOptionsCard from "./panels/GraphOptionsCard";
 
 export default observer(
     class FloatingCards extends React.Component {
@@ -52,8 +26,8 @@ export default observer(
             marginLeft: "-15px",
         };
         toggleOptions = () => {
-            State.preferences.isRenderOptionsCardHidden = !State.preferences
-                .isRenderOptionsCardHidden;
+            State.preferences.isGraphOptionsCardHidden = !State.preferences
+                .isGraphOptionsCardHidden;
         };
         render() {
             return (
@@ -64,12 +38,11 @@ export default observer(
                                 Classes.CARD,
                                 Classes.ELEVATION_2,
                                 "overlay-card",
-                                "left-overlay-card",
                                 "transparent-frame",
                                 "left-cards"
                             )}
                             style={
-                                State.preferences.isRenderOptionsCardHidden
+                                State.preferences.isGraphOptionsCardHidden
                                     ? this.optionsInvisible
                                     : this.optionsVisible
                             }
@@ -81,7 +54,7 @@ export default observer(
                                 onClick={this.toggleOptions}
                             />
                             <br />
-                            <RenderOptionsCard />
+                            <GraphOptionsCard />
                         </div>
                         <div
                             className={classnames(
@@ -103,7 +76,7 @@ export default observer(
                                 className="openbtn"
                                 onClick={this.toggleOptions}
                                 style={
-                                    State.preferences.isRenderOptionsCardHidden
+                                    State.preferences.isGraphOptionsCardHidden
                                         ? this.sideButtonVis
                                         : this.sideButtonInv
                                 }
@@ -115,10 +88,12 @@ export default observer(
                     {/* {State.graph.selectedNodes.length === 1 && (
                         <NodeDetail node={State.graph.currentlyHoveredId} />
                     )} */}
-                    {State.graph.currentlyHoveredId &&
-                        State.graph.selectedNodes.length === 0 && (
+                    {State.interaction.currentlyHoveredNodeId &&
+                        State.interaction.selectedNodes.length === 0 && (
                             <NodeDetailPanel
-                                onNode={State.graph.currentlyHoveredId}
+                                onNode={
+                                    State.interaction.currentlyHoveredNodeId
+                                }
                             />
                         )}
 
@@ -126,7 +101,7 @@ export default observer(
                     {/* {State.graph.selectedNodes.length !== 1 && State.graph.currentlyHovered && (
                         <NodeDetail node={State.graph.currentlyHovered.data.ref} />
                     )} */}
-                    {State.graph.selectedNodes.length !== 0 && (
+                    {State.interaction.selectedNodes.length !== 0 && (
                         <MultiDetailPanel />
                     )}
 
@@ -139,9 +114,9 @@ export default observer(
                         <RightClickBackgroundPanel />
                     )}
                     {State.preferences.deleteEdgePanelOpen &&
-                        State.graph.selectedNode && (
+                        State.interaction.selectedNode && (
                             <DeleteEdgeInteractionPanel
-                                onNode={State.graph.selectedNode}
+                                onNode={State.interaction.selectedNode}
                             />
                         )}
                 </div>
@@ -149,5 +124,3 @@ export default observer(
         }
     }
 );
-
-// export default FloatingCards;

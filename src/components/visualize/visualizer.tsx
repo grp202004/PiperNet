@@ -2,17 +2,26 @@ import React from "react";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
+    LinkObject,
     NodeObject,
 } from "react-force-graph-3d";
-import ComponentRef from "../ComponentRef"
+import ComponentRef from "../ComponentRef";
 import State from "../../state";
+import SpriteText from "three-spritetext";
+import {
+    ICustomLinkObject,
+    ICustomNodeObject,
+} from "../../state/GraphDelegate";
+
+interface Props {
+    controlType: "trackball" | "orbit" | "fly";
+}
 
 export default observer(
-    class ThreeJSVis extends React.Component {
-
+    class ThreeJSVis extends React.Component<Props, {}> {
         state = {
-            visualizationGraph: State.graphDelegate.visualizationGraph()
-        }
+            visualizationGraph: State.graphDelegate.visualizationGraph(),
+        };
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -20,122 +29,147 @@ export default observer(
             return this.graphRef.current;
         }
 
-        getNodeId(node: NodeObject): string {
-            let nodeId: string;
-            if (node.id as string) {
-                nodeId = node.id as string;
-            } else {
-                nodeId = (node.id as number).toString();
-            }
-            return nodeId;
-        }
-
         graphDelegate = State.graphDelegate;
 
-        nodeHover = (
+        hoverNodeCallback = (
             node: NodeObject | null,
             previousNode: NodeObject | null
         ) => {
             if (State.search.isPreviewing) return;
-            if (node != null && node !== previousNode) {
-                State.graph.currentlyHoveredId = this.getNodeId(
-                    node as NodeObject
-                );
+            // to avoid frequent refresh
+
+            if (node === null) {
+                State.interaction.currentlyHoveredNodeId = null;
+            } else if (node !== previousNode) {
+                let current: string = node.id as string;
+                State.interaction.previouslyHoveredNodeId =
+                    State.interaction.currentlyHoveredNodeId;
+                State.interaction.currentlyHoveredNodeId = current;
             }
         };
 
-        // ref of State.graph.selectedNodes
-        selectedNodes: string[] = State.graph.selectedNodes;
-
-        nodeSelect = (node: NodeObject, event: MouseEvent) => {
-            let nodeId = this.getNodeId(node as NodeObject);
+        nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {
+            let nodeId = node.id as string;
             if (event.ctrlKey || event.shiftKey) {
                 // multi-selection
-                if (this.selectedNodes.includes(nodeId)) {
-                    let index = this.selectedNodes.indexOf(nodeId);
-                    if (index > -1) {
-                        this.selectedNodes.splice(index, 1);
-                    }
+                let index;
+                // if already in the list of selected, remove
+                if (
+                    (index = State.interaction.selectedNodes.indexOf(
+                        nodeId
+                    )) !== -1
+                ) {
+                    State.interaction.selectedNodes.splice(index, 1);
                 } else {
-                    this.selectedNodes.push(nodeId);
+                    // if not in the list, add
+                    State.interaction.selectedNodes.push(nodeId);
                 }
             } else {
-                // single-selection
-                // TODO
+                // single select
+                State.interaction.selectedNode = node.id as string;
             }
-            this.graphMethods.refresh(); // update color of selected nodes
         };
 
-        nodeRightClick = (node: NodeObject, event: MouseEvent) => {
-            State.graph.selectedNode = node.id as string;
+        nodeRightClickCallback = (node: NodeObject, event: MouseEvent) => {
+            State.interaction.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickBackgroundPanelOpen = false;
             State.preferences.rightClickNodePanelOpen = true;
+            this.closeAllPanel();
         };
 
-        backgroundRightClick = (event: MouseEvent) => {
+        backgroundClickCallback = (event: MouseEvent) => {
+            // cancel all selection
+            State.interaction.selectedNodes = [];
+            State.preferences.rightClickNodePanelOpen = false;
+            State.preferences.rightClickBackgroundPanelOpen = false;
+            this.closeAllPanel();
+        };
+
+        backgroundRightClickCallback = (event: MouseEvent) => {
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickNodePanelOpen = false;
             State.preferences.rightClickBackgroundPanelOpen = true;
+            this.closeAllPanel();
         };
 
+        computeNodeColor(_node: NodeObject) {
+            let node = _node as ICustomNodeObject;
+            if (node.hovered) {
+                return State.css.node.highlightColor;
+            } else if (node.selected) {
+                return State.css.node.selectedColor;
+            } else {
+                return State.css.node.defaultColor;
+            }
+        }
+
+        computeEdgeColor(_edge: LinkObject) {
+            let edge = _edge as ICustomLinkObject;
+            if (edge.hovered) {
+                return State.css.edge.highlightColor;
+            } else if (edge.selected) {
+                return State.css.edge.selectedColor;
+            } else {
+                return State.css.edge.defaultColor;
+            }
+        }
+        computeEdgeWidth(_edge: LinkObject) {
+            let edge = _edge as ICustomLinkObject;
+            if (edge.hovered) {
+                return State.css.edge.highlightWidth;
+            } else if (edge.selected) {
+                return State.css.edge.highlightWidth;
+            } else {
+                return State.css.edge.defaultWidth;
+            }
+        }
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
                     <ForceGraph3D
+                        // Data Segment
                         ref={this.graphRef}
                         graphData={this.state.visualizationGraph}
-                        nodeResolution={20}
+                        controlType={this.props.controlType}
+                        // Node Visualization Segment
+                        nodeLabel="id"
+                        nodeRelSize={State.css.node.size}
+                        nodeColor={this.computeNodeColor}
                         nodeVisibility={this.graphDelegate.nodeVisibility}
-                        linkVisibility={this.graphDelegate.linkVisibility}
+                        nodeResolution={State.css.node.resolution}
+                        nodeThreeObjectExtend={true}
+                        nodeThreeObject={(node) => {
+                            const sprite = new SpriteText(`${node.id}`);
+                            sprite.color = State.css.label.color;
+                            sprite.textHeight = State.css.label.size;
+                            sprite.visible = State.css.label.show;
+                            return sprite;
+                        }}
+                        // Node Manipulation Segment
+                        onNodeHover={this.hoverNodeCallback}
+                        onNodeClick={this.nodeLeftClickCallback}
+                        onNodeRightClick={this.nodeRightClickCallback}
                         onNodeDragEnd={(node) => {
                             node.fx = node.x;
                             node.fy = node.y;
                             node.fz = node.z;
                         }}
-                        onBackgroundRightClick={this.backgroundRightClick}
-                        linkWidth={(link) => {
-                            return State.graphDelegate.ifHighlightLink(
-                                link,
-                                2,
-                                0.1,
-                                1
-                            );
-                        }}
-                        linkColor={(link) => {
-                            return State.graphDelegate.ifHighlightLink(
-                                link,
-                                "orangered",
-                                "white",
-                                "white"
-                            );
-                        }}
-                        linkDirectionalParticles={(link) => {
-                            return State.graphDelegate.ifHighlightLink(
-                                link,
-                                4,
-                                0,
-                                0
-                            );
-                        }}
-                        linkDirectionalParticleWidth={4}
+                        // Link Visualization Segment
+                        linkVisibility={this.graphDelegate.linkVisibility}
+                        linkWidth={this.computeEdgeWidth}
+                        linkColor={this.computeEdgeColor}
+                        // Graph Manipulation Segment
+                        onBackgroundRightClick={
+                            this.backgroundRightClickCallback
+                        }
+                        onBackgroundClick={this.backgroundClickCallback}
+                        // Engine
                         onEngineTick={() =>
-                            this.graphDelegate.clusterDelegation()
+                            this.graphDelegate.clusterObject.clusterDelegation()
                         }
-                        nodeColor={(node) =>
-                            this.selectedNodes.includes(this.getNodeId(node))
-                                ? "yellow"
-                                : "grey"
-                        }
-                        onNodeClick={this.nodeSelect}
-                        onNodeRightClick={this.nodeRightClick}
-                        onBackgroundClick={() => {
-                            State.preferences.rightClickNodePanelOpen = false;
-                            State.preferences.rightClickBackgroundPanelOpen = false;
-                        }}
-                        onNodeHover={this.nodeHover}
                     />
                 );
                 // } else {
@@ -164,13 +198,18 @@ export default observer(
 
         updateVisualizationGraph() {
             this.setState({
-                visualizationGraph: State.graphDelegate.visualizationGraph()
-            })
+                visualizationGraph: State.graphDelegate.visualizationGraph(),
+            });
+            // this.graphMethods.refresh();
+        }
+
+        closeAllPanel() {
+            State.preferences.deleteEdgePanelOpen = false;
         }
 
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
-            ComponentRef.visualizer = this
+            ComponentRef.visualizer = this;
         }
     }
 );
