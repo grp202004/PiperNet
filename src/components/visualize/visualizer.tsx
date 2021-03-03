@@ -81,7 +81,7 @@ export default observer(
 
         backgroundClickCallback = (event: MouseEvent) => {
             // cancel all selection
-            State.interaction.selectedNodes = [];
+            // State.interaction.selectedNodes = [];
             State.preferences.rightClickNodePanelOpen = false;
             State.preferences.rightClickBackgroundPanelOpen = false;
             this.closeAllPanel();
@@ -101,6 +101,8 @@ export default observer(
                 return State.css.node.highlightColor;
             } else if (node.selected) {
                 return State.css.node.selectedColor;
+            } else if (node.multiSelected) {
+                return State.css.node.multiSelectedColor;
             } else {
                 return State.css.node.defaultColor;
             }

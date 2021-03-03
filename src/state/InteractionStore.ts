@@ -162,6 +162,8 @@ export default class InteractionStore {
             oldAttributes.hovered = newAttribute.hovered;
         } else if (newAttribute.hasOwnProperty("selected")) {
             oldAttributes.selected = newAttribute.selected;
+        } else if (newAttribute.hasOwnProperty("multiSelected")) {
+            oldAttributes.multiSelected = newAttribute.multiSelected;
         }
     }
 

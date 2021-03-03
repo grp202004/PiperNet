@@ -13,6 +13,7 @@ class NodeGlobalConfig {
     }
     defaultColor: string = "#808080";
     selectedColor: string = "#ffffAA";
+    multiSelectedColor: string = "white";
     highlightColor: string = "#ff6060";
 
     resolution = 12;
