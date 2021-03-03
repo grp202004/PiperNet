@@ -4,7 +4,7 @@
 
 An interactive 2D/3D cluster graph visualization system that runs in your browsers as well as on desktop.
 
-[**Stable Beta** - Launch stable beta version of PiperNet in your browser](https://kaby-lake.github.io/pipernet.github.io/)
+[**Stable Beta** - Launch stable beta version of PiperNet in your browser](https://grp202004.github.io/pipernet.github.io/)
 
 [**Canary** - Launch early access canary version of PiperNet in your browser](https://kaby-lake.github.io/pipernetDev.github.io/)
 
