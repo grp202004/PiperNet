@@ -20,6 +20,7 @@ Interactions & Operations
 -   More sample input files have been founded with brief explanation and citation (citations will be available on the user handbook).
 -   user can hover the mouse on a node and the details of which node will appear on the top-right corner as a table, besides, the
     user can change node details directly in this table
+-   users can hover the mouse on a node and the edges linked to this node will be highlighted
 -   The InteractiveDeleteEdge has been done, in which you can right-click on a node and select Delete Edge to active this panel on
     the right-bottom corner of the screen. This panel acts as a table and lists all the edges that are connected to this node, clicking
     on a row in this table will preview the selected edge with the camera focusing on this node. There’s also a button to delete the
