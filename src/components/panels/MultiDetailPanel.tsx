@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Classes } from "@blueprintjs/core";
+import { Classes, Button } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import ComponentRef from "../ComponentRef";
@@ -40,6 +40,30 @@ export default observer(
                                 />
                             ))}
                         </Table>
+                        <Button
+                            icon="undo"
+                            onClick={() => {
+                                State.interaction.selectedNodes = [];
+                            }}
+                        >
+                            cancel select
+                        </Button>
+                        <Button
+                            icon="delete"
+                            onClick={() => {
+                                State.interaction.selectedNodes = [];
+                            }}
+                        >
+                            Delete all
+                        </Button>
+                        <Button
+                            icon="circle"
+                            onClick={() => {
+                                State.interaction.selectedNodes = [];
+                            }}
+                        >
+                            Cluster
+                        </Button>
                     </div>
                 </div>
             );

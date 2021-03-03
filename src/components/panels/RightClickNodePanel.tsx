@@ -32,8 +32,7 @@ export default observer(
                     <MenuDivider
                         title={
                             ("Node ID: " +
-                                State.interaction
-                                    .currentlyHoveredNodeId) as string
+                                State.interaction.chNodeIdforDisplay) as string
                         }
                     />
                     <MenuItem
@@ -41,8 +40,7 @@ export default observer(
                         text="Delete Node"
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.interaction
-                                    .currentlyHoveredNodeId as string
+                                State.interaction.chNodeIdforDisplay as string
                             );
                             State.preferences.rightClickNodePanelOpen = false;
                         }}

@@ -45,6 +45,7 @@ export default observer(
                 State.interaction.previouslyHoveredNodeId =
                     State.interaction.currentlyHoveredNodeId;
                 State.interaction.currentlyHoveredNodeId = current;
+                State.interaction.chNodeIdforDisplay = current;
             }
         };
 

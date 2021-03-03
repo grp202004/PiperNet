@@ -27,6 +27,11 @@ export default class InteractionStore {
      */
     currentlyHoveredNodeId: string | null = null;
 
+    /**
+     * the currently hovered node id that used for display at RightClickPanel
+     */
+    chNodeIdforDisplay: string = "";
+
     get currentlyHoveredNodeNeighbors(): string[] | null {
         if (this.currentlyHoveredNodeId === null) {
             return null;
