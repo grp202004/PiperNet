@@ -31,11 +31,12 @@ export default observer(
                 label: string;
                 key: string;
             }[] = [];
+            headers.push({ label: "_id", key: "_id" });
             State.graph.metadata.nodeProperties.map((value) => {
                 headers.push({ label: value, key: value });
                 return null;
             });
-            headers.push({ label: "_id", key: "_id" });
+            
             let exportData = State.graph.rawGraph.export();
             let data: any[] = [];
             exportData.nodes.forEach((node) => {

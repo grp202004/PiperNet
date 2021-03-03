@@ -47,11 +47,7 @@ export default observer(
 
         get fullProperties(): string[] {
             let propertiesWithNone = copy(State.graph.metadata.nodeProperties);
-            if (State.graph.rawGraph.hasAttribute('default')){
-                propertiesWithNone.unshift(State.graph.rawGraph.getAttribute('default'));
-                propertiesWithNone.unshift("None");
-            }else{
-            propertiesWithNone.unshift("None");}
+            propertiesWithNone.unshift("None");
             return propertiesWithNone;
         }
 
