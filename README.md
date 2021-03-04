@@ -6,6 +6,8 @@ An interactive 2D/3D cluster graph visualization system that runs in your browse
 
 [**Stable Beta** - Launch stable beta version of PiperNet in your browser](https://grp202004.github.io/pipernet.github.io/)
 
+[**Documentation** - Documentation of this project](https://grp202004.github.io/PiperNet-Docs/)
+
 [**Canary** - Launch early access canary version of PiperNet in your browser](https://kaby-lake.github.io/pipernetDev.github.io/)
 
 ## About
@@ -68,12 +70,40 @@ The [Dynamic GEXF](https://gephi.org/gexf/format/dynamics.html) is currently not
 
 [Sample Datasets](./src/samples/) are located inside this repository, enjoy and have fun :\)
 
-### More Features on the Way !
+### Data Visualization in 3D
 
-This project is currently under development, and we have a lot more existing new features coming soon.
+To view the graph from different angle and size, the following operations can be applied:
+
+-   Rotate: hold the left mouse
+-   Pan: hold the right mouse
+-   Zoom: mouse wheel
+
+For more details of a certain node, mouse hovering can show a label of the node ID while the node turns red, with detailed information of the node such as node ID and other attributes being displayed in a table that is editable on the right-top corner
+
+### 3D Clusters
+
+Choose **Clustered by** at the top-right of the scene. All attributes of the nodes will be shown in the menu. By default, the cluster is none and no cluster is formed. When a new attribute is picked for cluster, the graph will be refreshed. Nodes in different clusters will be packed by spheres or convex hull (can be set in Graph Options on the left panel) in different colors.
+
+### Node and Edge Datasheet
+
+The node and edge datasheet shows the detailed information as well as various operation on the node and edge, including but not limited to: **Add** new Nodes and Edges, **Delete** Nodes and Edges, **Search** and **Filter** the table, **Alter** the attributes...
+
+### Multi-selection
+
+Hold **Control** or **Shift** and left click the node to select or deselect the nodes, Rectangular Marquee Selection is on the way...
+
+### Context Menu
+
+right-click on the background or specific node to activate context menu, with rich buttons lick: Add Node, Add Edge, Delete Node and Delete Edge
+
+-   Delete Edge: after clicking Delete Edge, hover the mouse on the candidate edge (listed in the right-bottom corner to preview the edge to be deleted)
+
+### Graph Options
+
+information regarding the graph options is available in the online documentation website.
 
 ```
 
 ```
 
-♥ Developed and maintained by [UNNC GRP 2020.04](https://github.com/grp202004). We are currently not accepting any contribution from other than the team members.
+♥ Developed and maintained by [UNNC GRP 2020.04](https://github.com/grp202004). We are currently not accepting any contribution from other than the team members, but we are welcome will any issues raising and features advice.
