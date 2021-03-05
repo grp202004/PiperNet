@@ -19,6 +19,7 @@ export default class InteractionStore {
     selectedEdge: string | null = null;
 
     selectedEdges: string[] = [];
+
     /**
      * the currently hovered node id
      * the multiNodeDetailPanel will render and refresh if this changes
@@ -26,6 +27,8 @@ export default class InteractionStore {
      * @type {string}
      */
     currentlyHoveredNodeId: string | null = null;
+
+    currentlyHoveredClusterId: string | null = null;
 
     get currentlyHoveredNodeNeighbors(): string[] | null {
         if (this.currentlyHoveredNodeId === null) {

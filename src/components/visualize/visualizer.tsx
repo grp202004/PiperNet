@@ -146,6 +146,8 @@ export default observer(
                             sprite.color = State.css.label.color;
                             sprite.textHeight = State.css.label.size;
                             sprite.visible = State.css.label.show;
+                            sprite.backgroundColor = "";
+                            sprite.translateX(State.css.node.size + 2);
                             return sprite;
                         }}
                         // Node Manipulation Segment
@@ -210,6 +212,8 @@ export default observer(
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
             ComponentRef.visualizer = this;
+
+
         }
     }
 );

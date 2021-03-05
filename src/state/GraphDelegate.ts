@@ -6,7 +6,9 @@ import {
     LinkObject,
     NodeObject,
 } from "react-force-graph-3d";
+import * as THREE from "three";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
+import { Object3D } from "three";
 
 /**
  * hovered: false, selected: false: DefaultColor;
@@ -82,6 +84,12 @@ export default class GraphDelegate {
     mountDelegateMethods(_graphDelegateMethods: ForceGraphMethods) {
         this.graphDelegateMethods = _graphDelegateMethods;
         this.clusterObject.threeScene = this.graphDelegateMethods.scene();
+
+        document.addEventListener(
+            "mousemove",
+            State.graphDelegate.onDocumentMouseMove,
+            false
+        );
     }
 
     /**
@@ -176,6 +184,46 @@ export default class GraphDelegate {
         }
 
         return graphCopy;
+    }
+
+    onDocumentMouseMove(event: MouseEvent) {
+        if (
+            State.cluster.clusterBy === null ||
+            !State.graphDelegate.graphDelegateMethods
+        ) {
+            State.interaction.currentlyHoveredClusterId = null;
+            return;
+        }
+
+        let vector = new THREE.Vector3(
+            (event.clientX / window.innerWidth) * 2 - 1,
+            -(event.clientY / window.innerHeight) * 2 + 1,
+            0.5
+        );
+
+        let camera = State.graphDelegate.graphDelegateMethods?.camera();
+        if (!camera) {
+            return;
+        }
+        vector = vector.unproject(camera);
+
+        let raycaster = new THREE.Raycaster(
+            camera.position,
+            vector.sub(camera.position).normalize()
+        );
+        let intersects = raycaster.intersectObjects(
+            State.graphDelegate.clusterObject.fusionClusterObjects
+                ?.children as Object3D[],
+            true
+        ); // Circle element which you want to identify
+
+        if (intersects.length > 0) {
+            console.log("currentlyHoveredNodeId", intersects);
+            State.interaction.currentlyHoveredClusterId =
+                intersects[0].object.uuid;
+        } else {
+            State.interaction.currentlyHoveredClusterId = null;
+        }
     }
 
     /**

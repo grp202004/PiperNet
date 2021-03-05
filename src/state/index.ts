@@ -9,6 +9,7 @@ import ClusterStore from "./ClusterStore";
 import CssStore from "./CssStore";
 import GraphDelegate from "./GraphDelegate";
 import InteractionStore from "./InteractionStore";
+import { createSolutionBuilderWithWatch } from "typescript";
 
 class AppState {
     static _instance: AppState | null = null;
@@ -74,6 +75,24 @@ autorun(() => {
         State.graphDelegate.graphDelegateMethods?.pauseAnimation();
     }
 });
+
+reaction(
+    () => State.interaction.currentlyHoveredClusterId,
+    (currentlyHoveredClusterId) => {
+        console.log("currentlyHoveredNodeId", currentlyHoveredClusterId);
+        if (currentlyHoveredClusterId) {
+            let mesh = State.graphDelegate.clusterObject.getObjectById(
+                currentlyHoveredClusterId
+            );
+            if (mesh) {
+                let material = mesh.material as THREE.Material;
+                material.opacity = 0.8;
+            }
+        } else {
+            State.graphDelegate.clusterObject.resetDefaultMaterial();
+        }
+    }
+);
 
 reaction(
     () => State.interaction.currentlyHoveredNodeId,
