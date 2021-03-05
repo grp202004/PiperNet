@@ -16,12 +16,7 @@ export default observer(
                         "transparent-frame"
                     )}
                 >
-                    <div
-                        className={classnames(
-                            Classes.CARD,
-                            "nodes-details-table"
-                        )}
-                    >
+                    <div className={classnames(Classes.CARD)}>
                         <Table numRows={State.interaction.selectedNodes.length}>
                             {State.graph.metadata.nodeProperties.map((it) => (
                                 <Column
@@ -40,30 +35,6 @@ export default observer(
                                 />
                             ))}
                         </Table>
-                        <Button
-                            icon="undo"
-                            onClick={() => {
-                                State.interaction.selectedNodes = [];
-                            }}
-                        >
-                            cancel select
-                        </Button>
-                        <Button
-                            icon="delete"
-                            onClick={() => {
-                                State.interaction.selectedNodes = [];
-                            }}
-                        >
-                            Delete all
-                        </Button>
-                        <Button
-                            icon="circle"
-                            onClick={() => {
-                                State.interaction.selectedNodes = [];
-                            }}
-                        >
-                            Cluster
-                        </Button>
                     </div>
                 </div>
             );

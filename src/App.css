@@ -191,7 +191,7 @@ html {
     left: 2em;
     bottom: 4em;
     position: absolute;
-    z-index: 99;
+    /* z-index: 99; */
 }
 
 .right-bottom-overlay-card {

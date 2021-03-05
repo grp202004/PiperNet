@@ -250,7 +250,7 @@ export default class ImportStore {
 
         // parse Edge file and store into the Graph DS
         tempEdges = await this.readEdgeCSV();
-        tempEdges.forEach((edge,idx) => {
+        tempEdges.forEach((edge, idx) => {
             let fromId = edge[fromColumn].toString();
             let toId = edge[toColumn].toString();
 
@@ -260,7 +260,7 @@ export default class ImportStore {
             if (!graph.hasNode(toId)) {
                 graph.addNode(toId, { id: toId });
             }
-            graph.addEdgeWithKey(idx,fromId, toId);
+            graph.addEdgeWithKey(idx, fromId, toId);
         });
 
         config.edgeFile.isReady = true;
@@ -269,7 +269,7 @@ export default class ImportStore {
             ? Object.keys(tempNodes[0])
             : ["id"];
 
-            // graph.setAttribute('cluster','label');
+        // graph.setAttribute('cluster','label');
 
         return {
             graph: graph,
@@ -284,7 +284,7 @@ export default class ImportStore {
     public async importGraphFromGEXF() {
         let graph = await this.readGEXF();
         let nodeProperties: string[] = [];
-
+        this.setNodeAttributesCluster(graph);
         for (const [key] of Object.entries(
             graph.getNodeAttributes(graph.nodes()[0])
         )) {
@@ -302,6 +302,12 @@ export default class ImportStore {
                 edgeProperties: ["source_id", "target_id"],
             },
         };
+    }
+
+    private setNodeAttributesCluster(graph: Graph) {
+        graph.forEachNode((node, attributes) => {
+            attributes.cluster = 0;
+        });
     }
 
     /**

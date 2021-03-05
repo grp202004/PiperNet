@@ -47,6 +47,7 @@ export default observer(
                 State.interaction.currentlyHoveredNodeId = current;
                 State.interaction.chNodeIdforDisplay = current;
             }
+            // console.log(State.graph.rawGraph);
         };
 
         nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {

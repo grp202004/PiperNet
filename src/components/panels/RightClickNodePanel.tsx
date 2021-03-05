@@ -47,6 +47,48 @@ export default observer(
                     />
                     <MenuDivider />
                     <MenuItem
+                        icon="circle"
+                        text="CLuster Node"
+                        onClick={() => {
+                            let clusterId: number =
+                                State.graph.numberOfClusters + 1;
+                            State.interaction.selectedNodes.map((nodeid) => {
+                                let after = State.graph.rawGraph.setNodeAttribute(
+                                    nodeid,
+                                    "cluster",
+                                    clusterId
+                                );
+                            });
+                            State.graph.numberOfClusters++;
+                            State.preferences.rightClickNodePanelOpen = false;
+                            State.cluster.setCluster("cluster");
+                        }}
+                        disabled={State.interaction.selectedNodes.length === 0}
+                    />
+                    <MenuItem
+                        icon="undo"
+                        text="cancel multiple select"
+                        onClick={() => {
+                            State.interaction.selectedNodes = [];
+                            State.preferences.rightClickNodePanelOpen = false;
+                        }}
+                        disabled={State.interaction.selectedNodes.length === 0}
+                    />
+                    <MenuItem
+                        icon="graph-remove"
+                        text="Delete selected Nodes"
+                        onClick={() => {
+                            State.interaction.selectedNodes.forEach((node) => {
+                                State.graph.mutating.dropNode(node);
+                            });
+                            // State.graph.mutating.dropNode(
+                            //     State.interaction.chNodeIdforDisplay as string
+                            // );
+                            State.preferences.rightClickNodePanelOpen = false;
+                        }}
+                    />
+                    <MenuDivider />
+                    <MenuItem
                         icon="new-link"
                         text="Add Edge"
                         onClick={() => {
