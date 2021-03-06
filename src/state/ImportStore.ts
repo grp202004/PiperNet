@@ -303,7 +303,10 @@ export default class ImportStore {
             },
         };
     }
-
+    /**
+     * add attrubute 'cluster' for each node usde for cluster nodes
+     *
+     */
     private setNodeAttributesCluster(graph: Graph) {
         graph.forEachNode((node, attributes) => {
             attributes.cluster = 0;
