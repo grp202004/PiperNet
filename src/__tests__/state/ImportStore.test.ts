@@ -388,20 +388,6 @@ describe("the outer", () => {
             expect(store.importConfig.edgeFile.isReady).toBeTruthy();
         });
 
-        //27
-        test("first element of nodes of the graph", async () => {
-            store.importConfig.edgeFile.mapping.fromId = "Source";
-            store.importConfig.edgeFile.mapping.toId = "Target";
-            store.selectedEdgeFileFromInput = csvFileOfDh11Edge;
-            const data = await store.importGraphFromCSV();
-            data.graph.forEachNodeUntil((node, attributes) => {
-                expect(attributes).toEqual({ id: "1" });
-                if (node == "1") {
-                    return true;
-                }
-            });
-        });
-
         //28
         test("every element of edges of the graph", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";

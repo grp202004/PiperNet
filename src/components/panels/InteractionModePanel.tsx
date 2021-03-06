@@ -3,8 +3,7 @@ import { Button, Classes, Intent, Position, Tooltip } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
-import { VisualizationMode } from "../../state/NodeInteractionStore";
-import { renderFilteredItems } from "@blueprintjs/select";
+import { VisualizationMode } from "../../state/PreferencesStore";
 
 export default observer(
     class InteractionModePanel extends React.Component {
@@ -34,9 +33,9 @@ export default observer(
                         ])}
                         text={mode}
                         intent={this.getIntent(mode)}
-                        active={State.interaction.visualizationMode === mode}
+                        active={State.preferences.visualizationMode === mode}
                         onClick={() => {
-                            State.interaction.visualizationMode = mode;
+                            State.preferences.visualizationMode = mode;
                         }}
                     />
                 </Tooltip>

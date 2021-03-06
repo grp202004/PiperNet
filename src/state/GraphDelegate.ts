@@ -194,7 +194,7 @@ export default class GraphDelegate {
             State.cluster.clusterBy === null ||
             !State.graphDelegate.graphDelegateMethods
         ) {
-            State.interaction.currentlyHoveredClusterId = null;
+            State.clusterInteraction.currentlyHoveredClusterId = null;
             return;
         }
         let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
@@ -223,12 +223,15 @@ export default class GraphDelegate {
         );
 
         if (intersects.length > 0) {
-            console.log("currentlyHoveredNodeId", intersects);
-            State.interaction.currentlyHoveredClusterId =
+            State.clusterInteraction.currentlyHoveredClusterId =
                 intersects[0].object.uuid;
         } else {
-            State.interaction.currentlyHoveredClusterId = null;
+            State.clusterInteraction.currentlyHoveredClusterId = null;
         }
+        console.log(
+            "currentlyHoveredClusterId",
+            State.clusterInteraction.currentlyHoveredClusterId
+        );
     }
 
     /**

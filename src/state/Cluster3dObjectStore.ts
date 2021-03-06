@@ -42,6 +42,13 @@ export default class Cluster3dObjectStore {
      *
      */
     initEmptyMapAndFusion() {
+        if (this.fusionClusterObjects) {
+            this.threeScene.remove(this.fusionClusterObjects);
+            this.dispose();
+        }
+        if (State.cluster.clusterBy === null) {
+            return;
+        }
         let initialMap = new Map<string | number, THREE.Mesh>();
         State.cluster.attributePoints.forEach((value, key) => {
             initialMap.set(
@@ -69,10 +76,6 @@ export default class Cluster3dObjectStore {
      */
     clusterDelegation() {
         if (State.cluster.clusterBy === null) {
-            if (this.fusionClusterObjects) {
-                this.threeScene.remove(this.fusionClusterObjects);
-                this.dispose();
-            }
             return;
         } else {
             if (

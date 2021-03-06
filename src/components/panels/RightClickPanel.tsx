@@ -30,6 +30,26 @@ export default observer(
             };
         }
 
+        formNewCluster() {
+            let date = new Date().toLocaleString();
+            let clusterId: string = `Cluster Generated @ ${date}`;
+            if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
+                State.graph.metadata.nodeProperties.push("new-cluster");
+            }
+            State.graph.rawGraph.forEachNode((_, attributes) => {
+                attributes["new-cluster"] = "";
+            });
+            State.interaction.selectedNodes.map((nodeId) => {
+                State.graph.rawGraph.setNodeAttribute(
+                    nodeId,
+                    "new-cluster",
+                    clusterId
+                );
+            });
+            State.preferences.rightClickPanelOpen = false;
+            State.cluster.setCluster("new-cluster");
+        }
+
         renderNodeMenu() {
             return (
                 <Menu
@@ -43,7 +63,7 @@ export default observer(
                         title={
                             ("Node ID: " +
                                 State.interaction
-                                    .currentlyHoveredNodeId) as string
+                                    .stagedCurrentlyHoveredNodeId) as string
                         }
                     />
                     <MenuItem
@@ -54,6 +74,32 @@ export default observer(
                                 State.interaction
                                     .currentlyHoveredNodeId as string
                             );
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
+                    />
+                    <MenuDivider />
+                    <MenuItem
+                        icon="inner-join"
+                        text="Form a New Cluster"
+                        onClick={this.formNewCluster}
+                        disabled={State.interaction.selectedNodes.length === 0}
+                    />
+                    <MenuItem
+                        icon="eraser"
+                        text="Cancel Selection"
+                        onClick={() => {
+                            State.interaction.selectedNodes = [];
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
+                        disabled={State.interaction.selectedNodes.length === 0}
+                    />
+                    <MenuItem
+                        icon="graph-remove"
+                        text="Delete Selected Nodes"
+                        onClick={() => {
+                            State.interaction.selectedNodes.forEach((node) => {
+                                State.graph.mutating.dropNode(node);
+                            });
                             State.preferences.rightClickPanelOpen = false;
                         }}
                     />

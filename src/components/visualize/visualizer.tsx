@@ -13,7 +13,7 @@ import {
     ICustomNodeObject,
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
-import { VisualizationMode } from "../../state/NodeInteractionStore";
+import { VisualizationMode } from "../../state/PreferencesStore";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -244,7 +244,7 @@ export default observer(
 );
 
 reaction(
-    () => State.interaction.visualizationMode,
+    () => State.preferences.visualizationMode,
     (visualizationMode) => {
         console.log(`changing mode to ${visualizationMode}`);
         switch (visualizationMode) {

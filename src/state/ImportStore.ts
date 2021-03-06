@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
+import { IMetaData } from "./GraphStore";
 
 export interface INodeFileConfig {
     // the file is successfully parsed and ready for display
@@ -280,48 +281,31 @@ export default class ImportStore {
             ? Object.keys(tempNodes[0])
             : ["id"];
 
-        // graph.setAttribute('cluster','label');
-
         return {
             graph: graph,
             metadata: {
                 snapshotName: "Untitled",
                 nodeProperties: nodeProperties,
-            },
+            } as IMetaData,
         };
     }
 
-    //TODO:import 里的id和cluster， source target还没设置
     public async importGraphFromGEXF() {
         let graph = await this.readGEXF();
         let nodeProperties: string[] = [];
-        this.setNodeAttributesCluster(graph);
         for (const [key] of Object.entries(
             graph.getNodeAttributes(graph.nodes()[0])
         )) {
             nodeProperties.push(key);
         }
 
-        // graph.setAttribute('cluster','label');
-
         return {
             graph: graph,
             metadata: {
                 snapshotName: "Untitled",
                 nodeProperties: nodeProperties,
-                clusterProperties: null,
-                edgeProperties: ["source_id", "target_id"],
-            },
+            } as IMetaData,
         };
-    }
-    /**
-     * add attrubute 'cluster' for each node usde for cluster nodes
-     *
-     */
-    private setNodeAttributesCluster(graph: Graph) {
-        graph.forEachNode((node, attributes) => {
-            attributes.cluster = 0;
-        });
     }
 
     /**

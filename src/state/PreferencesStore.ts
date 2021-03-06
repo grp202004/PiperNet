@@ -1,5 +1,12 @@
 import { makeAutoObservable } from "mobx";
 
+export enum VisualizationMode {
+    Normal = "Normal", // normal state
+    ClusterSelection = "Cluster Selection", // selecting the cluster to be Merged
+    NodeSelection = "Node Selection", // multi-selecting the node
+    ClusterSplitting = "Cluster Splitting", // drawing the line to split the cluster
+}
+
 export default class PreferencesStore {
     constructor() {
         makeAutoObservable(this);
@@ -34,4 +41,6 @@ export default class PreferencesStore {
 
     view = "3D";
     controlType: "trackball" | "orbit" | "fly" = "trackball";
+
+    visualizationMode: VisualizationMode = VisualizationMode.Normal;
 }

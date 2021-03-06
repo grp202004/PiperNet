@@ -7,7 +7,8 @@ import SearchStore from "./SearchStore";
 import ClusterStore from "./ClusterStore";
 import CssStore from "./CssStore";
 import GraphDelegate from "./GraphDelegate";
-import InteractionStore from "./NodeInteractionStore";
+import NodeInteractionStore from "./NodeInteractionStore";
+import ClusterInteractionStore from "./ClusterInteractionStore";
 
 class AppState {
     static _instance: AppState | null = null;
@@ -15,7 +16,8 @@ class AppState {
     preferences!: PreferencesStore;
     graph!: GraphStore;
     graphDelegate!: GraphDelegate;
-    interaction!: InteractionStore;
+    interaction!: NodeInteractionStore;
+    clusterInteraction!: ClusterInteractionStore;
     import!: ImportStore;
     search!: SearchStore;
     cluster!: ClusterStore;
@@ -25,7 +27,8 @@ class AppState {
         this.preferences = new PreferencesStore();
         this.graph = new GraphStore();
         this.graphDelegate = new GraphDelegate();
-        this.interaction = new InteractionStore();
+        this.interaction = new NodeInteractionStore();
+        this.clusterInteraction = new ClusterInteractionStore();
         this.import = new ImportStore();
         this.search = new SearchStore();
         this.cluster = new ClusterStore();
@@ -73,7 +76,7 @@ autorun(() => {
 });
 
 reaction(
-    () => State.interaction.currentlyHoveredClusterId,
+    () => State.clusterInteraction.currentlyHoveredClusterId,
     (currentlyHoveredClusterId) => {
         console.log("currentlyHoveredNodeId", currentlyHoveredClusterId);
         if (currentlyHoveredClusterId) {

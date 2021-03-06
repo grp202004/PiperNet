@@ -33,10 +33,12 @@ export default class ClusterStore {
      *
      * @param {(string | null)} by
      */
-    setCluster(by: string | null) {
-        this.clusterBy = by;
-        State.graph.rawGraph.setAttribute("default", by);
+    setCluster(to: string | null) {
+        this.clusterBy = to;
+        State.graphDelegate.clusterObject.initEmptyMapAndFusion();
         State.graph.refreshGraph();
+
+        State.graph.rawGraph.setAttribute("default", to);
     }
 
     /**
