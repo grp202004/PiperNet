@@ -200,18 +200,6 @@ html {
     position: absolute;
 }
 
-.minimal-navbar-right {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-}
-
-.minimal-navbar-left {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
-
 .bottom-status-bar {
     position: absolute;
     bottom: 0px;
@@ -360,8 +348,9 @@ div.pt-card.sub-option.legend {
     height: 600px;
 }
 
-.argo-selection-action-panel {
-    right: 300px;
+.selection-action-panel {
+    left: 50%;
+    margin-left: -200px;
     top: 50px;
     position: absolute;
     pointer-events: all;

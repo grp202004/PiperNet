@@ -2,10 +2,18 @@ import { Attributes } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import State from ".";
 
+export enum VisualizationMode {
+    Normal = "Normal", // normal state
+    ClusterSelection = "Cluster Selection", // selecting the cluster to be Merged
+    NodeSelection = "Node Selection", // multi-selecting the node
+    ClusterSplitting = "Cluster Splitting", // drawing the line to split the cluster
+}
 export default class InteractionStore {
     constructor() {
         makeAutoObservable(this);
     }
+
+    visualizationMode: VisualizationMode = VisualizationMode.Normal;
 
     selectedNode: string | null = null;
     /**
@@ -19,6 +27,7 @@ export default class InteractionStore {
     selectedEdge: string | null = null;
 
     selectedEdges: string[] = [];
+
     /**
      * the currently hovered node id
      * the multiNodeDetailPanel will render and refresh if this changes
@@ -30,7 +39,8 @@ export default class InteractionStore {
     /**
      * the currently hovered node id that used for display at RightClickPanel
      */
-    chNodeIdforDisplay: string = "";
+    stagedCurrentlyHoveredNodeId: string = "";
+    currentlyHoveredClusterId: string | null = null;
 
     get currentlyHoveredNodeNeighbors(): string[] | null {
         if (this.currentlyHoveredNodeId === null) {

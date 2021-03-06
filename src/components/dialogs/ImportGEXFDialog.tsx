@@ -37,9 +37,9 @@ export default observer(
                                             res.metadata
                                         );
 
-                                        if(State.cluster.rawGraph.hasAttribute('cluster')){
+                                        if(State.cluster.rawGraph.hasAttribute('default')){
                                             State.cluster
-                                            .setCluster(State.graph.rawGraph.getAttribute('cluster'));
+                                            .setCluster(State.graph.rawGraph.getAttribute('default'));
                                         }
 
                                         State.import.isLoading = false;

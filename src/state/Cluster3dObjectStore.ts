@@ -20,6 +20,8 @@ export default class Cluster3dObjectStore {
      * all the clusters should form a 3D Group to be imported into Scene
      * if no cluster attribute is set, this will be set to null
      *
+     * each children is a THREE.Mesh
+     *
      * @type {THREE.Group}
      */
     fusionClusterObjects: THREE.Group | null = null;
@@ -31,7 +33,7 @@ export default class Cluster3dObjectStore {
      *
      * @type {(Map<string | number, THREE.Group> | null)}
      */
-    clusterObjectsMap: Map<string | number, THREE.Group> | null = null;
+    clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
 
     /**
      * create empty BufferGeometry and mesh with colour
@@ -40,11 +42,11 @@ export default class Cluster3dObjectStore {
      *
      */
     initEmptyMapAndFusion() {
-        let initialMap = new Map<string | number, THREE.Group>();
+        let initialMap = new Map<string | number, THREE.Mesh>();
         State.cluster.attributePoints.forEach((value, key) => {
             initialMap.set(
                 key,
-                this.createMeshGroup(new THREE.BufferGeometry(), key)
+                this.createMesh(new THREE.BufferGeometry(), key)
             );
         });
 
@@ -80,14 +82,34 @@ export default class Cluster3dObjectStore {
                 this.initEmptyMapAndFusion();
             }
             this.clusterObjectsMap?.forEach(
-                (group: THREE.Group, key: string | number) => {
-                    let newBufferGeometry = this.convexHullObject(key);
-                    group.children.forEach((mesh: any) => {
-                        mesh.geometry.copy(newBufferGeometry);
-                    });
+                (mesh: THREE.Mesh, key: string | number) => {
+                    mesh.geometry.copy(this.convexHullObject(key));
                 }
             );
         }
+    }
+
+    getObjectById(uuid: string): THREE.Mesh | null {
+        let res: THREE.Object3D | null = null;
+        this.fusionClusterObjects?.children.every((item: THREE.Object3D) => {
+            if (item.uuid === uuid) {
+                res = item;
+                return false;
+            } else {
+                return true;
+            }
+        });
+        return res;
+    }
+
+    resetDefaultMaterial() {
+        this.fusionClusterObjects?.children.forEach(
+            (object: THREE.Object3D) => {
+                let mesh = object as THREE.Mesh;
+                let material = mesh.material as THREE.Material;
+                material.opacity = 0.15;
+            }
+        );
     }
 
     /**
@@ -96,12 +118,10 @@ export default class Cluster3dObjectStore {
      *
      */
     dispose() {
-        this.clusterObjectsMap?.forEach((group: THREE.Group) => {
-            group.children.forEach((mesh: any) => {
-                let material = mesh.material as THREE.Material;
-                material.dispose();
-                mesh.geometry.dispose();
-            });
+        this.clusterObjectsMap?.forEach((mesh: THREE.Mesh) => {
+            let material = mesh.material as THREE.Material;
+            material.dispose();
+            mesh.geometry.dispose();
         });
         this.clusterObjectsMap = null;
         this.fusionClusterObjects = null;
@@ -164,10 +184,10 @@ export default class Cluster3dObjectStore {
      *
      * @see THREE.Mesh
      */
-    private createMeshGroup(
+    private createMesh(
         geom: THREE.BufferGeometry,
         name: string | number
-    ): THREE.Group {
+    ): THREE.Mesh {
         const meshMaterial = new THREE.MeshBasicMaterial({
             color: State.cluster.attributeColor.get(name),
             transparent: true,
@@ -175,13 +195,9 @@ export default class Cluster3dObjectStore {
         });
         meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
         meshMaterial.depthWrite = false;
-        // const wireFrameMat = new THREE.MeshBasicMaterial();
-        // wireFrameMat.wireframe = true; //把材质渲染成线框
-        // wireFrameMat.wireframeLinecap = "round";
 
-        let group = SceneUtils.createMultiMaterialObject(geom, [meshMaterial]);
-        // wireFrameMat,
-        group.name = "THREE_CLUSTER_" + name;
-        return group;
+        let mesh = new THREE.Mesh(geom, meshMaterial);
+        mesh.name = "THREE_CLUSTER_" + name;
+        return mesh;
     }
 }

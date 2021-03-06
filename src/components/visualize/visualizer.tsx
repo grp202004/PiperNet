@@ -12,6 +12,8 @@ import {
     ICustomLinkObject,
     ICustomNodeObject,
 } from "../../state/GraphDelegate";
+import { reaction } from "mobx";
+import { VisualizationMode } from "../../state/NodeInteractionStore";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -21,7 +23,9 @@ export default observer(
     class ThreeJSVis extends React.Component<Props, {}> {
         state = {
             visualizationGraph: State.graphDelegate.visualizationGraph(),
+            nodePointerInteraction: true,
         };
+
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -45,7 +49,7 @@ export default observer(
                 State.interaction.previouslyHoveredNodeId =
                     State.interaction.currentlyHoveredNodeId;
                 State.interaction.currentlyHoveredNodeId = current;
-                State.interaction.chNodeIdforDisplay = current;
+                State.interaction.stagedCurrentlyHoveredNodeId = current;
             }
             // console.log(State.graph.rawGraph);
         };
@@ -76,24 +80,24 @@ export default observer(
             State.interaction.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
-            State.preferences.rightClickBackgroundPanelOpen = false;
-            State.preferences.rightClickNodePanelOpen = true;
+            State.preferences.rightClickOn = "Node";
+            State.preferences.rightClickPanelOpen = true;
             this.closeAllPanel();
         };
 
         backgroundClickCallback = (event: MouseEvent) => {
             // cancel all selection
-            // State.interaction.selectedNodes = [];
-            State.preferences.rightClickNodePanelOpen = false;
-            State.preferences.rightClickBackgroundPanelOpen = false;
+            State.interaction.selectedNodes = [];
+            State.preferences.rightClickPanelOpen = false;
             this.closeAllPanel();
         };
 
         backgroundRightClickCallback = (event: MouseEvent) => {
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
-            State.preferences.rightClickNodePanelOpen = false;
-            State.preferences.rightClickBackgroundPanelOpen = true;
+            State.preferences.rightClickOn = "Background";
+            State.preferences.rightClickPanelOpen = true;
+
             this.closeAllPanel();
         };
 
@@ -150,6 +154,8 @@ export default observer(
                             sprite.color = State.css.label.color;
                             sprite.textHeight = State.css.label.size;
                             sprite.visible = State.css.label.show;
+                            sprite.backgroundColor = "";
+                            sprite.translateX(State.css.node.size + 2);
                             return sprite;
                         }}
                         // Node Manipulation Segment
@@ -170,10 +176,13 @@ export default observer(
                             this.backgroundRightClickCallback
                         }
                         onBackgroundClick={this.backgroundClickCallback}
-                        // Engine
-                        onEngineTick={() =>
-                            this.graphDelegate.clusterObject.clusterDelegation()
+                        enablePointerInteraction={
+                            this.state.nodePointerInteraction
                         }
+                        // Engine
+                        onEngineTick={() => {
+                            this.graphDelegate.clusterObject.clusterDelegation();
+                        }}
                     />
                 );
                 // } else {
@@ -204,16 +213,68 @@ export default observer(
             this.setState({
                 visualizationGraph: State.graphDelegate.visualizationGraph(),
             });
-            // this.graphMethods.refresh();
         }
 
         closeAllPanel() {
             State.preferences.deleteEdgePanelOpen = false;
         }
 
+        clusterInteractionListener(set: boolean) {
+            if (set) {
+                document.addEventListener(
+                    "mousemove",
+                    State.graphDelegate.onDocumentMouseMove
+                );
+                console.log("MouseMove event listening");
+            } else {
+                document.removeEventListener(
+                    "mousemove",
+                    State.graphDelegate.onDocumentMouseMove
+                );
+                console.log("MouseMove event not listening");
+            }
+        }
+
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
+            this.clusterInteractionListener(true);
             ComponentRef.visualizer = this;
+        }
+    }
+);
+
+reaction(
+    () => State.interaction.visualizationMode,
+    (visualizationMode) => {
+        console.log(`changing mode to ${visualizationMode}`);
+        switch (visualizationMode) {
+            case VisualizationMode.Normal:
+                ComponentRef.visualizer?.setState({
+                    nodePointerInteraction: true,
+                });
+                ComponentRef.visualizer?.clusterInteractionListener(true);
+                break;
+
+            case VisualizationMode.NodeSelection:
+                ComponentRef.visualizer?.setState({
+                    nodePointerInteraction: true,
+                });
+                ComponentRef.visualizer?.clusterInteractionListener(false);
+                break;
+
+            case VisualizationMode.ClusterSelection:
+                ComponentRef.visualizer?.setState({
+                    nodePointerInteraction: false,
+                });
+                ComponentRef.visualizer?.clusterInteractionListener(true);
+                break;
+
+            case VisualizationMode.ClusterSplitting:
+                ComponentRef.visualizer?.setState({
+                    nodePointerInteraction: false,
+                });
+                ComponentRef.visualizer?.clusterInteractionListener(true);
+                break;
         }
     }
 );

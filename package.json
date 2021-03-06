@@ -1,6 +1,7 @@
 {
     "name": "pipernet",
     "version": "0.5.0-beta",
+    "discription": "A 3D Data Visualization Software",
     "private": true,
     "main": "main.js",
     "homepage": "./",
@@ -22,7 +23,7 @@
         "react-color": "^2.19.3",
         "react-csv": "^2.0.3",
         "react-dom": "^17.0.1",
-        "react-force-graph-3d": "^1.18.8",
+        "react-force-graph-3d": "^1.18.9",
         "react-scripts": "^4.0.2",
         "three": "^0.125.2",
         "three-spritetext": "^1.6.0",
@@ -36,8 +37,8 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "electron-start": "electron .",
-        "pack-win": "electron-packager ./ pipernet-win-0.4.0-beta -win --arch=x64 --electron-version 11.2.1 --overwrite --ignore=/node_modules",
-        "pack-mac": "electron-packager ./ pipernet-mac-0.4.0-beta --platform=darwin --arch=x64 --electron-version 11.2.1 --overwrite --ignore=/node_modules"
+        "pack-win": "electron-packager . pipernet-win-0.5.0-beta --platform=win32 --arch=x64 --overwrite --ignore=/node_modules",
+        "pack-mac": "electron-packager . pipernet-mac-0.5.0-beta --platform=darwin --arch=x64 --overwrite --ignore=/node_modules"
     },
     "eslintConfig": {
         "extends": [
@@ -65,7 +66,8 @@
         "@types/react": "^17.0.0",
         "@types/react-color": "^3.0.4",
         "@types/react-csv": "^1.1.1",
-        "electron": "^11.2.1",
+        "@types/react-dom": "^17.0.1",
+        "electron": "^11.3.0",
         "electron-packager": "^15.2.0",
         "prettier": "2.2.1"
     },

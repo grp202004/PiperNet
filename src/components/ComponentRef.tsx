@@ -8,11 +8,11 @@ class ComponentRef {
 
     static _instance: ComponentRef | null = null;
 
-    nodeDetail!: any;
+    nodeDetail!: React.Component | any;
 
-    multiNodeDetail!: any;
+    multiNodeDetail!: React.Component | any;
 
-    visualizer!: any;
+    visualizer!: React.Component | any;
 
     // add singleton to prevent creating multiple instances of the State class
     static get instance() {
