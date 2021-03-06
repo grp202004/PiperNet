@@ -3,7 +3,6 @@
   <meta lastmodifieddate="2021-01-27">
     <creator>Gephi 0.9</creator>
     <description></description>
-    <default>label</default>
   </meta>
   <graph defaultedgetype="directed" mode="static">
     <nodes>
