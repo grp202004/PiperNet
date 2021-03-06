@@ -140,13 +140,13 @@ reaction(
             if (selectedNodes.includes(node)) {
                 State.interaction.updateNodeVisualizeAttribute(
                     node,
-                    { selected: true },
+                    { multiSelected: true },
                     oldAttributes._visualize
                 );
             } else {
                 State.interaction.updateNodeVisualizeAttribute(
                     node,
-                    { selected: false },
+                    { multiSelected: false },
                     oldAttributes._visualize
                 );
             }

@@ -49,7 +49,9 @@ export default observer(
                 State.interaction.previouslyHoveredNodeId =
                     State.interaction.currentlyHoveredNodeId;
                 State.interaction.currentlyHoveredNodeId = current;
+                State.interaction.stagedCurrentlyHoveredNodeId = current;
             }
+            // console.log(State.graph.rawGraph);
         };
 
         nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {
@@ -105,6 +107,8 @@ export default observer(
                 return State.css.node.highlightColor;
             } else if (node.selected) {
                 return State.css.node.selectedColor;
+            } else if (node.multiSelected) {
+                return State.css.node.multiSelectedColor;
             } else {
                 return State.css.node.defaultColor;
             }
@@ -219,14 +223,15 @@ export default observer(
             if (set) {
                 document.addEventListener(
                     "mousemove",
-                    State.graphDelegate.onDocumentMouseMove,
-                    false
+                    State.graphDelegate.onDocumentMouseMove
                 );
+                console.log("MouseMove event listening");
             } else {
                 document.removeEventListener(
                     "mousemove",
                     State.graphDelegate.onDocumentMouseMove
                 );
+                console.log("MouseMove event not listening");
             }
         }
 
@@ -247,28 +252,28 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
-                ComponentRef.visualizer?.clusterHoverListener(true);
+                ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
             case VisualizationMode.NodeSelection:
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
-                ComponentRef.visualizer?.clusterHoverListener(false);
+                ComponentRef.visualizer?.clusterInteractionListener(false);
                 break;
 
             case VisualizationMode.ClusterSelection:
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
-                ComponentRef.visualizer?.clusterHoverListener(true);
+                ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
             case VisualizationMode.ClusterSplitting:
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
-                ComponentRef.visualizer?.clusterHoverListener(true);
+                ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
         }
     }

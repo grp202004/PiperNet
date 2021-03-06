@@ -102,6 +102,14 @@ export default observer(
                             >
                                 Cancel
                             </Button>
+                            {/* //todo:
+                            <Button
+                                onClick={() => {
+                                    State.preferences.AddEdgeDialogOpen = false;
+                                }}
+                            >
+                                Preview
+                            </Button> */}
                             <Button
                                 intent={Intent.PRIMARY}
                                 onClick={() => {

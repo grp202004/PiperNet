@@ -25,6 +25,7 @@ import ComponentRef from "../components/ComponentRef";
 export interface ICustomNodeObject extends NodeObject {
     hovered: boolean;
     selected: boolean;
+    multiSelected: boolean;
     isClusterNode?: boolean;
 }
 /**
@@ -51,6 +52,7 @@ export function createCustomNodeObject(
         id: _id,
         hovered: false,
         selected: false,
+        multiSelected: false,
         isClusterNode: _cluster,
     };
     return result;
@@ -86,8 +88,6 @@ export default class GraphDelegate {
     mountDelegateMethods(_graphDelegateMethods: ForceGraphMethods) {
         this.graphDelegateMethods = _graphDelegateMethods;
         this.clusterObject.threeScene = this.graphDelegateMethods.scene();
-
-
     }
 
     /**

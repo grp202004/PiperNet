@@ -295,7 +295,7 @@ export default class ImportStore {
     public async importGraphFromGEXF() {
         let graph = await this.readGEXF();
         let nodeProperties: string[] = [];
-
+        this.setNodeAttributesCluster(graph);
         for (const [key] of Object.entries(
             graph.getNodeAttributes(graph.nodes()[0])
         )) {
@@ -313,6 +313,15 @@ export default class ImportStore {
                 edgeProperties: ["source_id", "target_id"],
             },
         };
+    }
+    /**
+     * add attrubute 'cluster' for each node usde for cluster nodes
+     *
+     */
+    private setNodeAttributesCluster(graph: Graph) {
+        graph.forEachNode((node, attributes) => {
+            attributes.cluster = 0;
+        });
     }
 
     /**

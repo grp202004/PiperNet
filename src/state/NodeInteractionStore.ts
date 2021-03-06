@@ -36,6 +36,10 @@ export default class InteractionStore {
      */
     currentlyHoveredNodeId: string | null = null;
 
+    /**
+     * the currently hovered node id that used for display at RightClickPanel
+     */
+    stagedCurrentlyHoveredNodeId: string = "";
     currentlyHoveredClusterId: string | null = null;
 
     get currentlyHoveredNodeNeighbors(): string[] | null {
@@ -173,6 +177,8 @@ export default class InteractionStore {
             oldAttributes.hovered = newAttribute.hovered;
         } else if (newAttribute.hasOwnProperty("selected")) {
             oldAttributes.selected = newAttribute.selected;
+        } else if (newAttribute.hasOwnProperty("multiSelected")) {
+            oldAttributes.multiSelected = newAttribute.multiSelected;
         }
     }
 

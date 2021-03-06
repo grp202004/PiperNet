@@ -189,8 +189,9 @@ html {
 
 .left-bottom-overlay-card {
     left: 2em;
-    bottom: 2em;
+    bottom: 4em;
     position: absolute;
+    /* z-index: 99; */
 }
 
 .right-bottom-overlay-card {
@@ -313,6 +314,7 @@ div.pt-card.sub-option.legend {
     font-size: 0.4em;
     pointer-events: all;
     padding: 0;
+    /* display: flex; */
 }
 
 .right-click-panel {
