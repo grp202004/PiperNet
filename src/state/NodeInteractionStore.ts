@@ -2,10 +2,18 @@ import { Attributes } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import State from ".";
 
+export enum VisualizationMode {
+    Normal = "Normal", // normal state
+    ClusterSelection = "Cluster Selection", // selecting the cluster to be Merged
+    NodeSelection = "Node Selection", // multi-selecting the node
+    ClusterSplitting = "Cluster Splitting", // drawing the line to split the cluster
+}
 export default class InteractionStore {
     constructor() {
         makeAutoObservable(this);
     }
+
+    visualizationMode: VisualizationMode = VisualizationMode.Normal;
 
     selectedNode: string | null = null;
     /**

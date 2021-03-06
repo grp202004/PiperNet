@@ -15,7 +15,6 @@ import classnames from "classnames";
 import gexf from "graphology-gexf/browser";
 import State from "../../state";
 import { CSVLink } from "react-csv";
-import { Attributes, NodeKey } from "graphology-types";
 
 export default observer(
     class ExportDialog extends React.Component {
@@ -86,9 +85,9 @@ export default observer(
             return (
                 <Dialog
                     icon="projects"
-                    isOpen={State.project.exportDialogOpen}
+                    isOpen={State.preferences.exportDialogOpen}
                     onClose={() => {
-                        State.project.exportDialogOpen = false;
+                        State.preferences.exportDialogOpen = false;
                     }}
                     title={`Export Graph`}
                 >

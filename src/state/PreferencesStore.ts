@@ -11,7 +11,7 @@ export default class PreferencesStore {
     rightClickPositionY = 30;
 
     // Dialog
-
+    exportDialogOpen = false;
     preferenceDialogOpen = false;
     statisticsDialogOpen = false;
     helpDialogOpen = false;
@@ -24,8 +24,8 @@ export default class PreferencesStore {
 
     // Panel
 
-    rightClickBackgroundPanelOpen = false;
-    rightClickNodePanelOpen = false;
+    rightClickOn = null as null | "Node" | "Cluster" | "Background";
+    rightClickPanelOpen = false;
     deleteEdgePanelOpen = false;
 
     isGraphOptionsCardHidden = true;

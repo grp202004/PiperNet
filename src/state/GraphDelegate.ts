@@ -87,11 +87,7 @@ export default class GraphDelegate {
         this.graphDelegateMethods = _graphDelegateMethods;
         this.clusterObject.threeScene = this.graphDelegateMethods.scene();
 
-        document.addEventListener(
-            "mousemove",
-            State.graphDelegate.onDocumentMouseMove,
-            false
-        );
+
     }
 
     /**
@@ -224,7 +220,7 @@ export default class GraphDelegate {
             State.graphDelegate.clusterObject.fusionClusterObjects
                 ?.children as Object3D[],
             true
-        ); // Circle element which you want to identify
+        );
 
         if (intersects.length > 0) {
             console.log("currentlyHoveredNodeId", intersects);

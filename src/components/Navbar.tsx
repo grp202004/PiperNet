@@ -110,7 +110,7 @@ export default observer(
                                         icon="download"
                                         text="Export Graph"
                                         onClick={() => {
-                                            State.project.exportDialogOpen = true;
+                                            State.preferences.exportDialogOpen = true;
                                         }}
                                     />
                                 </Menu>

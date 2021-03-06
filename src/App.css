@@ -346,8 +346,9 @@ div.pt-card.sub-option.legend {
     height: 600px;
 }
 
-.argo-selection-action-panel {
-    right: 300px;
+.selection-action-panel {
+    left: 50%;
+    margin-left: -200px;
     top: 50px;
     position: absolute;
     pointer-events: all;

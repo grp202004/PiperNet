@@ -6,10 +6,11 @@ import State from "../state";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
-import RightClickNodePanel from "./panels/RightClickNodePanel";
-import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
+import RightClickNodePanel from "./panels/RightClickPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 import GraphOptionsCard from "./panels/GraphOptionsCard";
+import InteractionModePanel from "./panels/InteractionModePanel";
+import RightClickPanel from "./panels/RightClickPanel";
 
 export default observer(
     class FloatingCards extends React.Component {
@@ -106,19 +107,19 @@ export default observer(
                     )}
 
                     <SearchPanel />
-                    {State.preferences.rightClickNodePanelOpen && (
-                        <RightClickNodePanel />
-                    )}
-
-                    {State.preferences.rightClickBackgroundPanelOpen && (
-                        <RightClickBackgroundPanel />
-                    )}
+                    {State.preferences.rightClickPanelOpen &&
+                        State.preferences.rightClickOn && (
+                            <RightClickPanel
+                                on={State.preferences.rightClickOn}
+                            />
+                        )}
                     {State.preferences.deleteEdgePanelOpen &&
                         State.interaction.selectedNode && (
                             <DeleteEdgeInteractionPanel
                                 onNode={State.interaction.selectedNode}
                             />
                         )}
+                    <InteractionModePanel />
                 </div>
             );
         }
