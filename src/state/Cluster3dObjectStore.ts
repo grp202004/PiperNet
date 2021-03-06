@@ -90,6 +90,31 @@ export default class Cluster3dObjectStore {
         }
     }
 
+    getObjectById(uuid: string): THREE.Mesh | null {
+        let res: THREE.Object3D | null = null;
+        this.fusionClusterObjects?.children[0].children.every(
+            (item: THREE.Object3D) => {
+                if (item.uuid === uuid) {
+                    res = item;
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        );
+        return res;
+    }
+
+    resetDefaultMaterial() {
+        this.fusionClusterObjects?.children[0].children.forEach(
+            (object: THREE.Object3D) => {
+                let mesh = object as THREE.Mesh;
+                let material = mesh.material as THREE.Material;
+                material.opacity = 0.15;
+            }
+        );
+    }
+
     /**
      * dispose the geometries and materials in every clusterObject
      * and set these props to be null, which indicates that no additional 3d object is added into Scene
