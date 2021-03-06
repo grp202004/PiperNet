@@ -35,6 +35,7 @@ export default class ClusterStore {
      */
     setCluster(by: string | null) {
         this.clusterBy = by;
+        State.graph.rawGraph.setAttribute("default", by);
         State.graph.refreshGraph();
     }
 

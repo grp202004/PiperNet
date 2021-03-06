@@ -86,7 +86,7 @@ reaction(
             );
             if (mesh) {
                 let material = mesh.material as THREE.Material;
-                material.opacity = 0.8;
+                material.opacity = 0.5;
             }
         } else {
             State.graphDelegate.clusterObject.resetDefaultMaterial();

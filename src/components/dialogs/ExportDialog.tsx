@@ -15,6 +15,7 @@ import classnames from "classnames";
 import gexf from "graphology-gexf/browser";
 import State from "../../state";
 import { CSVLink } from "react-csv";
+import { Attributes, NodeKey } from "graphology-types";
 
 export default observer(
     class ExportDialog extends React.Component {
@@ -22,8 +23,21 @@ export default observer(
             ready: true,
         };
 
+        /**
+         * compute the GEXF file from rawGraph
+         * delete the temporary _visualize attribute from the graph
+         *
+         * @returns {*}
+         */
         computeGEXFFile() {
-            return gexf.write(State.graph.rawGraph);
+            let graphCopy = State.graph.rawGraph.copy();
+            graphCopy.forEachNode((_node, attributes: any) => {
+                delete attributes["_visualize"];
+            });
+            graphCopy.forEachEdge((_edge, attributes: any) => {
+                delete attributes["_visualize"];
+            });
+            return gexf.write(graphCopy);
         }
 
         computeNodeFile() {

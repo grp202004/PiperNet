@@ -199,18 +199,6 @@ html {
     position: absolute;
 }
 
-.minimal-navbar-right {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-}
-
-.minimal-navbar-left {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
-
 .bottom-status-bar {
     position: absolute;
     bottom: 0px;

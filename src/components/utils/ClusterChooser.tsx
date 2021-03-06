@@ -88,10 +88,11 @@ export default observer(
                     onItemSelect={(item: string) => {
                         let selected = item === "None" ? null : item;
                         this.props.onSelect(selected);
-                        State.graph.rawGraph.setAttribute('default',selected);
                     }}
                 >
-                    <Button text={this.props.syncWith ?? this.fullProperties[0]} />
+                    <Button
+                        text={this.props.syncWith ?? this.fullProperties[0]}
+                    />
                 </Select>
             );
         }

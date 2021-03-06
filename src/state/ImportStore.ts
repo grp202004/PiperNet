@@ -3,7 +3,6 @@ import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
-import State from ".";
 
 export interface INodeFileConfig {
     // the file is successfully parsed and ready for display
@@ -240,27 +239,39 @@ export default class ImportStore {
 
         // parse Node file and store into the Graph DS
         if (config.hasNodeFile) {
-            tempNodes = await this.readNodeCSV();
-            tempNodes.forEach((node) => {
-                let nodeId = node[config.nodeFile.mapping.id].toString();
-                delete node[config.nodeFile.mapping.id];
-                graph.addNode(nodeId, node);
-            });
+            if (this.importConfig.nodeFile.hasHeader) {
+                // if has header, then tempNodes returns an array of objects
+                tempNodes = (await this.readNodeCSV()) as Object[];
+                tempNodes.forEach((node) => {
+                    let nodeId = node[config.nodeFile.mapping.id].toString();
+                    delete node[config.nodeFile.mapping.id];
+                    graph.addNode(nodeId, node);
+                });
+            } else {
+                // if no header, then tempNodes returns an array of array
+                tempNodes = (await this.readNodeCSV()) as any[][];
+                tempNodes.forEach((node) => {
+                    let nodeId = node[config.nodeFile.mapping.id].toString();
+                    let attributes = Object.assign({}, node);
+                    delete attributes[config.nodeFile.mapping.id];
+                    graph.addNode(nodeId, attributes);
+                });
+            }
         }
 
         // parse Edge file and store into the Graph DS
         tempEdges = await this.readEdgeCSV();
-        tempEdges.forEach((edge,idx) => {
+        tempEdges.forEach((edge, idx) => {
             let fromId = edge[fromColumn].toString();
             let toId = edge[toColumn].toString();
 
             if (!graph.hasNode(fromId)) {
-                graph.addNode(fromId, { id: fromId });
+                graph.addNode(fromId, {});
             }
             if (!graph.hasNode(toId)) {
-                graph.addNode(toId, { id: toId });
+                graph.addNode(toId, {});
             }
-            graph.addEdgeWithKey(idx,fromId, toId);
+            graph.addEdgeWithKey(idx, fromId, toId);
         });
 
         config.edgeFile.isReady = true;
@@ -269,7 +280,7 @@ export default class ImportStore {
             ? Object.keys(tempNodes[0])
             : ["id"];
 
-            // graph.setAttribute('cluster','label');
+        // graph.setAttribute('cluster','label');
 
         return {
             graph: graph,

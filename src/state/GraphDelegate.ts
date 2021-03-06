@@ -1,3 +1,4 @@
+import ReactDOM from "react-dom";
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import State from ".";
@@ -9,6 +10,7 @@ import {
 import * as THREE from "three";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
 import { Object3D } from "three";
+import ComponentRef from "../components/ComponentRef";
 
 /**
  * hovered: false, selected: false: DefaultColor;
@@ -171,13 +173,18 @@ export default class GraphDelegate {
                     State.cluster.attributeKeys
                         .get(attribute)
                         ?.forEach((target) => {
-                            graphCopy.addEdge(clusterID, target, {
-                                _visualize: createCustomLinkObject(
-                                    clusterID,
-                                    target,
-                                    true
-                                ),
-                            });
+                            graphCopy.addEdgeWithKey(
+                                `${clusterID}-${target}`,
+                                clusterID,
+                                target,
+                                {
+                                    _visualize: createCustomLinkObject(
+                                        clusterID,
+                                        target,
+                                        true
+                                    ),
+                                }
+                            );
                         });
                 }
             );
@@ -194,10 +201,12 @@ export default class GraphDelegate {
             State.interaction.currentlyHoveredClusterId = null;
             return;
         }
+        let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
+        let box = (<Element>element)?.getBoundingClientRect();
 
         let vector = new THREE.Vector3(
-            (event.clientX / window.innerWidth) * 2 - 1,
-            -(event.clientY / window.innerHeight) * 2 + 1,
+            ((event.clientX - box.left) / box.width) * 2 - 1,
+            -((event.clientY - box.top) / box.height) * 2 + 1,
             0.5
         );
 

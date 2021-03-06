@@ -212,8 +212,6 @@ export default observer(
         componentDidMount() {
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
             ComponentRef.visualizer = this;
-
-
         }
     }
 );
