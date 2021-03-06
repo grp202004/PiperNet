@@ -99,8 +99,8 @@ export default observer(
                                         }}
                                     />
                                     <MenuItem
-                                        icon="import"
-                                        text="Import from GEXF..."
+                                        icon="document-open"
+                                        text="Open File..."
                                         onClick={() => {
                                             State.import.importGEXFDialogOpen = true;
                                         }}

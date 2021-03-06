@@ -254,7 +254,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    style={{ minWidth: "80vw" }}
+                    style={{ minWidth: "40vw" }}
                     icon="import"
                     isOpen={State.import.importCSVDialogOpen}
                     onClose={() => {
@@ -273,7 +273,7 @@ export default observer(
                                     "import-dialog"
                                 )}
                             >
-                                I have:
+                                
                                 <SimpleSelect
                                     items={[ONLY_EDGE_FILE, NODE_AND_EDGE_FILE]}
                                     text={this.state.available}

@@ -56,12 +56,12 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    icon="import"
+                    icon="document-open"
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
                         State.import.importGEXFDialogOpen = false;       
                     }}
-                    title="Import GEXF"
+                    title="Open File"
                 >
                     {/* if is loading, then show Spinner */}
                     {State.import.isLoading ? (
