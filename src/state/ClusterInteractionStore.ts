@@ -91,4 +91,49 @@ export default class ClusterInteractionStore {
         State.cluster.setCluster("_merge-cluster");
         this.flush();
     }
+
+    lineSegment!: { x: number; y: number }[];
+
+    PointInPoly(
+        pt: { x: number; y: number },
+        poly: { x: number; y: number }[]
+    ) {
+        for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+            ((poly[i].y <= pt.y && pt.y < poly[j].y) ||
+                (poly[j].y <= pt.y && pt.y < poly[i].y)) &&
+                pt.x <
+                    ((poly[j].x - poly[i].x) * (pt.y - poly[i].y)) /
+                        (poly[j].y - poly[i].y) +
+                        poly[i].x &&
+                (c = !c);
+        return c;
+    }
+
+    computeSplitCluster(): any[] {
+        let screenCoords = [] as {
+            id: string;
+            x: number;
+            y: number;
+            [key: string]: any;
+        }[];
+        State.graph.rawGraph.forEachNode((node, attribute) => {
+            let coord = State.graphDelegate.graphDelegateMethods.graph2ScreenCoords(
+                attribute._visualize.x,
+                attribute._visualize.y,
+                attribute._visualize.z
+            );
+            screenCoords.push({ id: node, x: coord.x, y: coord.y });
+        });
+
+        screenCoords.map((value) => {
+            let inside = this.PointInPoly(value, screenCoords);
+
+            if (inside) {
+                value["value"] = 1;
+            } else {
+                value["value"] = 0;
+            }
+        });
+        return screenCoords;
+    }
 }
