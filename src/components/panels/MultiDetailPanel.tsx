@@ -22,7 +22,7 @@ export default observer(
                             "nodes-details-table"
                         )}
                     >
-                        <Table numRows={State.graph.selectedNodes.length}>
+                        <Table numRows={State.interaction.selectedNodes.length}>
                             {State.graph.metadata.nodeProperties.map((it) => (
                                 <Column
                                     key={it}
@@ -30,7 +30,7 @@ export default observer(
                                     cellRenderer={(i) => (
                                         <Cell>
                                             {State.graph.rawGraph.getNodeAttribute(
-                                                State.graph.selectedNodes[
+                                                State.interaction.selectedNodes[
                                                     i
                                                 ] as string,
                                                 it as string

@@ -1,6 +1,20 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import { Attributes } from "graphology-types";
+import {
+    createCustomNodeObject,
+    createCustomLinkObject,
+} from "./GraphDelegate";
+import ComponentRef from "../components/ComponentRef";
+import State from ".";
+import GraphMutation from "./GraphMutation";
+
+export interface IMetaData {
+    snapshotName: string;
+
+    // attributes of nodes in imported graph
+    nodeProperties: string[];
+}
 
 /**
  * the class to store a raw graph as well as the related information
@@ -11,6 +25,7 @@ import { Attributes } from "graphology-types";
 export default class GraphStore {
     constructor() {
         makeAutoObservable(this);
+        this.mutating = new GraphMutation(this);
     }
 
     /**
@@ -38,11 +53,7 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawNode(node: string, attributes: Attributes) {
-        attributes._visualize = {
-            id: node,
-            val: 1, // to be changed, to represent the size of the node
-            isClusterNode: false, // if is clusterNode, then the front-end will ignore this node
-        };
+        attributes._visualize = createCustomNodeObject(node, false);
     }
 
     /**
@@ -57,11 +68,7 @@ export default class GraphStore {
      * @param {Attributes} attributes
      */
     decorateRawEdge(source: string, target: string, attributes: Attributes) {
-        attributes._visualize = {
-            source: source,
-            target: target,
-            isClusterLink: false, // if is clusterLink, then the front-end will ignore this link
-        };
+        attributes._visualize = createCustomLinkObject(source, target, false);
     }
 
     /**
@@ -85,27 +92,43 @@ export default class GraphStore {
     }
 
     /**
-     * the currently selected node ids
-     * the singleNodeDetailPanel will render and refresh if this changes
+     * proxy method to set the new graph
+     * if intend to set a new graph, please use this method instead of directly modify GraphStore
      *
-     * @type {string[]}
+     * @param {Graph} newGraph
+     * @param {IMetaData} metadata
      */
-    selectedNodes: string[] = [];
+    public setGraph(_rawGraph: Graph, _metadata: IMetaData | null = null) {
+        this.rawGraph = this.decorateRawGraph(_rawGraph);
+        if (_metadata) {
+            this.metadata = _metadata;
+        }
+        State.interaction.flush();
+        State.cluster.clusterBy = null;
+        ComponentRef.visualizer.updateVisualizationGraph();
+    }
 
     /**
-     * the currently selected node id
+     * should be called when the graph gets updated (the data inside the graph gets updated, or the attribute to be clustered has changed)
      *
-     * @type {string}
+     * @memberof GraphStore
      */
-    selectedNode: string = "";
+    public refreshGraph() {
+        State.interaction.flush();
+        ComponentRef.visualizer.updateVisualizationGraph();
+    }
 
     /**
-     * the currently hovered node id
-     * the multiNodeDetailPanel will render and refresh if this changes
+     * the wrapper methods to mutate the graph
+     * all the mutations of the graph should go through this API rather than calling this.rawGraph.[mutate]
      *
-     * @type {string}
+     * has basic functions like addNode, dropNode, addEdge, dropEdge...
+     *
+     * @see {GraphMutation}
      */
-    currentlyHoveredId: string = "undefined";
+    mutating: GraphMutation;
+
+
 
     /**
      * if currently there is a graph in the dataset
@@ -121,10 +144,8 @@ export default class GraphStore {
      * should be updated if a new graph is imported
      *
      */
-    metadata = {
-        snapshotName: "SNAPSHOT" as string,
-
-        // attributes of nodes in imported graph
-        nodeProperties: [] as string[],
+    metadata: IMetaData = {
+        snapshotName: "SNAPSHOT",
+        nodeProperties: [],
     };
 }

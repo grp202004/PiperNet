@@ -2,6 +2,7 @@ import { makeAutoObservable, observable } from "mobx";
 import Graph from "graphology";
 import * as THREE from "three";
 import randomcolor from "randomcolor";
+import State from ".";
 
 /**
  * all the computed values get from the rawGraph
@@ -17,11 +18,25 @@ export default class ClusterStore {
     }
     /**
      * @observable
+     *
+     * attention: please use setCluster() to alter this data
      * Specify which attribute to be clustered
-     * if this is changed, all get values will be updated
+     * the default value should be null, and front-end graph will interpret this to Not-Cluster
+     *
      *
      */
-    clusterBy = "None";
+    clusterBy: string | null = null;
+
+    /**
+     * the setter of clusterBy
+     * will update the front-end 3d graph about the cluster changes
+     *
+     * @param {(string | null)} by
+     */
+    setCluster(by: string | null) {
+        this.clusterBy = by;
+        State.graph.refreshGraph();
+    }
 
     /**
      * @observable .ref
@@ -41,8 +56,11 @@ export default class ClusterStore {
      * @type {(Map<string, string | number>)}
      */
     get keyAttribute(): Map<string, string | number> {
-        const attribute = this.clusterBy;
         const keyValueMap = new Map<string, string | number>();
+        if (this.clusterBy === null) {
+            return keyValueMap;
+        }
+        const attribute = this.clusterBy as string;
 
         this.rawGraph?.forEachNode((key, attributes) => {
             // if this attribute is defined

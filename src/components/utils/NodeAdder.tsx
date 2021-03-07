@@ -5,8 +5,8 @@ import {
     FormGroup,
     H5,
     InputGroup,
+    Tooltip,
 } from "@blueprintjs/core";
-import { Tooltip2 } from "@blueprintjs/popover2";
 import { observer } from "mobx-react";
 import React from "react";
 import State from "../../state";
@@ -43,23 +43,23 @@ export default observer(
 
         canImportTag = () => {
             return this.canImport ? (
-                <Tooltip2
+                <Tooltip
                     content={
                         "This Node Id is not used by any existing node yet"
                     }
                     intent="success"
                 >
                     <Button icon="tick" intent="success" minimal={true} />
-                </Tooltip2>
+                </Tooltip>
             ) : (
-                <Tooltip2
+                <Tooltip
                     content={
                         "This Node Id is currently in use by other nodes, try with another one instead"
                     }
                     intent="warning"
                 >
                     <Button icon="cross" intent="warning" minimal={true} />
-                </Tooltip2>
+                </Tooltip>
             );
         };
 
@@ -121,7 +121,7 @@ export default observer(
                                 this.state.newNodeId,
                                 this.state.attributes
                             );
-                            State.graph.rawGraph.addNode(
+                            State.graph.mutating.addNode(
                                 this.state.newNodeId,
                                 this.state.attributes
                             );

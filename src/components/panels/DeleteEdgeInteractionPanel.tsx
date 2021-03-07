@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Button, Card, Code, Intent } from "@blueprintjs/core";
+import { Alert, Button, Card, Code, H6, Intent } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
@@ -24,36 +24,22 @@ interface Props {
 export default observer(
     class DeleteEdgeInteractionPanel extends React.Component<Props, {}> {
         state = {
-            edgeToDelete: "",
+            targetNode: null as string | null,
             deleteAlertOpen: false,
         };
 
         get neighbors(): string[] {
-            if (this.props.onNode === "") {
-                return [];
-            }
-            let neighbors: string[] = [];
-            State.graph.rawGraph.forEachNeighbor(
-                this.props.onNode,
-                (neighbor) => {
-                    neighbors.push(neighbor);
-                }
-            );
-            return neighbors;
+            return State.graph.rawGraph.neighbors(this.props.onNode);
         }
 
         deleteEdgeRenderer: ICellRenderer = (rowIndex) => {
             let targetNode = this.neighbors[rowIndex];
-            let edgeKey = State.graph.rawGraph.edge(
-                this.props.onNode,
-                targetNode
-            );
             return (
                 <Cell>
                     <Button
                         onClick={() => {
                             this.setState({
-                                edgeToDelete: edgeKey as string,
+                                targetNode: targetNode,
                                 deleteAlertOpen: true,
                             });
                         }}
@@ -67,11 +53,23 @@ export default observer(
         };
 
         deleteEdgeAlert = () => {
-            if (this.state.edgeToDelete === "") {
+            if (this.state.targetNode === null) {
                 return null;
             }
-            let source = State.graph.rawGraph.source(this.state.edgeToDelete);
-            let target = State.graph.rawGraph.target(this.state.edgeToDelete);
+
+            let edgeToDelete: string | undefined;
+
+            if (
+                (edgeToDelete = State.graph.rawGraph.edge(
+                    this.state.targetNode,
+                    this.props.onNode
+                )) === undefined
+            ) {
+                edgeToDelete = State.graph.rawGraph.edge(
+                    this.props.onNode,
+                    this.state.targetNode
+                );
+            }
 
             return (
                 <Alert
@@ -82,15 +80,17 @@ export default observer(
                     isOpen={this.state.deleteAlertOpen}
                     onCancel={() => this.setState({ deleteAlertOpen: false })}
                     onConfirm={() => {
-                        State.graph.rawGraph.dropEdge(this.state.edgeToDelete);
+                        State.graph.mutating.dropEdge(edgeToDelete as string);
                         this.setState({ deleteAlertOpen: false });
+                        State.preferences.deleteEdgePanelOpen = false;
                     }}
                 >
                     <p>
-                        Are you sure you want to delete the edge with ID{" "}
-                        <Code>{this.state.edgeToDelete}</Code> between Node ID{" "}
-                        <Code>{source}</Code> and Node ID <Code>{target}</Code>.
-                        This action cannot be reversed.
+                        Are you sure you want to delete the edge with Key{" "}
+                        <Code>{edgeToDelete as string}</Code> between Node ID{" "}
+                        <Code>{this.state.targetNode}</Code> and Node ID{" "}
+                        <Code>{this.props.onNode}</Code>. This action cannot be
+                        reversed.
                     </p>
                 </Alert>
             );
@@ -100,16 +100,15 @@ export default observer(
             return (
                 <Cell interactive={true}>
                     <div
-                        onClick={() => {
+                        onMouseEnter={() => {
                             State.graphDelegate.cameraFocusOn(
                                 this.props.onNode,
                                 400
                             );
-                            State.graphDelegate.highlightLink = {
-                                source: this.props.onNode,
-                                target: this.neighbors[rowIndex],
-                            };
-                            State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
+                            State.interaction.selectedEdge = State.interaction.getEdgeKey(
+                                this.props.onNode,
+                                this.neighbors[rowIndex]
+                            ) as string;
                         }}
                     >
                         {this.neighbors[rowIndex]}
@@ -131,12 +130,13 @@ export default observer(
                             icon="cross"
                             onClick={() => {
                                 State.preferences.deleteEdgePanelOpen = false;
-                                State.graphDelegate.highlightLink = null;
+                                State.interaction.selectedEdge = null;
                                 State.graphDelegate.graphDelegateMethods.refresh(); // update color of selected edges
                             }}
                         >
                             Close
                         </Button>
+                        <H6> Node ID: {this.props.onNode}</H6>
                         <Table
                             numRows={this.neighbors.length}
                             defaultRowHeight={30}

@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
+import State from ".";
 
 export interface INodeFileConfig {
     // the file is successfully parsed and ready for display
@@ -188,6 +189,7 @@ export default class ImportStore {
                         intent: Intent.DANGER,
                         timeout: -1,
                     });
+                    this.isLoading = false;
                 }
             };
         });
@@ -248,7 +250,7 @@ export default class ImportStore {
 
         // parse Edge file and store into the Graph DS
         tempEdges = await this.readEdgeCSV();
-        tempEdges.forEach((edge) => {
+        tempEdges.forEach((edge,idx) => {
             let fromId = edge[fromColumn].toString();
             let toId = edge[toColumn].toString();
 
@@ -258,7 +260,7 @@ export default class ImportStore {
             if (!graph.hasNode(toId)) {
                 graph.addNode(toId, { id: toId });
             }
-            graph.addEdge(fromId, toId);
+            graph.addEdgeWithKey(idx,fromId, toId);
         });
 
         config.edgeFile.isReady = true;
@@ -266,6 +268,8 @@ export default class ImportStore {
         let nodeProperties = config.hasNodeFile
             ? Object.keys(tempNodes[0])
             : ["id"];
+
+            // graph.setAttribute('cluster','label');
 
         return {
             graph: graph,
@@ -286,6 +290,8 @@ export default class ImportStore {
         )) {
             nodeProperties.push(key);
         }
+
+        // graph.setAttribute('cluster','label');
 
         return {
             graph: graph,
@@ -338,7 +344,6 @@ export default class ImportStore {
                     .map((l) => l.trim())
                     .slice(0, lines.length < 10 ? lines.length : 10)
                     .join("\n");
-                console.log(topLinesAsString);
 
                 // Parse the top lines
                 try {
@@ -456,7 +461,6 @@ export default class ImportStore {
                     .map((l) => l.trim())
                     .slice(0, lines.length < 10 ? lines.length : 10)
                     .join("\n");
-                console.log(topLinesAsString);
 
                 // Parse the top lines
                 try {

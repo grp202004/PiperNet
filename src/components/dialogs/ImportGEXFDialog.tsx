@@ -32,10 +32,15 @@ export default observer(
                                 State.import
                                     .importGraphFromGEXF()
                                     .then((res) => {
-                                        State.graph.rawGraph = State.graph.decorateRawGraph(
-                                            res.graph
+                                        State.graph.setGraph(
+                                            res.graph,
+                                            res.metadata
                                         );
-                                        State.graph.metadata = res.metadata;
+
+                                        if(State.cluster.rawGraph.hasAttribute('cluster')){
+                                            State.cluster
+                                            .setCluster(State.graph.rawGraph.getAttribute('cluster'));
+                                        }
 
                                         State.import.isLoading = false;
                                         State.import.importGEXFDialogOpen = false;
@@ -52,12 +57,9 @@ export default observer(
             return (
                 <Dialog
                     icon="import"
-                    className={classnames({
-                        [Classes.DARK]: State.preferences.darkMode,
-                    })}
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
-                        State.import.importGEXFDialogOpen = false;
+                        State.import.importGEXFDialogOpen = false;       
                     }}
                     title="Import GEXF"
                 >

@@ -1,21 +1,59 @@
 # Changelog
 
-## [Unreleased](https://github.com/grp202004/PiperNet/tree/HEAD)
+## [v0.5-beta](https://github.com/grp202004/PiperNet/tree/v0.5-beta) (2021-03-02)
 
-[Full Changelog](https://github.com/grp202004/PiperNet/compare/v0.4-beta...HEAD)
+**Tone**
+Interactions & Operations
+
+**Features Added** (not full yet)
+
+-   DataSheetTable can be generated accordingly which shows the nodes data and edges data of the graph, the attributes related
+    to nodes and edges can be displayed as well as edited as a cell form inside the table.
+-   The Node Table also includes features like searching for nodes using queries, adding nodes (with Popover to type in details) as
+    well as deleting nodes.
+-   The Edge Table also includes features like searching for edges using queries, adding edges (in between two nodes) as well as
+    deleting edges.
+-   The sidebar control panel UI which can toggle the graph options, such as color-pickers of color options and sliders to control the node size.
+-   Testing on our most important class (ImportStore) which basically handle the stuff in importing the graph has complete.
+-   The Clusters of a graph can be generated either using the Convex Hull Object3D or SphereGeometry, with each cluster in different colours, moving the
+    node inside a cluster will refresh the shape of the cluster as well.
+-   More sample input files have been founded with brief explanation and citation (citations will be available on the user handbook).
+-   user can hover the mouse on a node and the details of which node will appear on the top-right corner as a table, besides, the
+    user can change node details directly in this table
+-   The InteractiveDeleteEdge has been done, in which you can right-click on a node and select Delete Edge to active this panel on
+    the right-bottom corner of the screen. This panel acts as a table and lists all the edges that are connected to this node, clicking
+    on a row in this table will preview the selected edge with the camera focusing on this node. There’s also a button to delete the
+    edges in the table mentioned above
+-   Right-click on the background will pop-up a context menu where you can add nodes to this graph
 
 **Fixed bugs:**
 
+-   Delete edge in edge data sheet not working [\#49](https://github.com/grp202004/PiperNet/issues/49)
+-   Delete edges [\#46](https://github.com/grp202004/PiperNet/issues/46)
+-   addEdge [\#45](https://github.com/grp202004/PiperNet/issues/45)
+-   New nodes generated in cluster [\#42](https://github.com/grp202004/PiperNet/issues/42)
+-   UI inconsistency: attribute to be clustered issue [\#40](https://github.com/grp202004/PiperNet/issues/40)
+-   Addition/Deletion on nodes and edges won’t refresh the 3D graph respectively [\#39](https://github.com/grp202004/PiperNet/issues/39)
 -   Add Edges working when only input one node id in edge data sheet [\#33](https://github.com/grp202004/PiperNet/issues/33)
 -   invalid edge when adding edges in edge data sheet [\#32](https://github.com/grp202004/PiperNet/issues/32)
+-   hidden text in search box in edge data sheet [\#31](https://github.com/grp202004/PiperNet/issues/31)
 -   Data sheet mismatch the headers [\#29](https://github.com/grp202004/PiperNet/issues/29)
+-   No responding when an error graph which is imported [\#19](https://github.com/grp202004/PiperNet/issues/19)
 
 **Closed issues:**
 
+-   Changing the "Cluster By" value might not produce the desired cluster graph as wanted [\#23](https://github.com/grp202004/PiperNet/issues/23)
+-   A cluster which is physically inside another cluster might not display the correct cluster colour [\#21](https://github.com/grp202004/PiperNet/issues/21)
+-   The Graph Options sidebar only has UI by real functionalities [\#18](https://github.com/grp202004/PiperNet/issues/18)
+-   The edges do not show in 3D Convex Hule, the edges only show up when zooming in [\#11](https://github.com/grp202004/PiperNet/issues/11)
 -   Graph Generation edge [\#1](https://github.com/grp202004/PiperNet/issues/1)
 
 **Merged pull requests:**
 
+-   Issuesfix -\> master [\#53](https://github.com/grp202004/PiperNet/pull/53) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Add edge -\> master [\#51](https://github.com/grp202004/PiperNet/pull/51) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Sphere cluster -\> master [\#50](https://github.com/grp202004/PiperNet/pull/50) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Fix emergency issue: graph not refreshing / incorrect graph generation [\#44](https://github.com/grp202004/PiperNet/pull/44) ([Kaby-Lake](https://github.com/Kaby-Lake))
 -   DeleteEdgeInteractionPanel and AddNodeDialog merge into master [\#36](https://github.com/grp202004/PiperNet/pull/36) ([Kaby-Lake](https://github.com/Kaby-Lake))
 -   merge AddNode interaction to the dev branch [\#34](https://github.com/grp202004/PiperNet/pull/34) ([Kaby-Lake](https://github.com/Kaby-Lake))
 -   merge Node and Edge Table to master [\#30](https://github.com/grp202004/PiperNet/pull/30) ([Kaby-Lake](https://github.com/Kaby-Lake))

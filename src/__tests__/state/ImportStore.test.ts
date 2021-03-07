@@ -352,7 +352,7 @@ describe("the outer", () => {
     describe("test function importGraphFromCSV with only edge file", () => {
         //Test file: src/samples/dh11/dh11_edges.csv
 
-        //23
+        //21
         test("the nodeProperties of the graph", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";
             store.importConfig.edgeFile.mapping.toId = "Target";
@@ -361,7 +361,7 @@ describe("the outer", () => {
             expect(data.metadata.nodeProperties).toEqual(["id"]);
         });
 
-        //24
+        //22
         test("the number of nodes of the graph", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";
             store.importConfig.edgeFile.mapping.toId = "Target";
@@ -370,7 +370,7 @@ describe("the outer", () => {
             expect(data.graph.order).toEqual(621);
         });
 
-        //25
+        //23
         test("the number of edges of the graph", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";
             store.importConfig.edgeFile.mapping.toId = "Target";
@@ -379,7 +379,7 @@ describe("the outer", () => {
             expect(data.graph.size).toEqual(733);
         });
 
-        //26
+        //24
         test("the attribute importConfig.edgeFile.isReady", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";
             store.importConfig.edgeFile.mapping.toId = "Target";
@@ -388,7 +388,7 @@ describe("the outer", () => {
             expect(store.importConfig.edgeFile.isReady).toBeTruthy();
         });
 
-        //27
+        //25
         test("first element of nodes of the graph", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";
             store.importConfig.edgeFile.mapping.toId = "Target";
@@ -402,7 +402,7 @@ describe("the outer", () => {
             });
         });
 
-        //28
+        //26
         test("every element of edges of the graph", async () => {
             store.importConfig.edgeFile.mapping.fromId = "Source";
             store.importConfig.edgeFile.mapping.toId = "Target";
@@ -417,7 +417,7 @@ describe("the outer", () => {
     describe("test function importGraphFromCSV with both nodes and edges file", () => {
         //Test file: src/samples/dh11/dh11_edges.csv and src/samples/dh11/dh_11nodes.csv
 
-        //30
+        //27
         test("the nodeProperties of the graph", async () => {
             store.importConfig.hasNodeFile = true;
             store.importConfig.edgeFile.mapping.fromId = "Source";
@@ -441,7 +441,7 @@ describe("the outer", () => {
             ]);
         });
 
-        //31
+        //28
         test("the number of nodes of the graph", async () => {
             store.importConfig.hasNodeFile = true;
             store.importConfig.edgeFile.mapping.fromId = "Source";
@@ -453,7 +453,7 @@ describe("the outer", () => {
             expect(data.graph.order).toEqual(621);
         });
 
-        //32
+        //29
         test("the number of edges of the graph", async () => {
             store.importConfig.hasNodeFile = true;
             store.importConfig.edgeFile.mapping.fromId = "Source";
@@ -465,7 +465,7 @@ describe("the outer", () => {
             expect(data.graph.size).toEqual(733);
         });
 
-        //33
+        //30
         test("first element of nodes of the graph", async () => {
             store.importConfig.hasNodeFile = true;
             store.importConfig.edgeFile.mapping.fromId = "Source";
@@ -494,7 +494,7 @@ describe("the outer", () => {
             });
         });
 
-        //34
+        //31
         test("every element of edges of the graph", async () => {
             store.importConfig.hasNodeFile = true;
             store.importConfig.edgeFile.mapping.fromId = "Source";
@@ -510,7 +510,7 @@ describe("the outer", () => {
     });
 
     describe("test function readGEXF", () => {
-        //35
+        //32
         //Test file: src/samples/lesmiserables/lesmiserables.gexf
         test("number of nodes", async () => {
             store.selectedGEXFFileFromInput = gexfFile;
@@ -518,7 +518,7 @@ describe("the outer", () => {
             const data = await store.readGEXF();
             expect(data.order).toEqual(77);
         });
-        //36
+        //33
         test("first element of nodes", async () => {
             store.selectedGEXFFileFromInput = gexfFile;
             // @ts-ignore
@@ -535,14 +535,14 @@ describe("the outer", () => {
                 }
             });
         });
-        //37
+        //34
         test("number of edges", async () => {
             store.selectedGEXFFileFromInput = gexfFile;
             // @ts-ignore
             const data = await store.readGEXF();
             expect(data.size).toEqual(254);
         });
-        //38
+        //35
         test("first element of edges", async () => {
             store.selectedGEXFFileFromInput = gexfFile;
             // @ts-ignore
