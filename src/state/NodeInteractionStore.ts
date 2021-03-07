@@ -132,37 +132,6 @@ export default class InteractionStore {
         );
     }
 
-    /**
-     * update the _visualize object inside all the nodes attribute and calls graph refresh
-     *
-     * @param {Attributes} _attributeVisualize
-     * @memberof GraphMutation
-     */
-    updateNodesVisualizeAttribute(_attributeVisualize: Attributes) {
-        State.graph.rawGraph.updateEachNodeAttributes((node, attribute) => {
-            return {
-                ...attribute._visualize,
-                ..._attributeVisualize,
-            };
-        });
-    }
-
-    /**
-     *
-     * update the _visualize object inside all the edges attribute and calls graph refresh
-     *
-     * @param {Attributes} _attributeVisualize
-     * @memberof GraphMutation
-     */
-    updateEdgesVisualizeAttribute(_attributeVisualize: Attributes) {
-        State.graph.rawGraph.updateEachEdgeAttributes((node, attribute) => {
-            return {
-                ...attribute._visualize,
-                ..._attributeVisualize,
-            };
-        });
-    }
-
     updateVisualizeAttributeParser(newAttribute: any, oldAttributes: any) {
         if (newAttribute.hasOwnProperty("hovered")) {
             oldAttributes.hovered = newAttribute.hovered;

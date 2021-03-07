@@ -62,11 +62,13 @@ autorun(() => State.import.renderImportEdgePreview());
 // will auto run if selectedNodeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportNodePreview());
 
+// sync the rawGraph bi-directionally
 autorun(
     () =>
         (State.cluster.rawGraph = State.search.rawGraph = State.graph.rawGraph)
 );
 
+// set the graph to suspend animating according to State.css.isAnimating
 autorun(() => {
     if (State.css.isAnimating === true) {
         State.graphDelegate.graphDelegateMethods?.resumeAnimation();
@@ -75,24 +77,47 @@ autorun(() => {
     }
 });
 
+// if graph is empty, suspend the animation to save computing power
+reaction(
+    () => State.graph.rawGraph?.order,
+    (number) => {
+        if (number === 0) {
+            State.css.isAnimating = false;
+            console.log("Pause Animating");
+        } else {
+            State.css.isAnimating = true;
+            console.log("Resume Animating");
+        }
+    },
+    { fireImmediately: true }
+);
+
+// auto highlight the hovered Cluster
 reaction(
     () => State.clusterInteraction.currentlyHoveredClusterId,
     (currentlyHoveredClusterId) => {
         console.log("currentlyHoveredNodeId", currentlyHoveredClusterId);
-        if (currentlyHoveredClusterId) {
-            let mesh = State.graphDelegate.clusterObject.getObjectById(
-                currentlyHoveredClusterId
-            );
-            if (mesh) {
-                let material = mesh.material as THREE.Material;
-                material.opacity = 0.5;
-            }
-        } else {
-            State.graphDelegate.clusterObject.resetDefaultMaterial();
-        }
+        State.graphDelegate.clusterObject.updateAllMaterials();
     }
 );
 
+// auto highlight the selected Cluster
+reaction(
+    () => State.clusterInteraction.selectedCluster,
+    (selectedCluster) => {
+        State.graphDelegate.clusterObject.updateAllMaterials();
+    }
+);
+
+// auto highlight the selected Clusters
+reaction(
+    () => State.clusterInteraction.selectedClusters,
+    (selectedClusters) => {
+        State.graphDelegate.clusterObject.updateAllMaterials();
+    }
+);
+
+// auto highlight the hovered Node
 reaction(
     () => State.interaction.currentlyHoveredNodeId,
     (currentlyHoveredNodeId) => {
@@ -135,6 +160,7 @@ reaction(
     }
 );
 
+// auto highlight the selected nodes
 reaction(
     () => State.interaction.selectedNodes.map((node) => node),
     (selectedNodes) => {
@@ -154,11 +180,11 @@ reaction(
                 );
             }
         });
-
         State.graphDelegate.graphDelegateMethods.refresh();
     }
 );
 
+// auto highlight the selected node
 reaction(
     () => State.interaction.selectedNode,
     (selectedNode) => {
@@ -182,6 +208,7 @@ reaction(
     }
 );
 
+// auto highlight the selected edges
 reaction(
     () => State.interaction.selectedEdge,
     (selectedEdge) => {

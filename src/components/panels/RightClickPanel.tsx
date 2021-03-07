@@ -133,14 +133,12 @@ export default observer(
                     style={this.stylePosition}
                 >
                     <MenuItem
-                        icon="new-object"
-                        text="Split Cluster"
-                        onClick={() => {}}
-                    />
-                    <MenuItem
                         icon="group-objects"
                         text="Merge Cluster"
-                        onClick={() => {}}
+                        onClick={() => {
+                            State.clusterInteraction.mergeSelectedCluster();
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
                     />
                     <MenuDivider />
                 </Menu>
@@ -158,14 +156,6 @@ export default observer(
                 >
                     <MenuItem
                         icon="new-object"
-                        text="Add Node"
-                        onClick={() => {
-                            State.preferences.AddNodeDialogOpen = true;
-                            State.preferences.rightClickPanelOpen = false;
-                        }}
-                    />
-                    <MenuItem
-                        icon="group-objects"
                         text="Add Node"
                         onClick={() => {
                             State.preferences.AddNodeDialogOpen = true;

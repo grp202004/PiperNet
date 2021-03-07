@@ -35,7 +35,15 @@ export default class PreferencesStore {
     rightClickPanelOpen = false;
     deleteEdgePanelOpen = false;
 
-    isGraphOptionsCardHidden = true;
+    graphOptionsCardOpen = false;
+
+    closeAllPanel(except?: string) {
+        this.deleteEdgePanelOpen = false;
+        this.graphOptionsCardOpen = false;
+        if (except !== "rightClickPanel") {
+            this.rightClickPanelOpen = false;
+        }
+    }
 
     // 3D Graph
 

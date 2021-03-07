@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
 import { SphereGeometry } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
-import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import State from ".";
 
 export default class Cluster3dObjectStore {
@@ -49,6 +48,7 @@ export default class Cluster3dObjectStore {
         if (State.cluster.clusterBy === null) {
             return;
         }
+        this.UUID2ClusterValueMap = new Map<string, string | number>();
         let initialMap = new Map<string | number, THREE.Mesh>();
         State.cluster.attributePoints.forEach((value, key) => {
             initialMap.set(
@@ -128,6 +128,7 @@ export default class Cluster3dObjectStore {
         });
         this.clusterObjectsMap = null;
         this.fusionClusterObjects = null;
+        this.UUID2ClusterValueMap = new Map<string, string | number>();
     }
 
     /**
@@ -200,7 +201,52 @@ export default class Cluster3dObjectStore {
         meshMaterial.depthWrite = false;
 
         let mesh = new THREE.Mesh(geom, meshMaterial);
+        this.UUID2ClusterValueMap.set(mesh.uuid, name);
         mesh.name = "THREE_CLUSTER_" + name;
         return mesh;
+    }
+
+    UUID2ClusterValueMap!: Map<string, string | number>;
+
+    meshSpotlightMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        const oldOpacity = material.opacity;
+        material.opacity = 0.7;
+        setTimeout(() => {
+            material.opacity = oldOpacity;
+        }, 100);
+    }
+
+    private meshHighlightMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        material.opacity = 0.5;
+    }
+
+    private meshSelectedMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        material.opacity = 0.3;
+    }
+
+    private meshNormalMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        material.opacity = 0.15;
+    }
+
+    updateAllMaterials() {
+        this.fusionClusterObjects?.children.forEach((_object) => {
+            let mesh = _object as THREE.Mesh;
+            const meshId = mesh.uuid;
+            if (State.clusterInteraction.currentlyHoveredClusterId === meshId) {
+                this.meshHighlightMaterial(mesh);
+                return;
+            } else if (
+                State.clusterInteraction.selectedClusters.includes(meshId)
+            ) {
+                this.meshSelectedMaterial(mesh);
+                return;
+            } else {
+                this.meshNormalMaterial(mesh);
+            }
+        });
     }
 }

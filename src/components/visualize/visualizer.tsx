@@ -14,6 +14,7 @@ import {
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
+import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -55,6 +56,9 @@ export default observer(
         };
 
         nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {
+            if (!this.state.nodePointerInteraction) {
+                return;
+            }
             let nodeId = node.id as string;
             if (event.ctrlKey || event.shiftKey) {
                 // multi-selection
@@ -77,28 +81,33 @@ export default observer(
         };
 
         nodeRightClickCallback = (node: NodeObject, event: MouseEvent) => {
+            if (!this.state.nodePointerInteraction) {
+                return;
+            }
             State.interaction.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Node";
             State.preferences.rightClickPanelOpen = true;
-            this.closeAllPanel();
+            State.preferences.closeAllPanel("rightClickPanel");
         };
 
         backgroundClickCallback = (event: MouseEvent) => {
             // cancel all selection
             State.interaction.selectedNodes = [];
             State.preferences.rightClickPanelOpen = false;
-            this.closeAllPanel();
+            State.preferences.closeAllPanel("rightClickPanel");
         };
 
         backgroundRightClickCallback = (event: MouseEvent) => {
+            if (!this.state.nodePointerInteraction) {
+                return;
+            }
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Background";
             State.preferences.rightClickPanelOpen = true;
-
-            this.closeAllPanel();
+            State.preferences.closeAllPanel("rightClickPanel");
         };
 
         computeNodeColor(_node: NodeObject) {
@@ -215,23 +224,35 @@ export default observer(
             });
         }
 
-        closeAllPanel() {
-            State.preferences.deleteEdgePanelOpen = false;
-        }
-
         clusterInteractionListener(set: boolean) {
             if (set) {
                 document.addEventListener(
                     "mousemove",
-                    State.graphDelegate.onDocumentMouseMove
+                    CustomMouseEvent.onDocumentMouseMove
                 );
-                console.log("MouseMove event listening");
+                document.addEventListener(
+                    "click",
+                    CustomMouseEvent.onDocumentLeftClick
+                );
+                document.addEventListener(
+                    "contextmenu",
+                    CustomMouseEvent.onDocumentRightClick
+                );
+                console.log("MouseEvent listening");
             } else {
                 document.removeEventListener(
                     "mousemove",
-                    State.graphDelegate.onDocumentMouseMove
+                    CustomMouseEvent.onDocumentMouseMove
                 );
-                console.log("MouseMove event not listening");
+                document.removeEventListener(
+                    "click",
+                    CustomMouseEvent.onDocumentLeftClick
+                );
+                document.removeEventListener(
+                    "contextmenu",
+                    CustomMouseEvent.onDocumentRightClick
+                );
+                console.log("MouseEvent stop listening");
             }
         }
 
