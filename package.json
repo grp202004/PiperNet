@@ -13,6 +13,7 @@
         "classnames": "^2.2.6",
         "copy-anything": "^2.0.1",
         "csv-parse": "^4.14.2",
+        "d3-polygon": "^2.0.0",
         "graphology": "^0.19.3",
         "graphology-gexf": "^0.7.0",
         "graphology-types": "^0.19.2",
@@ -61,6 +62,7 @@
     },
     "devDependencies": {
         "@types/classnames": "^2.2.11",
+        "@types/d3-polygon": "^2.0.0",
         "@types/jest": "^26.0.20",
         "@types/pluralize": "0.0.29",
         "@types/randomcolor": "^0.5.5",

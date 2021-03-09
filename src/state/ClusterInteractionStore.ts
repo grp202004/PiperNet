@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
+import { polygonContains } from "d3-polygon";
 import State from ".";
 
 export default class ClusterInteractionStore {
@@ -92,22 +93,7 @@ export default class ClusterInteractionStore {
         this.flush();
     }
 
-    lineSegment!: { x: number; y: number }[];
-
-    PointInPoly(
-        pt: { x: number; y: number },
-        poly: { x: number; y: number }[]
-    ) {
-        for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
-            ((poly[i].y <= pt.y && pt.y < poly[j].y) ||
-                (poly[j].y <= pt.y && pt.y < poly[i].y)) &&
-                pt.x <
-                    ((poly[j].x - poly[i].x) * (pt.y - poly[i].y)) /
-                        (poly[j].y - poly[i].y) +
-                        poly[i].x &&
-                (c = !c);
-        return c;
-    }
+    lineSegment!: any[];
 
     computeSplitCluster(): any[] {
         let screenCoords = [] as {
@@ -125,8 +111,14 @@ export default class ClusterInteractionStore {
             screenCoords.push({ id: node, x: coord.x, y: coord.y });
         });
 
+        let tempLineSegment: [number, number][] = this.lineSegment.map(
+            (value) => {
+                return [value.x, value.y];
+            }
+        );
+
         screenCoords.map((value) => {
-            let inside = this.PointInPoly(value, screenCoords);
+            let inside = polygonContains(tempLineSegment, [value.x, value.y]);
 
             if (inside) {
                 value["value"] = 1;

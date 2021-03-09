@@ -44,16 +44,17 @@ export default observer(
         }
 
         exportDrawing() {
-            let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
-            let box = (element as Element)?.getBoundingClientRect();
-            let hightDiff = this.canvas.y - box.y;
+            let hightDiff = 50;
             const data = JSON.parse(this.canvasMethods.getSaveData());
             let res = data.lines[0].points as { x: number; y: number }[];
             res.map((value) => {
                 value.y += hightDiff;
             });
+            res = [res[0], res[res.length - 1]];
             res.unshift({ x: 0, y: 0 });
             res.push({ x: this.canvas.width, y: 0 });
+            res.push({ x: 0, y: 0 });
+            console.log(res);
             State.clusterInteraction.lineSegment = res;
             console.log(State.clusterInteraction.computeSplitCluster());
         }
