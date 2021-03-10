@@ -186,6 +186,18 @@ html {
     top: 5em;
     position: absolute;
 }
+.selectionBox {
+    position: fixed;
+    background-color: #61dafb;
+    opacity: 0.5;
+}
+
+.boxCanvas {
+    position: fixed;
+    z-index: 999;
+    width: 100vw;
+    height: 100vh;
+}
 
 .left-bottom-overlay-card {
     left: 2em;

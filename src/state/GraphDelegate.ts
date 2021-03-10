@@ -11,6 +11,7 @@ import * as THREE from "three";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
 import { Object3D } from "three";
 import ComponentRef from "../components/ComponentRef";
+import { Attributes } from "_graphology-types@0.19.2@graphology-types";
 
 /**
  * hovered: false, selected: false: DefaultColor;
@@ -187,6 +188,17 @@ export default class GraphDelegate {
         }
 
         return graphCopy;
+    }
+
+    getMouseCoordsX(event: MouseEvent): number {
+        let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
+        let box = (<Element>element)?.getBoundingClientRect();
+        return event.clientX - box.left;
+    }
+    getMouseCoordsY(event: MouseEvent): number {
+        let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
+        let box = (<Element>element)?.getBoundingClientRect();
+        return event.clientY - box.top;
     }
 
     onDocumentMouseMove(event: MouseEvent) {

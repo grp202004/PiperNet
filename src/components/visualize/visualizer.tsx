@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
@@ -14,6 +15,7 @@ import {
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
+import SelectionBox from "../SelectionBox";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -56,6 +58,10 @@ export default observer(
 
         nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {
             let nodeId = node.id as string;
+            let attributes = State.graph.rawGraph.getNodeAttribute(
+                nodeId,
+                "_visualize"
+            );
             if (event.ctrlKey || event.shiftKey) {
                 // multi-selection
                 let index;
@@ -137,53 +143,60 @@ export default observer(
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
-                    <ForceGraph3D
-                        // Data Segment
-                        ref={this.graphRef}
-                        graphData={this.state.visualizationGraph}
-                        controlType={this.props.controlType}
-                        // Node Visualization Segment
-                        nodeLabel="id"
-                        nodeRelSize={State.css.node.size}
-                        nodeColor={this.computeNodeColor}
-                        nodeVisibility={this.graphDelegate.nodeVisibility}
-                        nodeResolution={State.css.node.resolution}
-                        nodeThreeObjectExtend={true}
-                        nodeThreeObject={(node) => {
-                            const sprite = new SpriteText(`${node.id}`);
-                            sprite.color = State.css.label.color;
-                            sprite.textHeight = State.css.label.size;
-                            sprite.visible = State.css.label.show;
-                            sprite.backgroundColor = "";
-                            sprite.translateX(State.css.node.size + 2);
-                            return sprite;
-                        }}
-                        // Node Manipulation Segment
-                        onNodeHover={this.hoverNodeCallback}
-                        onNodeClick={this.nodeLeftClickCallback}
-                        onNodeRightClick={this.nodeRightClickCallback}
-                        onNodeDragEnd={(node) => {
-                            node.fx = node.x;
-                            node.fy = node.y;
-                            node.fz = node.z;
-                        }}
-                        // Link Visualization Segment
-                        linkVisibility={this.graphDelegate.linkVisibility}
-                        linkWidth={this.computeEdgeWidth}
-                        linkColor={this.computeEdgeColor}
-                        // Graph Manipulation Segment
-                        onBackgroundRightClick={
-                            this.backgroundRightClickCallback
-                        }
-                        onBackgroundClick={this.backgroundClickCallback}
-                        enablePointerInteraction={
-                            this.state.nodePointerInteraction
-                        }
-                        // Engine
-                        onEngineTick={() => {
-                            this.graphDelegate.clusterObject.clusterDelegation();
-                        }}
-                    />
+                    <div>
+                        {State.preferences.visualizationMode ===
+                            VisualizationMode.NodeSelection &&
+                            State.interaction.boxSelectionOpen && (
+                                <SelectionBox />
+                            )}
+                        <ForceGraph3D
+                            // Data Segment
+                            ref={this.graphRef}
+                            graphData={this.state.visualizationGraph}
+                            controlType={this.props.controlType}
+                            // Node Visualization Segment
+                            nodeLabel="id"
+                            nodeRelSize={State.css.node.size}
+                            nodeColor={this.computeNodeColor}
+                            nodeVisibility={this.graphDelegate.nodeVisibility}
+                            nodeResolution={State.css.node.resolution}
+                            nodeThreeObjectExtend={true}
+                            nodeThreeObject={(node) => {
+                                const sprite = new SpriteText(`${node.id}`);
+                                sprite.color = State.css.label.color;
+                                sprite.textHeight = State.css.label.size;
+                                sprite.visible = State.css.label.show;
+                                sprite.backgroundColor = "";
+                                sprite.translateX(State.css.node.size + 2);
+                                return sprite;
+                            }}
+                            // Node Manipulation Segment
+                            onNodeHover={this.hoverNodeCallback}
+                            onNodeClick={this.nodeLeftClickCallback}
+                            onNodeRightClick={this.nodeRightClickCallback}
+                            onNodeDragEnd={(node) => {
+                                node.fx = node.x;
+                                node.fy = node.y;
+                                node.fz = node.z;
+                            }}
+                            // Link Visualization Segment
+                            linkVisibility={this.graphDelegate.linkVisibility}
+                            linkWidth={this.computeEdgeWidth}
+                            linkColor={this.computeEdgeColor}
+                            // Graph Manipulation Segment
+                            onBackgroundRightClick={
+                                this.backgroundRightClickCallback
+                            }
+                            onBackgroundClick={this.backgroundClickCallback}
+                            enablePointerInteraction={
+                                this.state.nodePointerInteraction
+                            }
+                            // Engine
+                            onEngineTick={() => {
+                                this.graphDelegate.clusterObject.clusterDelegation();
+                            }}
+                        />
+                    </div>
                 );
                 // } else {
                 //     return (

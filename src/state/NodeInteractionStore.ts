@@ -1,7 +1,8 @@
 import { Attributes } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import State from ".";
-
+import THREE from "three";
+import { Rect } from "_@blueprintjs_table@3.5.0@@blueprintjs/table";
 export default class InteractionStore {
     constructor() {
         makeAutoObservable(this);
@@ -19,6 +20,66 @@ export default class InteractionStore {
     selectedEdge: string | null = null;
 
     selectedEdges: string[] = [];
+    /**
+     * when the menuItem 'box-select Node' of RightClickPanel is clicked, then this will be set to true,
+     *  and the component'SelectionBox' will be  visualized only the mode is 'Node Selection' and this variable is true
+     */
+    boxSelectionOpen: boolean = false;
+    /**
+     * this stores the x and y coordinates when mouse clicked down for box selection
+     */
+    boxSelection_startPoint: Attributes = {
+        x: 0,
+        y: 0,
+    };
+
+    /**
+     * this stores the x and y coordinates when mouse clicked up for box selection
+     */
+    boxSelection_endPoint: Attributes = {
+        x: 0,
+        y: 0,
+    };
+
+    boxSelectNode() {
+        //clear selectedNodes
+        State.interaction.selectedNodes = [];
+
+        //calculate the box
+        let left = Math.min(
+            this.boxSelection_startPoint.x,
+            this.boxSelection_endPoint.x
+        );
+        let top = Math.min(
+            this.boxSelection_startPoint.y,
+            this.boxSelection_endPoint.y
+        );
+        let right = Math.max(
+            this.boxSelection_startPoint.x,
+            this.boxSelection_endPoint.x
+        );
+        let down = Math.max(
+            this.boxSelection_startPoint.y,
+            this.boxSelection_endPoint.y
+        );
+
+        //check which node is inside the box,if true push them into selectedNodes
+        State.graph.rawGraph.forEachNode((node, Attributes) => {
+            let coords = State.graphDelegate.graphDelegateMethods.graph2ScreenCoords(
+                Attributes._visualize.x,
+                Attributes._visualize.y,
+                Attributes._visualize.z
+            );
+            if (
+                left <= coords.x &&
+                coords.x <= right &&
+                top <= coords.y &&
+                down >= coords.y
+            ) {
+                State.interaction.selectedNodes.push(node);
+            }
+        });
+    }
 
     /**
      * the currently hovered node id
@@ -172,6 +233,10 @@ export default class InteractionStore {
             oldAttributes.multiSelected = newAttribute.multiSelected;
         }
     }
+
+    // setupSelectionBox(){
+    //     let selectionBox=new THREE.Line(Rect,new THREE.LineBasicMaterial({ linewidth: 3, color: 0x999999 }));
+    // }
 
     /**
      * should call this on every refresh of graph DS

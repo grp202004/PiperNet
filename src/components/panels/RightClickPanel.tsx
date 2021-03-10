@@ -4,6 +4,8 @@ import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import { computed, makeObservable } from "mobx";
+import { DISABLED } from "_@blueprintjs_core@3.36.0@@blueprintjs/core/lib/esm/common/classes";
+import { VisualizationMode } from "../../state/PreferencesStore";
 
 interface Props {
     /**
@@ -76,6 +78,20 @@ export default observer(
                             );
                             State.preferences.rightClickPanelOpen = false;
                         }}
+                    />
+                    <MenuItem
+                        icon="graph-remove"
+                        text="Box-select Node"
+                        onClick={() => {
+                            State.interaction.boxSelectionOpen = true;
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
+                        disabled={
+                            !(
+                                State.preferences.visualizationMode ===
+                                VisualizationMode.NodeSelection
+                            )
+                        }
                     />
                     <MenuDivider />
                     <MenuItem
