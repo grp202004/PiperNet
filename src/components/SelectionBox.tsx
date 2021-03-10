@@ -2,7 +2,7 @@ import React, { MouseEventHandler } from "react";
 import { observer } from "_mobx-react@7.0.5@mobx-react";
 import { Attributes } from "graphology-types";
 import classnames from "classnames";
-import { Position } from "_@blueprintjs_core@3.36.0@@blueprintjs/core";
+// import { Position } from "_@blueprintjs_core@3.36.0@@blueprintjs/core";
 import State from "../state/index";
 
 export default observer(
