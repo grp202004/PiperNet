@@ -1,21 +1,11 @@
-import React, { useCallback, useState } from "react";
-import {
-    Button,
-    Card,
-    Classes,
-    H4,
-    Intent,
-    Popover,
-    Position,
-    Tooltip,
-    PanelStack2,
-} from "@blueprintjs/core";
+import React from "react";
+import { Button, Classes, Intent, Position } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import { VisualizationMode } from "../../state/PreferencesStore";
 import ClusterSplittingPanelStack from "./ClusterSplittingPanelStack";
-import ComponentRef from "../ComponentRef";
+import { Tooltip2 } from "@blueprintjs/popover2";
 
 export default observer(
     class InteractionModePanel extends React.Component {
@@ -37,7 +27,7 @@ export default observer(
 
         renderMode(mode: VisualizationMode) {
             return (
-                <Tooltip content={mode} position={Position.BOTTOM}>
+                <Tooltip2 content={mode}>
                     <Button
                         className={classnames([
                             Classes.BUTTON,
@@ -50,7 +40,7 @@ export default observer(
                             State.preferences.visualizationMode = mode;
                         }}
                     />
-                </Tooltip>
+                </Tooltip2>
             );
         }
 
@@ -60,7 +50,9 @@ export default observer(
                     {this.renderMode(VisualizationMode.Normal)}
                     {this.renderMode(VisualizationMode.NodeSelection)}
                     {this.renderMode(VisualizationMode.ClusterSelection)}
-                    <ClusterSplittingPanelStack />
+                    <ClusterSplittingPanelStack
+                        currentStep={State.helper.clusterSplittingCurrentStep}
+                    />
                 </div>
             );
         }

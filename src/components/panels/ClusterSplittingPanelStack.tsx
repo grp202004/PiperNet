@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { ComponentProps, useCallback, useState } from "react";
 
 import {
     Button,
@@ -14,14 +14,18 @@ import { Popover2, Tooltip2 } from "@blueprintjs/labs";
 import classnames from "classnames";
 import State from "../../state";
 import { VisualizationMode } from "../../state/PreferencesStore";
+import { observer } from "mobx-react";
+import ComponentRef from "../ComponentRef";
 
 interface CustomPanelEntry {
+    step: number;
     title: string;
     component: JSX.Element;
 }
 
 const allPanelStacks = [
     {
+        step: 1,
         title: "Select Cluster",
         component: (
             <p>
@@ -30,15 +34,34 @@ const allPanelStacks = [
         ),
     } as CustomPanelEntry,
     {
+        step: 2,
         title: "Draw Line",
         component: (
-            <p>
-                Use the mouse to <b>hold and draw a line </b> to split this
-                Cluster
-            </p>
+            <div
+                style={{
+                    display: "flex",
+                }}
+            >
+                <p>
+                    Use the mouse to <b>hold and draw a line </b> to split this
+                    Cluster
+                </p>
+                <div>
+                    <Button
+                        intent="danger"
+                        small={true}
+                        onClick={() => {
+                            State.helper.clusterSplittingCurrentStep = 1;
+                        }}
+                    >
+                        Back
+                    </Button>
+                </div>
+            </div>
         ),
     } as CustomPanelEntry,
     {
+        step: 3,
         title: "Confirm?",
         component: (
             <div>
@@ -53,11 +76,7 @@ const allPanelStacks = [
                         intent="danger"
                         small={true}
                         onClick={() => {
-                            // State.clusterInteraction.confirmClusterSplittingOpen = false;
-                            State.clusterInteraction.confirmClusterSplittingTempData = null;
-                            State.interaction.flush();
-                            State.preferences.visualizationMode =
-                                VisualizationMode.Normal;
+                            State.helper.clusterSplittingCurrentStep = 2;
                         }}
                     >
                         Cancel
@@ -66,11 +85,11 @@ const allPanelStacks = [
                         intent="primary"
                         small={true}
                         onClick={() => {
-                            // State.clusterInteraction.confirmClusterSplittingOpen = false;
+                            State.helper.clusterSplittingPanelStackOpen = false;
                             State.clusterInteraction.splitCluster();
-                            State.interaction.flush();
                             State.preferences.visualizationMode =
                                 VisualizationMode.Normal;
+                            State.helper.clusterSplittingCurrentStep = 1;
                         }}
                     >
                         Confirm
@@ -85,107 +104,118 @@ interface PanelInfo {
     panelNumber: number;
 }
 
-const customPanelRenderer = (props: PanelProps<PanelInfo>) => {
+const CustomPanel: React.FC<PanelProps<PanelInfo>> = (props) => {
     return <Callout>{allPanelStacks[props.panelNumber - 1].component}</Callout>;
 };
 
-const CustomPanel: React.FC<PanelProps<PanelInfo>> = (props) => {
-    return customPanelRenderer(props);
-};
+interface Props {
+    currentStep: 1 | 2 | 3;
+}
 
-const initialPanel: Panel<PanelInfo> = {
-    props: {
-        panelNumber: 1,
-    },
-    renderPanel: CustomPanel,
-    title: allPanelStacks[0].title,
-};
+export default observer(
+    class ClusterSplittingPanelStack extends React.Component<Props, {}> {
+        constructor(props: Props) {
+            super(props);
+        }
 
-let ClusterSplittingPanelStack: React.FC = (props) => {
-    const [currentPanelStack, setCurrentPanelStack] = useState([initialPanel]);
-    const addToPanelStack = useCallback(
-        (newPanel: Panel<PanelInfo>) =>
-            setCurrentPanelStack((stack) => [...stack, newPanel]),
-        []
-    );
-    const removeFromPanelStack = useCallback(
-        (_lastPanel: Panel<PanelInfo>) =>
-            setCurrentPanelStack((stack) =>
-                stack.length === 1 ? stack : stack.slice(0, stack.length - 1)
-            ),
-        []
-    );
-    return (
-        <Popover2
-            usePortal={false}
-            content={
-                <div style={{ width: "300px" }}>
+        private firstPanel: Panel<PanelInfo> = {
+            props: {
+                panelNumber: 1,
+            },
+            renderPanel: CustomPanel,
+            title: allPanelStacks[0].title,
+        };
+
+        private secondPanel: Panel<PanelInfo> = {
+            props: {
+                panelNumber: 2,
+            },
+            renderPanel: CustomPanel,
+            title: allPanelStacks[1].title,
+        };
+
+        private thirdPanel: Panel<PanelInfo> = {
+            props: {
+                panelNumber: 3,
+            },
+            renderPanel: CustomPanel,
+            title: allPanelStacks[2].title,
+        };
+
+        get currentPanelStack() {
+            switch (State.helper.clusterSplittingCurrentStep) {
+                case 1:
+                    return [this.firstPanel];
+
+                case 2:
+                    return [this.firstPanel, this.secondPanel];
+
+                case 3:
+                    return [this.firstPanel, this.secondPanel, this.thirdPanel];
+            }
+        }
+
+        private renderPanelStack = () => {
+            return (
+                <div
+                    style={{ width: "300px", height: "100px", display: "flex" }}
+                >
                     <Button
                         icon="cross"
                         minimal={true}
                         onClick={() => {
-                            State.preferences.clusterSplittingPanelStackOpen = false;
-                        }}
-                    ></Button>
-                    <Button
-                        icon="chevron-left"
-                        minimal={true}
-                        onClick={() => {
-                            removeFromPanelStack(
-                                currentPanelStack[currentPanelStack.length - 1]
-                            );
-                        }}
-                    ></Button>
-                    <Button
-                        icon="chevron-right"
-                        minimal={true}
-                        onClick={() => {
-                            if (
-                                currentPanelStack.length ===
-                                allPanelStacks.length
-                            ) {
-                                return;
-                            }
-                            addToPanelStack({
-                                props: {
-                                    panelNumber: currentPanelStack.length + 1,
-                                },
-                                renderPanel: CustomPanel,
-                                title:
-                                    allPanelStacks[currentPanelStack.length]
-                                        .title,
-                            });
+                            State.helper.clusterSplittingPanelStackOpen = false;
                         }}
                     ></Button>
                     <PanelStack2
-                        initialPanel={currentPanelStack[0]}
-                        onOpen={addToPanelStack}
-                        onClose={removeFromPanelStack}
-                        renderActivePanelOnly={true}
-                        stack={currentPanelStack}
+                        initialPanel={this.firstPanel}
+                        stack={this.currentPanelStack}
                     />
                 </div>
-            }
-            defaultIsOpen={false}
-            isOpen={State.preferences.clusterSplittingPanelStackOpen}
-        >
-            <Tooltip2 usePortal={false} content={Intent.DANGER}>
-                <Button
-                    className={classnames([Classes.BUTTON, Classes.MINIMAL])}
-                    intent={Intent.DANGER}
-                    text={VisualizationMode.ClusterSplitting}
-                    active={
-                        State.preferences.visualizationMode ===
-                        VisualizationMode.ClusterSplitting
-                    }
-                    onClick={() => {
-                        State.preferences.visualizationMode =
-                            VisualizationMode.ClusterSplitting;
-                    }}
-                />
-            </Tooltip2>
-        </Popover2>
-    );
-};
+            );
+        };
 
-export default ClusterSplittingPanelStack;
+        render() {
+            return (
+                <Popover2
+                    placement="right"
+                    usePortal={false}
+                    content={this.renderPanelStack()}
+                    isOpen={
+                        State.preferences.visualizationMode ===
+                            VisualizationMode.ClusterSplitting &&
+                        State.helper.clusterSplittingPanelStackOpen
+                    }
+                    onOpened={() => {
+                        State.helper.clusterSplittingCurrentStep = 1;
+                    }}
+                >
+                    <Tooltip2
+                        usePortal={false}
+                        content={VisualizationMode.ClusterSplitting}
+                    >
+                        <Button
+                            className={classnames([
+                                Classes.BUTTON,
+                                Classes.MINIMAL,
+                            ])}
+                            intent={Intent.DANGER}
+                            text={VisualizationMode.ClusterSplitting}
+                            active={
+                                State.preferences.visualizationMode ===
+                                VisualizationMode.ClusterSplitting
+                            }
+                            onClick={() => {
+                                State.preferences.visualizationMode =
+                                    VisualizationMode.ClusterSplitting;
+                            }}
+                        />
+                    </Tooltip2>
+                </Popover2>
+            );
+        }
+        componentDidMount = () => {
+            ComponentRef.clusterSplittingPanelStack = this;
+        };
+    }
+);

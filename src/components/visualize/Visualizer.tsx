@@ -149,9 +149,10 @@ export default observer(
                 return (
                     <div>
                         {State.preferences.visualizationMode ===
-                            VisualizationMode.ClusterSplitting && (
-                            <CanvasDrawPanel />
-                        )}
+                            VisualizationMode.ClusterSplitting &&
+                            State.clusterInteraction.drawPanelActivate && (
+                                <CanvasDrawPanel />
+                            )}
                         <ForceGraph3D
                             // Data Segment
                             ref={this.graphRef}
@@ -301,7 +302,8 @@ reaction(
                     nodePointerInteraction: false,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(true);
-                State.preferences.clusterSplittingPanelStackOpen = true;
+                State.clusterInteraction.flush();
+                State.helper.clusterSplittingPanelStackOpen = true;
                 break;
         }
     }

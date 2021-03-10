@@ -51,6 +51,4 @@ export default class PreferencesStore {
     controlType: "trackball" | "orbit" | "fly" = "trackball";
 
     visualizationMode: VisualizationMode = VisualizationMode.Normal;
-
-    clusterSplittingPanelStackOpen: boolean = false;
 }

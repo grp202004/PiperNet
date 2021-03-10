@@ -1,6 +1,6 @@
 import { autorun, reaction } from "mobx";
 
-import PreferencesStore from "./PreferencesStore";
+import PreferencesStore, { VisualizationMode } from "./PreferencesStore";
 import GraphStore from "./GraphStore";
 import ImportStore from "./ImportStore";
 import SearchStore from "./SearchStore";
@@ -9,6 +9,8 @@ import CssStore from "./CssStore";
 import GraphDelegate from "./GraphDelegate";
 import NodeInteractionStore from "./NodeInteractionStore";
 import ClusterInteractionStore from "./ClusterInteractionStore";
+import HelperStackPanelStore from "./HelperStackPanelStore";
+import ComponentRef from "../components/ComponentRef";
 
 class AppState {
     static _instance: AppState | null = null;
@@ -21,6 +23,7 @@ class AppState {
     import!: ImportStore;
     search!: SearchStore;
     cluster!: ClusterStore;
+    helper!: HelperStackPanelStore;
     css!: CssStore;
 
     private privateConstructor() {
@@ -32,6 +35,7 @@ class AppState {
         this.import = new ImportStore();
         this.search = new SearchStore();
         this.cluster = new ClusterStore();
+        this.helper = new HelperStackPanelStore();
         this.css = new CssStore();
     }
 
@@ -76,6 +80,54 @@ autorun(() => {
         State.graphDelegate.graphDelegateMethods?.pauseAnimation();
     }
 });
+
+// if cluster selected, goto step 2
+autorun(() => {
+    if (
+        State.preferences.visualizationMode ===
+        VisualizationMode.ClusterSplitting
+    ) {
+        if (State.clusterInteraction.selectedCluster) {
+            State.helper.clusterSplittingCurrentStep = 2;
+            State.clusterInteraction.drawPanelActivate = true;
+            console.log("cluster selected");
+        }
+    }
+});
+
+// the preparation and cleaning when changing of Step
+reaction(
+    () => State.helper.clusterSplittingCurrentStep,
+    (step) => {
+        console.log(`Graph Splitting change to step ${step}`);
+        switch (step) {
+            case 1:
+                State.clusterInteraction.confirmClusterSplittingTempData = null;
+                State.interaction.flush();
+                State.clusterInteraction.flush();
+                State.graphDelegate.graphDelegateMethods.refresh();
+                break;
+
+            case 2:
+                ComponentRef?.canvasDrawPanel.clearDrawing();
+                State.graph.rawGraph.forEachNode((node, oldAttributes) => {
+                    State.interaction.updateNodeVisualizeAttribute(
+                        node,
+                        { selected: false },
+                        oldAttributes._visualize
+                    );
+                });
+                State.clusterInteraction.confirmClusterSplittingTempData = null;
+                State.interaction.flush();
+                State.graphDelegate.graphDelegateMethods.refresh();
+
+                break;
+
+            case 3:
+                break;
+        }
+    }
+);
 
 // if graph is empty, suspend the animation to save computing power
 reaction(

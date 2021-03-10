@@ -1,7 +1,8 @@
-import { makeAutoObservable } from "mobx";
+import { autorun, makeAutoObservable, reaction } from "mobx";
 import * as THREE from "three";
 import { polygonContains } from "d3-polygon";
 import State from ".";
+import { VisualizationMode } from "./PreferencesStore";
 
 export default class ClusterInteractionStore {
     constructor() {
@@ -30,6 +31,9 @@ export default class ClusterInteractionStore {
         );
         // multi-selection
         let index;
+
+        State.clusterInteraction.selectedCluster = uuid;
+
         // if already in the list of selected, remove
         if (
             (index = State.clusterInteraction.selectedClusters.indexOf(
@@ -93,6 +97,8 @@ export default class ClusterInteractionStore {
         this.flush();
     }
 
+    drawPanelActivate: boolean = false;
+
     lineSegment!: any[];
 
     confirmClusterSplittingTempData:
@@ -131,12 +137,12 @@ export default class ClusterInteractionStore {
 
             if (inside) {
                 State.interaction.updateNodeVisualizeAttribute(value.id, {
-                    hovered: true,
+                    selected: true,
                 });
                 value["value"] = 1;
             } else {
                 State.interaction.updateNodeVisualizeAttribute(value.id, {
-                    hovered: false,
+                    selected: false,
                 });
                 value["value"] = 0;
             }
@@ -151,14 +157,23 @@ export default class ClusterInteractionStore {
         const clusterId: string = `Cluster Split @ ${date}`;
         const anotherClusterId: string = `Another Cluster Split @ ${date}`;
         const thisCluster = State.cluster.clusterBy;
+
+        const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+            this.selectedCluster as string
+        ) as string | number;
+        const nodesToAlter = State.cluster.attributeKeys.get(
+            clusterValue
+        ) as string[];
         this.confirmClusterSplittingTempData?.forEach((node) => {
-            State.graph.rawGraph.setNodeAttribute(
-                node.id,
-                thisCluster as string,
-                node["value"] === 1 ? clusterId : anotherClusterId
-            );
+            if (nodesToAlter.includes(node.id)) {
+                State.graph.rawGraph.setNodeAttribute(
+                    node.id,
+                    thisCluster as string,
+                    node["value"] === 1 ? clusterId : anotherClusterId
+                );
+            }
         });
         this.confirmClusterSplittingTempData = null;
-        State.cluster.setCluster(thisCluster);
+        State.cluster.setCluster(thisCluster, true);
     }
 }

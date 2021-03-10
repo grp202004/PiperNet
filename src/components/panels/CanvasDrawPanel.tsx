@@ -35,7 +35,7 @@ export default observer(
                         canvasHeight={this.canvas.height}
                         canvasWidth={this.canvas.width}
                         lazyRadius={0}
-                        brushRadius={5}
+                        brushRadius={3}
                         brushColor={"#F6B26B"}
                         catenaryColor={"#F6B26B"}
                     />
@@ -44,9 +44,16 @@ export default observer(
         }
 
         exportDrawing() {
+            State.helper.clusterSplittingCurrentStep = 3;
             let hightDiff = 50;
             const data = JSON.parse(this.canvasMethods.getSaveData());
-            let drawPoints = data.lines[0].points as { x: number; y: number }[];
+            let drawPoints = data?.lines[0]?.points as {
+                x: number;
+                y: number;
+            }[];
+            if (!drawPoints) {
+                return;
+            }
             drawPoints.map((value) => {
                 value.y += hightDiff;
             });
@@ -77,5 +84,14 @@ export default observer(
             State.clusterInteraction.lineSegment = drawPoints;
             State.clusterInteraction.computeSplitCluster();
         }
+
+        clearDrawing() {
+            this.canvasMethods.clear();
+        }
+
+        componentDidMount = () => {
+            ComponentRef.canvasDrawPanel = this;
+            this.clearDrawing();
+        };
     }
 );
