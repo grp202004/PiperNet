@@ -2,7 +2,7 @@ import React from "react";
 // import PreferencesDialog from "./PreferencesDialog";
 import ImportCSVDialog from "./dialogs/ImportCSVDialog";
 import ImportGEXFDialog from "./dialogs/ImportGEXFDialog";
-import ImportSamplesDialog from "./dialogs/ImportGEXFDialog";
+import ImportSamplesDialog from "./dialogs/importSamplesDialog";
 import ExportDialog from "./dialogs/ExportDialog";
 // import ProjectDetailDialog from "./ProjectDetailDialog";
 // import RenameSnapshotDialog from "./RenameSnapshotDialog";
@@ -21,7 +21,7 @@ export default class Dialogs extends React.Component {
                 {/* <PreferencesDialog /> */}
                 <ImportCSVDialog />
                 <ImportGEXFDialog />
-                <ImportSamplesDialog />
+                <ImportSamplesDialog/>
                 {/*
                 <ProjectDetailDialog />
                 <RenameSnapshotDialog />

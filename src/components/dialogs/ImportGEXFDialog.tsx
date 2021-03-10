@@ -2,6 +2,7 @@
 import React from "react";
 import {
     Button,
+    ButtonGroup,
     Classes,
     Dialog,
     FileInput,
@@ -22,7 +23,8 @@ export default observer(
             return (
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button
+                        <ButtonGroup>
+                            <Button
                             className={classnames({
                                 [Classes.DISABLED]: !this.state.fileIsSelect,
                             })}
@@ -48,6 +50,7 @@ export default observer(
                             }}
                             text="Import"
                         />
+                        </ButtonGroup>
                     </div>
                 </div>
             );
