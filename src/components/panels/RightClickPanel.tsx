@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import { computed, makeObservable } from "mobx";
-import { DISABLED } from "_@blueprintjs_core@3.36.0@@blueprintjs/core/lib/esm/common/classes";
 import { VisualizationMode } from "../../state/PreferencesStore";
 
 interface Props {
