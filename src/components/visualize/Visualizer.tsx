@@ -274,7 +274,6 @@ export default observer(
 reaction(
     () => State.preferences.visualizationMode,
     (visualizationMode) => {
-        console.log(`changing mode to ${visualizationMode}`);
         switch (visualizationMode) {
             case VisualizationMode.Normal:
                 ComponentRef.visualizer?.setState({
@@ -302,6 +301,7 @@ reaction(
                     nodePointerInteraction: false,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(true);
+                State.preferences.clusterSplittingPanelStackOpen = true;
                 break;
         }
     }

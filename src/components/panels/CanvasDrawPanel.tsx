@@ -46,17 +46,36 @@ export default observer(
         exportDrawing() {
             let hightDiff = 50;
             const data = JSON.parse(this.canvasMethods.getSaveData());
-            let res = data.lines[0].points as { x: number; y: number }[];
-            res.map((value) => {
+            let drawPoints = data.lines[0].points as { x: number; y: number }[];
+            drawPoints.map((value) => {
                 value.y += hightDiff;
             });
-            res = [res[0], res[res.length - 1]];
-            res.unshift({ x: 0, y: 0 });
-            res.push({ x: this.canvas.width, y: 0 });
-            res.push({ x: 0, y: 0 });
-            console.log(res);
-            State.clusterInteraction.lineSegment = res;
-            console.log(State.clusterInteraction.computeSplitCluster());
+
+            // const firstPoint = drawPoints[0];
+            // const x1 = firstPoint.x,
+            //     y1 = firstPoint.y;
+            // const lastPoint = drawPoints[drawPoints.length - 1];
+            // const x2 = lastPoint.x,
+            //     y2 = lastPoint.y;
+            // const slope = (y1 - y2) / (x1 - x2);
+            // const b = (x1 * y2 - x2 * y1) / (x1 - x2);
+
+            // const leftIntersect = { x: 0, y: b };
+            // const rightIntersect = {
+            //     x: this.canvas.width,
+            //     y: slope * this.canvas.width + b,
+            // };
+            // const topIntersect = { x: -b / slope, y: 0 };
+            // const bottomIntersect = {
+            //     x: (this.canvas.height - b) / slope,
+            //     y: this.canvas.height,
+            // };
+
+            drawPoints.unshift({ x: 0, y: 0 });
+            drawPoints.push({ x: this.canvas.width, y: 0 });
+            drawPoints.push({ x: 0, y: 0 });
+            State.clusterInteraction.lineSegment = drawPoints;
+            State.clusterInteraction.computeSplitCluster();
         }
     }
 );

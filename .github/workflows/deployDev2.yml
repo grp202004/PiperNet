@@ -4,6 +4,11 @@
 name: Deploy Dev branch to GitHub Pages
 env:
     CI: false
+on:
+    push:
+        branches:
+            -ClusterCutMerge
+
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
@@ -20,7 +25,7 @@ jobs:
             - name: Deploy 🚀
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:
-                  REPOSITORY_NAME: Kaby-Lake/pipernetDev.github.io
+                  REPOSITORY_NAME: Kaby-Lake/pipernetDev2.github.io
                   ACCESS_TOKEN: ${{ secrets.PAGES }}
                   BRANCH: gh-pages
                   FOLDER: build

@@ -360,3 +360,11 @@ div.pt-card.sub-option.legend {
 .pt-numeric-input.pt-control-group {
     display: inline-flex;
 }
+
+.bp3-panel-stack-view {
+    position: inherit;
+}
+
+.bp3-panel-stack2 {
+    position: inherit;
+}

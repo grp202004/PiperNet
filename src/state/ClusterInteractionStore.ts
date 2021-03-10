@@ -95,7 +95,16 @@ export default class ClusterInteractionStore {
 
     lineSegment!: any[];
 
-    computeSplitCluster(): any[] {
+    confirmClusterSplittingTempData:
+        | {
+              [key: string]: any;
+              id: string;
+              x: number;
+              y: number;
+          }[]
+        | null = null;
+
+    computeSplitCluster() {
         let screenCoords = [] as {
             id: string;
             x: number;
@@ -121,11 +130,35 @@ export default class ClusterInteractionStore {
             let inside = polygonContains(tempLineSegment, [value.x, value.y]);
 
             if (inside) {
+                State.interaction.updateNodeVisualizeAttribute(value.id, {
+                    hovered: true,
+                });
                 value["value"] = 1;
             } else {
+                State.interaction.updateNodeVisualizeAttribute(value.id, {
+                    hovered: false,
+                });
                 value["value"] = 0;
             }
         });
-        return screenCoords;
+
+        State.graphDelegate.graphDelegateMethods.refresh();
+        this.confirmClusterSplittingTempData = screenCoords;
+    }
+
+    splitCluster() {
+        const date = new Date().toLocaleString();
+        const clusterId: string = `Cluster Split @ ${date}`;
+        const anotherClusterId: string = `Another Cluster Split @ ${date}`;
+        const thisCluster = State.cluster.clusterBy;
+        this.confirmClusterSplittingTempData?.forEach((node) => {
+            State.graph.rawGraph.setNodeAttribute(
+                node.id,
+                thisCluster as string,
+                node["value"] === 1 ? clusterId : anotherClusterId
+            );
+        });
+        this.confirmClusterSplittingTempData = null;
+        State.cluster.setCluster(thisCluster);
     }
 }

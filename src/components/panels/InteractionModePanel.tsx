@@ -1,9 +1,21 @@
-import React from "react";
-import { Button, Classes, Intent, Position, Tooltip } from "@blueprintjs/core";
+import React, { useCallback, useState } from "react";
+import {
+    Button,
+    Card,
+    Classes,
+    H4,
+    Intent,
+    Popover,
+    Position,
+    Tooltip,
+    PanelStack2,
+} from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import { VisualizationMode } from "../../state/PreferencesStore";
+import ClusterSplittingPanelStack from "./ClusterSplittingPanelStack";
+import ComponentRef from "../ComponentRef";
 
 export default observer(
     class InteractionModePanel extends React.Component {
@@ -48,7 +60,7 @@ export default observer(
                     {this.renderMode(VisualizationMode.Normal)}
                     {this.renderMode(VisualizationMode.NodeSelection)}
                     {this.renderMode(VisualizationMode.ClusterSelection)}
-                    {this.renderMode(VisualizationMode.ClusterSplitting)}
+                    <ClusterSplittingPanelStack />
                 </div>
             );
         }
