@@ -17,4 +17,6 @@ export default class HelperStackPanelStore {
      * @memberof HelperStackPanelStore
      */
     clusterSplittingCurrentStep: 1 | 2 | 3 = 1;
+
+    NodeSelectionPanelOpen: boolean = false;
 }

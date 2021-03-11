@@ -1,4 +1,4 @@
-import React, { ComponentProps, useCallback, useState } from "react";
+import React from "react";
 
 import {
     Button,
@@ -12,10 +12,10 @@ import {
 } from "@blueprintjs/core";
 import { Popover2, Tooltip2 } from "@blueprintjs/labs";
 import classnames from "classnames";
-import State from "../../state";
-import { VisualizationMode } from "../../state/PreferencesStore";
+import State from "../../../state";
+import { VisualizationMode } from "../../../state/PreferencesStore";
 import { observer } from "mobx-react";
-import ComponentRef from "../ComponentRef";
+import ComponentRef from "../../ComponentRef";
 
 interface CustomPanelEntry {
     step: number;
@@ -114,10 +114,6 @@ interface Props {
 
 export default observer(
     class ClusterSplittingPanelStack extends React.Component<Props, {}> {
-        constructor(props: Props) {
-            super(props);
-        }
-
         private firstPanel: Panel<PanelInfo> = {
             props: {
                 panelNumber: 1,
@@ -152,6 +148,8 @@ export default observer(
 
                 case 3:
                     return [this.firstPanel, this.secondPanel, this.thirdPanel];
+                default:
+                    return [];
             }
         }
 
@@ -208,6 +206,8 @@ export default observer(
                             onClick={() => {
                                 State.preferences.visualizationMode =
                                     VisualizationMode.ClusterSplitting;
+
+                                State.helper.clusterSplittingPanelStackOpen = true;
                             }}
                         />
                     </Tooltip2>

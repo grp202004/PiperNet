@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import { computed, makeObservable } from "mobx";
+import { VisualizationMode } from "../../state/PreferencesStore";
 
 interface Props {
     /**
@@ -48,6 +49,8 @@ export default observer(
             });
             State.preferences.rightClickPanelOpen = false;
             State.cluster.setCluster("new-cluster");
+
+            State.interaction.flush();
         }
 
         renderNodeMenu() {
@@ -62,8 +65,7 @@ export default observer(
                     <MenuDivider
                         title={
                             ("Node ID: " +
-                                State.interaction
-                                    .stagedCurrentlyHoveredNodeId) as string
+                                State.interaction.selectedNode) as string
                         }
                     />
                     <MenuItem
@@ -71,9 +73,9 @@ export default observer(
                         text="Delete Node"
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.interaction
-                                    .currentlyHoveredNodeId as string
+                                State.interaction.selectedNode as string
                             );
+                            State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                     />
@@ -88,7 +90,7 @@ export default observer(
                         icon="eraser"
                         text="Cancel Selection"
                         onClick={() => {
-                            State.interaction.selectedNodes = [];
+                            State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                         disabled={State.interaction.selectedNodes.length === 0}
@@ -100,6 +102,7 @@ export default observer(
                             State.interaction.selectedNodes.forEach((node) => {
                                 State.graph.mutating.dropNode(node);
                             });
+                            State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                     />
@@ -109,6 +112,8 @@ export default observer(
                         text="Add Edge"
                         onClick={() => {
                             State.preferences.AddEdgeDialogOpen = true;
+                            State.interaction.flush();
+                            State.preferences.rightClickPanelOpen = false;
                         }}
                     />
                     <MenuItem

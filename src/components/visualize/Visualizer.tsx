@@ -14,6 +14,7 @@ import {
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
+import SelectionBox from "../SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDrawPanel";
 
@@ -48,10 +49,7 @@ export default observer(
                 State.interaction.currentlyHoveredNodeId = null;
             } else if (node !== previousNode) {
                 let current: string = node.id as string;
-                State.interaction.previouslyHoveredNodeId =
-                    State.interaction.currentlyHoveredNodeId;
                 State.interaction.currentlyHoveredNodeId = current;
-                State.interaction.stagedCurrentlyHoveredNodeId = current;
             }
             // console.log(State.graph.rawGraph);
         };
@@ -61,7 +59,10 @@ export default observer(
                 return;
             }
             let nodeId = node.id as string;
-            if (event.ctrlKey || event.shiftKey) {
+            if (
+                State.preferences.visualizationMode ===
+                VisualizationMode.NodeSelection
+            ) {
                 // multi-selection
                 let index;
                 // if already in the list of selected, remove
@@ -77,7 +78,7 @@ export default observer(
                 }
             } else {
                 // single select
-                State.interaction.selectedNode = node.id as string;
+                State.interaction.selectedNodes = [node.id as string];
             }
         };
 
@@ -93,8 +94,9 @@ export default observer(
             State.preferences.closeAllPanel("rightClickPanel");
         };
 
-        backgroundClickCallback = (event: MouseEvent) => {
+        backgroundClickCallback = () => {
             // cancel all selection
+            State.interaction.flush();
             State.interaction.selectedNodes = [];
             State.preferences.rightClickPanelOpen = false;
             State.preferences.closeAllPanel("rightClickPanel");
@@ -148,6 +150,11 @@ export default observer(
             if (State.preferences.view === "3D") {
                 return (
                     <div>
+                        {State.preferences.visualizationMode ===
+                            VisualizationMode.NodeSelection &&
+                            State.interaction.boxSelectionOpen && (
+                                <SelectionBox />
+                            )}
                         {State.preferences.visualizationMode ===
                             VisualizationMode.ClusterSplitting &&
                             State.clusterInteraction.drawPanelActivate && (
