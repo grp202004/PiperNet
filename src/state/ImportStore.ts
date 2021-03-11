@@ -58,8 +58,8 @@ export default class ImportStore {
     //name of the GEXF file
     gexfFileName = "Choose GEXF File ...";
 
-    importCSVDialogOpen = false;
-    importSamplesDialogOpen = false;
+    importDialogOpen = false;
+
     importGEXFDialogOpen = false;
 
     // specific: File object selected via the file input.

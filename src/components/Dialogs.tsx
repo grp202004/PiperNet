@@ -1,8 +1,6 @@
 import React from "react";
 // import PreferencesDialog from "./PreferencesDialog";
-import ImportCSVDialog from "./dialogs/ImportCSVDialog";
-import ImportGEXFDialog from "./dialogs/ImportGEXFDialog";
-import ImportSamplesDialog from "./dialogs/ImportGEXFDialog";
+import ImportDialog from "./dialogs/importDialog";
 import ExportDialog from "./dialogs/ExportDialog";
 // import ProjectDetailDialog from "./ProjectDetailDialog";
 // import RenameSnapshotDialog from "./RenameSnapshotDialog";
@@ -13,15 +11,15 @@ import NodeDataSheetDialog from "./dialogs/NodeDataSheetDialog";
 import EdgeDataSheetDialog from "./dialogs/EdgeDataSheetDialog";
 import AddNodeDialog from "./dialogs/AddNodeDialog";
 import AddEdgeDialog from "./dialogs/AddEdgeDialog";
+import ImportGEXFDialog from "./dialogs/ImportGEXFDialog";
 
 export default class Dialogs extends React.Component {
     render() {
         return (
             <div style={{ display: "none" }}>
                 {/* <PreferencesDialog /> */}
-                <ImportCSVDialog />
                 <ImportGEXFDialog />
-                <ImportSamplesDialog />
+                <ImportDialog />
                 {/*
                 <ProjectDetailDialog />
                 <RenameSnapshotDialog />
