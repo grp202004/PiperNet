@@ -159,6 +159,7 @@ export default observer(
                             </Button>
                         </Popover>
                         <Switch
+                            style={{ marginTop: 10, marginLeft: 8 }}
                             label="Graph Animation"
                             checked={State.css.isAnimating}
                             onChange={() =>
@@ -228,7 +229,7 @@ export default observer(
                             Classes.ALIGN_RIGHT,
                         ])}
                     >
-                        Clustered by
+                        <div style={{ marginRight: 6 }}>Clustered by</div>
                         <ClusterChooser
                             onSelect={(cluster) => {
                                 State.cluster.setCluster(cluster);

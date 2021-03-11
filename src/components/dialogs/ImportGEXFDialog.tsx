@@ -67,7 +67,7 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    icon="import"
+                    icon="document-open"
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
                         State.import.importGEXFDialogOpen = false;
