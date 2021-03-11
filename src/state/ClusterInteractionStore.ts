@@ -1,8 +1,7 @@
-import { autorun, makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
 import { polygonContains } from "d3-polygon";
 import State from ".";
-import { VisualizationMode } from "./PreferencesStore";
 
 export default class ClusterInteractionStore {
     constructor() {
@@ -72,7 +71,7 @@ export default class ClusterInteractionStore {
      *
      */
     mergeSelectedCluster() {
-        let date = new Date().toLocaleString();
+        let date = new Date().toLocaleString("en");
         let clusterId: string = `Cluster Merged @ ${date}`;
         if (!State.graph.metadata.nodeProperties.includes("_merge-cluster")) {
             State.graph.metadata.nodeProperties.push("_merge-cluster");
@@ -153,7 +152,7 @@ export default class ClusterInteractionStore {
     }
 
     splitCluster() {
-        const date = new Date().toLocaleString();
+        let date = new Date().toLocaleString("en");
         const clusterId: string = `Cluster Split @ ${date}`;
         const anotherClusterId: string = `Another Cluster Split @ ${date}`;
         const thisCluster = State.cluster.clusterBy;

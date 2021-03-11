@@ -31,7 +31,7 @@ export default observer(
         }
 
         formNewCluster() {
-            let date = new Date().toLocaleString();
+            let date = new Date().toLocaleString("en");
             let clusterId: string = `Cluster Generated @ ${date}`;
             if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
                 State.graph.metadata.nodeProperties.push("new-cluster");

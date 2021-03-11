@@ -58,6 +58,18 @@ export default observer(
                 value.y += hightDiff;
             });
 
+            // line was drawn left to right
+            if (drawPoints[0].x < drawPoints[drawPoints.length - 1].x) {
+                drawPoints.unshift({ x: 0, y: 0 });
+                drawPoints.push({ x: this.canvas.width, y: 0 });
+                drawPoints.push({ x: 0, y: 0 });
+            } else {
+                drawPoints.reverse();
+                drawPoints.unshift({ x: 0, y: 0 });
+                drawPoints.push({ x: this.canvas.width, y: 0 });
+                drawPoints.push({ x: 0, y: 0 });
+            }
+
             // const firstPoint = drawPoints[0];
             // const x1 = firstPoint.x,
             //     y1 = firstPoint.y;
@@ -78,9 +90,6 @@ export default observer(
             //     y: this.canvas.height,
             // };
 
-            drawPoints.unshift({ x: 0, y: 0 });
-            drawPoints.push({ x: this.canvas.width, y: 0 });
-            drawPoints.push({ x: 0, y: 0 });
             State.clusterInteraction.lineSegment = drawPoints;
             State.clusterInteraction.computeSplitCluster();
         }
