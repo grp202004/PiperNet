@@ -92,7 +92,7 @@ export default observer(
             );
         }
         componentDidMount = () => {
-            ComponentRef.nodeDetail = this;
+            ComponentRef.nodeDetail = React.createRef();
         };
     }
 );

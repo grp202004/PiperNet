@@ -27,7 +27,7 @@ export default observer(
                             A <em>UNIQUE</em> node means there should only exist
                             one node that has the respective node id.
                         </p>
-                        <Tag>New edges are added to the end of the table</Tag>
+                        <Tag>New nodes are added to the end of the table</Tag>
                         <hr />
                         <NodeAdder
                             onAdded={() => {

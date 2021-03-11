@@ -23,8 +23,8 @@ export async function fetchSampleGraph(url: string) {
 }
 
 
-export const NODE_AND_EDGE_FILE = "both nodes and edges file";
-export const ONLY_EDGE_FILE = "only edges file";
+export const NODE_AND_EDGE_FILE = "import both nodes and edges file";
+export const ONLY_EDGE_FILE = "only import edges file";
 
 export const COLOR_LIST = {
     aliceblue: 0xf0f8ff,

@@ -16,12 +16,7 @@ export default observer(
                         "transparent-frame"
                     )}
                 >
-                    <div
-                        className={classnames(
-                            Classes.CARD,
-                            "nodes-details-table"
-                        )}
-                    >
+                    <div className={classnames(Classes.CARD)}>
                         <Table numRows={State.interaction.selectedNodes.length}>
                             {State.graph.metadata.nodeProperties.map((it) => (
                                 <Column

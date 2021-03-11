@@ -22,8 +22,21 @@ export default observer(
             ready: true,
         };
 
+        /**
+         * compute the GEXF file from rawGraph
+         * delete the temporary _visualize attribute from the graph
+         *
+         * @returns {*}
+         */
         computeGEXFFile() {
-            return gexf.write(State.graph.rawGraph);
+            let graphCopy = State.graph.rawGraph.copy();
+            graphCopy.forEachNode((_node, attributes: any) => {
+                delete attributes["_visualize"];
+            });
+            graphCopy.forEachEdge((_edge, attributes: any) => {
+                delete attributes["_visualize"];
+            });
+            return gexf.write(graphCopy);
         }
 
         computeNodeFile() {
@@ -31,11 +44,12 @@ export default observer(
                 label: string;
                 key: string;
             }[] = [];
+            headers.push({ label: "_id", key: "_id" });
             State.graph.metadata.nodeProperties.map((value) => {
                 headers.push({ label: value, key: value });
                 return null;
             });
-            headers.push({ label: "_id", key: "_id" });
+            
             let exportData = State.graph.rawGraph.export();
             let data: any[] = [];
             exportData.nodes.forEach((node) => {
@@ -71,9 +85,9 @@ export default observer(
             return (
                 <Dialog
                     icon="projects"
-                    isOpen={State.project.exportDialogOpen}
+                    isOpen={State.preferences.exportDialogOpen}
                     onClose={() => {
-                        State.project.exportDialogOpen = false;
+                        State.preferences.exportDialogOpen = false;
                     }}
                     title={`Export Graph`}
                 >
