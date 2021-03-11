@@ -76,9 +76,9 @@ export default observer(
                                 <SimpleSelect
                                     items={["convexHull", "sphere"]}
                                     text={State.css.cluster.shape}
-                                    onSelect={(it) =>
-                                        (State.css.cluster.shape = it)
-                                    }
+                                    onSelect={(it) => {
+                                        State.css.cluster.shape = it;
+                                    }}
                                     small={true}
                                 />
                             </span>
@@ -95,6 +95,7 @@ export default observer(
                                 labelStepSize={5}
                                 onChange={(value) => {
                                     State.css.cluster.resolution = value;
+                                    State.graphDelegate.graphDelegateMethods.refresh();
                                 }}
                                 value={State.css.cluster.resolution}
                             />

@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
 import { SphereGeometry } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
-import { SceneUtils } from "three/examples/jsm/utils/SceneUtils.js";
 import State from ".";
 
 export default class Cluster3dObjectStore {
@@ -20,6 +19,8 @@ export default class Cluster3dObjectStore {
      * all the clusters should form a 3D Group to be imported into Scene
      * if no cluster attribute is set, this will be set to null
      *
+     * each children is a THREE.Mesh
+     *
      * @type {THREE.Group}
      */
     fusionClusterObjects: THREE.Group | null = null;
@@ -31,7 +32,7 @@ export default class Cluster3dObjectStore {
      *
      * @type {(Map<string | number, THREE.Group> | null)}
      */
-    clusterObjectsMap: Map<string | number, THREE.Group> | null = null;
+    clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
 
     /**
      * create empty BufferGeometry and mesh with colour
@@ -40,11 +41,19 @@ export default class Cluster3dObjectStore {
      *
      */
     initEmptyMapAndFusion() {
-        let initialMap = new Map<string | number, THREE.Group>();
+        if (this.fusionClusterObjects) {
+            this.threeScene.remove(this.fusionClusterObjects);
+            this.dispose();
+        }
+        if (State.cluster.clusterBy === null) {
+            return;
+        }
+        this.UUID2ClusterValueMap = new Map<string, string | number>();
+        let initialMap = new Map<string | number, THREE.Mesh>();
         State.cluster.attributePoints.forEach((value, key) => {
             initialMap.set(
                 key,
-                this.createMeshGroup(new THREE.BufferGeometry(), key)
+                this.createMesh(new THREE.BufferGeometry(), key)
             );
         });
 
@@ -67,10 +76,6 @@ export default class Cluster3dObjectStore {
      */
     clusterDelegation() {
         if (State.cluster.clusterBy === null) {
-            if (this.fusionClusterObjects) {
-                this.threeScene.remove(this.fusionClusterObjects);
-                this.dispose();
-            }
             return;
         } else {
             if (
@@ -80,11 +85,8 @@ export default class Cluster3dObjectStore {
                 this.initEmptyMapAndFusion();
             }
             this.clusterObjectsMap?.forEach(
-                (group: THREE.Group, key: string | number) => {
-                    let newBufferGeometry = this.convexHullObject(key);
-                    group.children.forEach((mesh: any) => {
-                        mesh.geometry.copy(newBufferGeometry);
-                    });
+                (mesh: THREE.Mesh, key: string | number) => {
+                    mesh.geometry.copy(this.convexHullObject(key));
                 }
             );
         }
@@ -92,21 +94,19 @@ export default class Cluster3dObjectStore {
 
     getObjectById(uuid: string): THREE.Mesh | null {
         let res: THREE.Object3D | null = null;
-        this.fusionClusterObjects?.children[0].children.every(
-            (item: THREE.Object3D) => {
-                if (item.uuid === uuid) {
-                    res = item;
-                    return false;
-                } else {
-                    return true;
-                }
+        this.fusionClusterObjects?.children.every((item: THREE.Object3D) => {
+            if (item.uuid === uuid) {
+                res = item;
+                return false;
+            } else {
+                return true;
             }
-        );
+        });
         return res;
     }
 
     resetDefaultMaterial() {
-        this.fusionClusterObjects?.children[0].children.forEach(
+        this.fusionClusterObjects?.children.forEach(
             (object: THREE.Object3D) => {
                 let mesh = object as THREE.Mesh;
                 let material = mesh.material as THREE.Material;
@@ -121,15 +121,14 @@ export default class Cluster3dObjectStore {
      *
      */
     dispose() {
-        this.clusterObjectsMap?.forEach((group: THREE.Group) => {
-            group.children.forEach((mesh: any) => {
-                let material = mesh.material as THREE.Material;
-                material.dispose();
-                mesh.geometry.dispose();
-            });
+        this.clusterObjectsMap?.forEach((mesh: THREE.Mesh) => {
+            let material = mesh.material as THREE.Material;
+            material.dispose();
+            mesh.geometry.dispose();
         });
         this.clusterObjectsMap = null;
         this.fusionClusterObjects = null;
+        this.UUID2ClusterValueMap = new Map<string, string | number>();
     }
 
     /**
@@ -189,10 +188,10 @@ export default class Cluster3dObjectStore {
      *
      * @see THREE.Mesh
      */
-    private createMeshGroup(
+    private createMesh(
         geom: THREE.BufferGeometry,
         name: string | number
-    ): THREE.Group {
+    ): THREE.Mesh {
         const meshMaterial = new THREE.MeshBasicMaterial({
             color: State.cluster.attributeColor.get(name),
             transparent: true,
@@ -200,13 +199,54 @@ export default class Cluster3dObjectStore {
         });
         meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
         meshMaterial.depthWrite = false;
-        // const wireFrameMat = new THREE.MeshBasicMaterial();
-        // wireFrameMat.wireframe = true; //把材质渲染成线框
-        // wireFrameMat.wireframeLinecap = "round";
 
-        let group = SceneUtils.createMultiMaterialObject(geom, [meshMaterial]);
-        // wireFrameMat,
-        group.name = "THREE_CLUSTER_" + name;
-        return group;
+        let mesh = new THREE.Mesh(geom, meshMaterial);
+        this.UUID2ClusterValueMap.set(mesh.uuid, name);
+        mesh.name = "THREE_CLUSTER_" + name;
+        return mesh;
+    }
+
+    UUID2ClusterValueMap!: Map<string, string | number>;
+
+    meshSpotlightMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        const oldOpacity = material.opacity;
+        material.opacity = 0.7;
+        setTimeout(() => {
+            material.opacity = oldOpacity;
+        }, 100);
+    }
+
+    private meshHighlightMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        material.opacity = 0.5;
+    }
+
+    private meshSelectedMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        material.opacity = 0.3;
+    }
+
+    private meshNormalMaterial(mesh: THREE.Mesh) {
+        let material = mesh.material as THREE.Material;
+        material.opacity = 0.15;
+    }
+
+    updateAllMaterials() {
+        this.fusionClusterObjects?.children.forEach((_object) => {
+            let mesh = _object as THREE.Mesh;
+            const meshId = mesh.uuid;
+            if (State.clusterInteraction.currentlyHoveredClusterId === meshId) {
+                this.meshHighlightMaterial(mesh);
+                return;
+            } else if (
+                State.clusterInteraction.selectedClusters.includes(meshId)
+            ) {
+                this.meshSelectedMaterial(mesh);
+                return;
+            } else {
+                this.meshNormalMaterial(mesh);
+            }
+        });
     }
 }

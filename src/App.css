@@ -186,10 +186,22 @@ html {
     top: 5em;
     position: absolute;
 }
+.selectionBox {
+    position: fixed;
+    background-color: #61dafb;
+    opacity: 0.5;
+}
+
+.boxCanvas {
+    position: fixed;
+    z-index: 999;
+    width: 100vw;
+    height: 100vh;
+}
 
 .left-bottom-overlay-card {
     left: 2em;
-    bottom: 2em;
+    bottom: 4em;
     position: absolute;
 }
 
@@ -197,18 +209,6 @@ html {
     right: 2em;
     bottom: 2em;
     position: absolute;
-}
-
-.minimal-navbar-right {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-}
-
-.minimal-navbar-left {
-    position: absolute;
-    top: 0px;
-    left: 0px;
 }
 
 .bottom-status-bar {
@@ -325,6 +325,7 @@ div.pt-card.sub-option.legend {
     font-size: 0.4em;
     pointer-events: all;
     padding: 0;
+    /* display: flex; */
 }
 
 .right-click-panel {
@@ -358,8 +359,9 @@ div.pt-card.sub-option.legend {
     height: 600px;
 }
 
-.argo-selection-action-panel {
-    right: 300px;
+.selection-action-panel {
+    left: 50%;
+    margin-left: -200px;
     top: 50px;
     position: absolute;
     pointer-events: all;
@@ -368,4 +370,12 @@ div.pt-card.sub-option.legend {
 /* Override blueprint numeric input, since it's useless unless inline */
 .pt-numeric-input.pt-control-group {
     display: inline-flex;
+}
+
+.bp3-panel-stack-view {
+    position: inherit;
+}
+
+.bp3-panel-stack2 {
+    position: inherit;
 }
