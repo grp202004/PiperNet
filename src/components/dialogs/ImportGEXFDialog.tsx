@@ -25,31 +25,39 @@ export default observer(
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                         <ButtonGroup>
                             <Button
-                            className={classnames({
-                                [Classes.DISABLED]: !this.state.fileIsSelect,
-                            })}
-                            intent={Intent.PRIMARY}
-                            onClick={() => {
-                                State.import.isLoading = true;
-                                State.import
-                                    .importGraphFromGEXF()
-                                    .then((res) => {
-                                        State.graph.setGraph(
-                                            res.graph,
-                                            res.metadata
-                                        );
+                                className={classnames({
+                                    [Classes.DISABLED]: !this.state
+                                        .fileIsSelect,
+                                })}
+                                intent={Intent.PRIMARY}
+                                onClick={() => {
+                                    State.import.isLoading = true;
+                                    State.import
+                                        .importGraphFromGEXF()
+                                        .then((res) => {
+                                            State.graph.setGraph(
+                                                res.graph,
+                                                res.metadata
+                                            );
 
-                                        if(State.cluster.rawGraph.hasAttribute('default')){
-                                            State.cluster
-                                            .setCluster(State.graph.rawGraph.getAttribute('default'));
-                                        }
+                                            if (
+                                                State.cluster.rawGraph.hasAttribute(
+                                                    "default"
+                                                )
+                                            ) {
+                                                State.cluster.setCluster(
+                                                    State.graph.rawGraph.getAttribute(
+                                                        "default"
+                                                    )
+                                                );
+                                            }
 
-                                        State.import.isLoading = false;
-                                        State.import.importGEXFDialogOpen = false;
-                                    });
-                            }}
-                            text="Import"
-                        />
+                                            State.import.isLoading = false;
+                                            State.import.importGEXFDialogOpen = false;
+                                        });
+                                }}
+                                text="Import"
+                            />
                         </ButtonGroup>
                     </div>
                 </div>
@@ -62,9 +70,9 @@ export default observer(
                     icon="import"
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
-                        State.import.importGEXFDialogOpen = false;       
+                        State.import.importGEXFDialogOpen = false;
                     }}
-                    title="Import GEXF"
+                    title="Open GEXF"
                 >
                     {/* if is loading, then show Spinner */}
                     {State.import.isLoading ? (

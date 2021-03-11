@@ -46,10 +46,10 @@ export default observer(
                             content={
                                 <Menu>
                                     <MenuItem
-                                        text="Load Sample"
-                                        icon="graph"
+                                        text="Import from CSV"
+                                        icon="import"
                                         onClick={() => {
-                                            State.import.importSamplesDialogOpen = true;
+                                            State.import.importDialogOpen = true;
                                         }}
                                     >
                                         {/* {SAMPLE_GRAPH_SNAPSHOTS.map(
@@ -90,17 +90,10 @@ export default observer(
                                             }
                                         )} */}
                                     </MenuItem>
-                                    <MenuDivider />
+
                                     <MenuItem
                                         icon="import"
-                                        text="Import from CSV..."
-                                        onClick={() => {
-                                            State.import.importCSVDialogOpen = true;
-                                        }}
-                                    />
-                                    <MenuItem
-                                        icon="import"
-                                        text="Import from GEXF..."
+                                        text="Open GEXF"
                                         onClick={() => {
                                             State.import.importGEXFDialogOpen = true;
                                         }}

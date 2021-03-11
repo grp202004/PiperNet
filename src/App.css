@@ -258,12 +258,27 @@ td {
 }
 
 .import-preview-table {
-    height: 200px;
+    height: 30vh;
     margin-bottom: 15px;
 }
 
 .import-dialog {
     line-height: 30px;
+}
+
+.multistep-dialog-body {
+    height: 60vh;
+    justify-content: "center";
+    align-items: "center";
+    display: "flex";
+}
+
+.multistep-dialog-box {
+    width: 60vw;
+}
+
+.bp3-multistep-dialog-left-panel {
+    flex: unset;
 }
 
 .pt-non-ideal-state {
