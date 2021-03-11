@@ -1,14 +1,13 @@
 import { Attributes } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import State from ".";
-import THREE from "three";
-import { Rect } from "_@blueprintjs_table@3.5.0@@blueprintjs/table";
 export default class InteractionStore {
     constructor() {
         makeAutoObservable(this);
     }
 
     selectedNode: string | null = null;
+
     /**
      * the currently selected node ids
      * the singleNodeDetailPanel will render and refresh if this changes
@@ -92,7 +91,6 @@ export default class InteractionStore {
     /**
      * the currently hovered node id that used for display at RightClickPanel
      */
-    stagedCurrentlyHoveredNodeId: string = "";
 
     get currentlyHoveredNodeNeighbors(): string[] | null {
         if (this.currentlyHoveredNodeId === null) {
@@ -109,8 +107,6 @@ export default class InteractionStore {
             return this.getNodeNeighborEdges(this.currentlyHoveredNodeId);
         }
     }
-
-    previouslyHoveredNodeId: string | null = null;
 
     getNodeNeighborEdges(node: string): string[] {
         let neighbors = State.graph.rawGraph.neighbors(node);
@@ -193,37 +189,6 @@ export default class InteractionStore {
         );
     }
 
-    /**
-     * update the _visualize object inside all the nodes attribute and calls graph refresh
-     *
-     * @param {Attributes} _attributeVisualize
-     * @memberof GraphMutation
-     */
-    updateNodesVisualizeAttribute(_attributeVisualize: Attributes) {
-        State.graph.rawGraph.updateEachNodeAttributes((node, attribute) => {
-            return {
-                ...attribute._visualize,
-                ..._attributeVisualize,
-            };
-        });
-    }
-
-    /**
-     *
-     * update the _visualize object inside all the edges attribute and calls graph refresh
-     *
-     * @param {Attributes} _attributeVisualize
-     * @memberof GraphMutation
-     */
-    updateEdgesVisualizeAttribute(_attributeVisualize: Attributes) {
-        State.graph.rawGraph.updateEachEdgeAttributes((node, attribute) => {
-            return {
-                ...attribute._visualize,
-                ..._attributeVisualize,
-            };
-        });
-    }
-
     updateVisualizeAttributeParser(newAttribute: any, oldAttributes: any) {
         if (newAttribute.hasOwnProperty("hovered")) {
             oldAttributes.hovered = newAttribute.hovered;
@@ -248,6 +213,5 @@ export default class InteractionStore {
         this.selectedEdge = null;
         this.selectedEdges = [];
         this.currentlyHoveredNodeId = null;
-        this.previouslyHoveredNodeId = null;
     }
 }

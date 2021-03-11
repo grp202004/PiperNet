@@ -14,6 +14,10 @@ class ComponentRef {
 
     visualizer!: React.Component | any;
 
+    canvasDrawPanel!: React.Component | any;
+
+    clusterSplittingPanelStack!: React.Component | any;
+
     // add singleton to prevent creating multiple instances of the State class
     static get instance() {
         if (ComponentRef._instance === null) {

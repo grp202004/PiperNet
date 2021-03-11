@@ -1,4 +1,3 @@
-import ReactDOM from "react-dom";
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import State from ".";
@@ -7,11 +6,7 @@ import {
     LinkObject,
     NodeObject,
 } from "react-force-graph-3d";
-import * as THREE from "three";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
-import { Object3D } from "three";
-import ComponentRef from "../components/ComponentRef";
-import { Attributes } from "_graphology-types@0.19.2@graphology-types";
 
 /**
  * hovered: false, selected: false: DefaultColor;
@@ -188,62 +183,6 @@ export default class GraphDelegate {
         }
 
         return graphCopy;
-    }
-
-    getMouseCoordsX(event: MouseEvent): number {
-        let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
-        let box = (<Element>element)?.getBoundingClientRect();
-        return event.clientX - box.left;
-    }
-    getMouseCoordsY(event: MouseEvent): number {
-        let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
-        let box = (<Element>element)?.getBoundingClientRect();
-        return event.clientY - box.top;
-    }
-
-    onDocumentMouseMove(event: MouseEvent) {
-        if (
-            State.cluster.clusterBy === null ||
-            !State.graphDelegate.graphDelegateMethods
-        ) {
-            State.clusterInteraction.currentlyHoveredClusterId = null;
-            return;
-        }
-        let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
-        let box = (<Element>element)?.getBoundingClientRect();
-
-        let vector = new THREE.Vector3(
-            ((event.clientX - box.left) / box.width) * 2 - 1,
-            -((event.clientY - box.top) / box.height) * 2 + 1,
-            0.5
-        );
-
-        let camera = State.graphDelegate.graphDelegateMethods?.camera();
-        if (!camera) {
-            return;
-        }
-        vector = vector.unproject(camera);
-
-        let raycaster = new THREE.Raycaster(
-            camera.position,
-            vector.sub(camera.position).normalize()
-        );
-        let intersects = raycaster.intersectObjects(
-            State.graphDelegate.clusterObject.fusionClusterObjects
-                ?.children as Object3D[],
-            true
-        );
-
-        if (intersects.length > 0) {
-            State.clusterInteraction.currentlyHoveredClusterId =
-                intersects[0].object.uuid;
-        } else {
-            State.clusterInteraction.currentlyHoveredClusterId = null;
-        }
-        console.log(
-            "currentlyHoveredClusterId",
-            State.clusterInteraction.currentlyHoveredClusterId
-        );
     }
 
     /**

@@ -203,7 +203,6 @@ html {
     left: 2em;
     bottom: 4em;
     position: absolute;
-    /* z-index: 99; */
 }
 
 .right-bottom-overlay-card {
@@ -371,4 +370,12 @@ div.pt-card.sub-option.legend {
 /* Override blueprint numeric input, since it's useless unless inline */
 .pt-numeric-input.pt-control-group {
     display: inline-flex;
+}
+
+.bp3-panel-stack-view {
+    position: inherit;
+}
+
+.bp3-panel-stack2 {
+    position: inherit;
 }

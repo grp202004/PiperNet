@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Classes, Button } from "@blueprintjs/core";
+import { Classes } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import ComponentRef from "../ComponentRef";

@@ -1,8 +1,7 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import { observer } from "mobx-react";
 import { Attributes } from "graphology-types";
 import classnames from "classnames";
-// import { Position } from "_@blueprintjs_core@3.36.0@@blueprintjs/core";
 import State from "../state/index";
 
 export default observer(
@@ -44,6 +43,7 @@ export default observer(
                 });
             }
         };
+
         onMouseUpCallback = (
             event: React.MouseEvent<HTMLDivElement, MouseEvent>
         ) => {

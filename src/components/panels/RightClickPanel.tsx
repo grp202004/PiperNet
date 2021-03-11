@@ -32,7 +32,7 @@ export default observer(
         }
 
         formNewCluster() {
-            let date = new Date().toLocaleString();
+            let date = new Date().toLocaleString("en");
             let clusterId: string = `Cluster Generated @ ${date}`;
             if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
                 State.graph.metadata.nodeProperties.push("new-cluster");
@@ -49,6 +49,8 @@ export default observer(
             });
             State.preferences.rightClickPanelOpen = false;
             State.cluster.setCluster("new-cluster");
+
+            State.interaction.flush();
         }
 
         renderNodeMenu() {
@@ -63,8 +65,7 @@ export default observer(
                     <MenuDivider
                         title={
                             ("Node ID: " +
-                                State.interaction
-                                    .stagedCurrentlyHoveredNodeId) as string
+                                State.interaction.selectedNode) as string
                         }
                     />
                     <MenuItem
@@ -72,25 +73,11 @@ export default observer(
                         text="Delete Node"
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.interaction
-                                    .currentlyHoveredNodeId as string
+                                State.interaction.selectedNode as string
                             );
+                            State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
                         }}
-                    />
-                    <MenuItem
-                        icon="graph-remove"
-                        text="Box-select Node"
-                        onClick={() => {
-                            State.interaction.boxSelectionOpen = true;
-                            State.preferences.rightClickPanelOpen = false;
-                        }}
-                        disabled={
-                            !(
-                                State.preferences.visualizationMode ===
-                                VisualizationMode.NodeSelection
-                            )
-                        }
                     />
                     <MenuDivider />
                     <MenuItem
@@ -103,7 +90,7 @@ export default observer(
                         icon="eraser"
                         text="Cancel Selection"
                         onClick={() => {
-                            State.interaction.selectedNodes = [];
+                            State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                         disabled={State.interaction.selectedNodes.length === 0}
@@ -115,6 +102,7 @@ export default observer(
                             State.interaction.selectedNodes.forEach((node) => {
                                 State.graph.mutating.dropNode(node);
                             });
+                            State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                     />
@@ -124,6 +112,8 @@ export default observer(
                         text="Add Edge"
                         onClick={() => {
                             State.preferences.AddEdgeDialogOpen = true;
+                            State.interaction.flush();
+                            State.preferences.rightClickPanelOpen = false;
                         }}
                     />
                     <MenuItem
@@ -148,14 +138,12 @@ export default observer(
                     style={this.stylePosition}
                 >
                     <MenuItem
-                        icon="new-object"
-                        text="Split Cluster"
-                        onClick={() => {}}
-                    />
-                    <MenuItem
                         icon="group-objects"
                         text="Merge Cluster"
-                        onClick={() => {}}
+                        onClick={() => {
+                            State.clusterInteraction.mergeSelectedCluster();
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
                     />
                     <MenuDivider />
                 </Menu>
@@ -173,14 +161,6 @@ export default observer(
                 >
                     <MenuItem
                         icon="new-object"
-                        text="Add Node"
-                        onClick={() => {
-                            State.preferences.AddNodeDialogOpen = true;
-                            State.preferences.rightClickPanelOpen = false;
-                        }}
-                    />
-                    <MenuItem
-                        icon="group-objects"
                         text="Add Node"
                         onClick={() => {
                             State.preferences.AddNodeDialogOpen = true;

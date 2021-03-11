@@ -1,6 +1,6 @@
 import { autorun, reaction } from "mobx";
 
-import PreferencesStore from "./PreferencesStore";
+import PreferencesStore, { VisualizationMode } from "./PreferencesStore";
 import GraphStore from "./GraphStore";
 import ImportStore from "./ImportStore";
 import SearchStore from "./SearchStore";
@@ -9,6 +9,8 @@ import CssStore from "./CssStore";
 import GraphDelegate from "./GraphDelegate";
 import NodeInteractionStore from "./NodeInteractionStore";
 import ClusterInteractionStore from "./ClusterInteractionStore";
+import HelperStackPanelStore from "./HelperStackPanelStore";
+import ComponentRef from "../components/ComponentRef";
 
 class AppState {
     static _instance: AppState | null = null;
@@ -21,6 +23,7 @@ class AppState {
     import!: ImportStore;
     search!: SearchStore;
     cluster!: ClusterStore;
+    helper!: HelperStackPanelStore;
     css!: CssStore;
 
     private privateConstructor() {
@@ -32,6 +35,7 @@ class AppState {
         this.import = new ImportStore();
         this.search = new SearchStore();
         this.cluster = new ClusterStore();
+        this.helper = new HelperStackPanelStore();
         this.css = new CssStore();
     }
 
@@ -62,11 +66,13 @@ autorun(() => State.import.renderImportEdgePreview());
 // will auto run if selectedNodeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportNodePreview());
 
+// sync the rawGraph bi-directionally
 autorun(
     () =>
         (State.cluster.rawGraph = State.search.rawGraph = State.graph.rawGraph)
 );
 
+// set the graph to suspend animating according to State.css.isAnimating
 autorun(() => {
     if (State.css.isAnimating === true) {
         State.graphDelegate.graphDelegateMethods?.resumeAnimation();
@@ -75,24 +81,95 @@ autorun(() => {
     }
 });
 
+// if cluster selected, goto step 2
+autorun(() => {
+    if (
+        State.preferences.visualizationMode ===
+        VisualizationMode.ClusterSplitting
+    ) {
+        if (State.clusterInteraction.selectedCluster) {
+            State.helper.clusterSplittingCurrentStep = 2;
+            State.clusterInteraction.drawPanelActivate = true;
+            console.log("cluster selected");
+        }
+    }
+});
+
+// the preparation and cleaning when changing of Step
 reaction(
-    () => State.clusterInteraction.currentlyHoveredClusterId,
-    (currentlyHoveredClusterId) => {
-        console.log("currentlyHoveredNodeId", currentlyHoveredClusterId);
-        if (currentlyHoveredClusterId) {
-            let mesh = State.graphDelegate.clusterObject.getObjectById(
-                currentlyHoveredClusterId
-            );
-            if (mesh) {
-                let material = mesh.material as THREE.Material;
-                material.opacity = 0.5;
-            }
-        } else {
-            State.graphDelegate.clusterObject.resetDefaultMaterial();
+    () => State.helper.clusterSplittingCurrentStep,
+    (step) => {
+        console.log(`Graph Splitting change to step ${step}`);
+        switch (step) {
+            case 1:
+                State.clusterInteraction.confirmClusterSplittingTempData = null;
+                State.interaction.flush();
+                State.clusterInteraction.flush();
+                State.graphDelegate.graphDelegateMethods.refresh();
+                break;
+
+            case 2:
+                ComponentRef?.canvasDrawPanel.clearDrawing();
+                State.graph.rawGraph.forEachNode((node, oldAttributes) => {
+                    State.interaction.updateNodeVisualizeAttribute(
+                        node,
+                        { selected: false },
+                        oldAttributes._visualize
+                    );
+                });
+                State.clusterInteraction.confirmClusterSplittingTempData = null;
+                State.interaction.flush();
+                State.graphDelegate.graphDelegateMethods.refresh();
+
+                break;
+
+            case 3:
+                break;
         }
     }
 );
 
+// if graph is empty, suspend the animation to save computing power
+reaction(
+    () => State.graph.rawGraph?.order,
+    (number) => {
+        if (number === 0) {
+            State.css.isAnimating = false;
+            console.log("Pause Animating");
+        } else {
+            State.css.isAnimating = true;
+            console.log("Resume Animating");
+        }
+    },
+    { fireImmediately: true }
+);
+
+// auto highlight the hovered Cluster
+reaction(
+    () => State.clusterInteraction.currentlyHoveredClusterId,
+    (currentlyHoveredClusterId) => {
+        console.log("currentlyHoveredNodeId", currentlyHoveredClusterId);
+        State.graphDelegate.clusterObject.updateAllMaterials();
+    }
+);
+
+// auto highlight the selected Cluster
+reaction(
+    () => State.clusterInteraction.selectedCluster,
+    (selectedCluster) => {
+        State.graphDelegate.clusterObject.updateAllMaterials();
+    }
+);
+
+// auto highlight the selected Clusters
+reaction(
+    () => State.clusterInteraction.selectedClusters,
+    (selectedClusters) => {
+        State.graphDelegate.clusterObject.updateAllMaterials();
+    }
+);
+
+// auto highlight the hovered Node
 reaction(
     () => State.interaction.currentlyHoveredNodeId,
     (currentlyHoveredNodeId) => {
@@ -135,6 +212,7 @@ reaction(
     }
 );
 
+// auto highlight the selected nodes
 reaction(
     () => State.interaction.selectedNodes.map((node) => node),
     (selectedNodes) => {
@@ -154,11 +232,11 @@ reaction(
                 );
             }
         });
-
         State.graphDelegate.graphDelegateMethods.refresh();
     }
 );
 
+// auto highlight the selected node
 reaction(
     () => State.interaction.selectedNode,
     (selectedNode) => {
@@ -182,6 +260,7 @@ reaction(
     }
 );
 
+// auto highlight the selected edges
 reaction(
     () => State.interaction.selectedEdge,
     (selectedEdge) => {

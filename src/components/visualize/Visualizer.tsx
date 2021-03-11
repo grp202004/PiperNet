@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { observer } from "mobx-react";
 import ForceGraph3D, {
     ForceGraphMethods,
@@ -16,6 +15,8 @@ import {
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
 import SelectionBox from "../SelectionBox";
+import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
+import CanvasDrawPanel from "../panels/CanvasDrawPanel";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -48,21 +49,20 @@ export default observer(
                 State.interaction.currentlyHoveredNodeId = null;
             } else if (node !== previousNode) {
                 let current: string = node.id as string;
-                State.interaction.previouslyHoveredNodeId =
-                    State.interaction.currentlyHoveredNodeId;
                 State.interaction.currentlyHoveredNodeId = current;
-                State.interaction.stagedCurrentlyHoveredNodeId = current;
             }
             // console.log(State.graph.rawGraph);
         };
 
         nodeLeftClickCallback = (node: NodeObject, event: MouseEvent) => {
+            if (!this.state.nodePointerInteraction) {
+                return;
+            }
             let nodeId = node.id as string;
-            let attributes = State.graph.rawGraph.getNodeAttribute(
-                nodeId,
-                "_visualize"
-            );
-            if (event.ctrlKey || event.shiftKey) {
+            if (
+                State.preferences.visualizationMode ===
+                VisualizationMode.NodeSelection
+            ) {
                 // multi-selection
                 let index;
                 // if already in the list of selected, remove
@@ -78,33 +78,39 @@ export default observer(
                 }
             } else {
                 // single select
-                State.interaction.selectedNode = node.id as string;
+                State.interaction.selectedNodes = [node.id as string];
             }
         };
 
         nodeRightClickCallback = (node: NodeObject, event: MouseEvent) => {
+            if (!this.state.nodePointerInteraction) {
+                return;
+            }
             State.interaction.selectedNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Node";
             State.preferences.rightClickPanelOpen = true;
-            this.closeAllPanel();
+            State.preferences.closeAllPanel("rightClickPanel");
         };
 
-        backgroundClickCallback = (event: MouseEvent) => {
+        backgroundClickCallback = () => {
             // cancel all selection
+            State.interaction.flush();
             State.interaction.selectedNodes = [];
             State.preferences.rightClickPanelOpen = false;
-            this.closeAllPanel();
+            State.preferences.closeAllPanel("rightClickPanel");
         };
 
         backgroundRightClickCallback = (event: MouseEvent) => {
+            if (!this.state.nodePointerInteraction) {
+                return;
+            }
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Background";
             State.preferences.rightClickPanelOpen = true;
-
-            this.closeAllPanel();
+            State.preferences.closeAllPanel("rightClickPanel");
         };
 
         computeNodeColor(_node: NodeObject) {
@@ -148,6 +154,11 @@ export default observer(
                             VisualizationMode.NodeSelection &&
                             State.interaction.boxSelectionOpen && (
                                 <SelectionBox />
+                            )}
+                        {State.preferences.visualizationMode ===
+                            VisualizationMode.ClusterSplitting &&
+                            State.clusterInteraction.drawPanelActivate && (
+                                <CanvasDrawPanel />
                             )}
                         <ForceGraph3D
                             // Data Segment
@@ -228,23 +239,35 @@ export default observer(
             });
         }
 
-        closeAllPanel() {
-            State.preferences.deleteEdgePanelOpen = false;
-        }
-
         clusterInteractionListener(set: boolean) {
             if (set) {
                 document.addEventListener(
                     "mousemove",
-                    State.graphDelegate.onDocumentMouseMove
+                    CustomMouseEvent.onDocumentMouseMove
                 );
-                console.log("MouseMove event listening");
+                document.addEventListener(
+                    "click",
+                    CustomMouseEvent.onDocumentLeftClick
+                );
+                document.addEventListener(
+                    "contextmenu",
+                    CustomMouseEvent.onDocumentRightClick
+                );
+                console.log("MouseEvent listening");
             } else {
                 document.removeEventListener(
                     "mousemove",
-                    State.graphDelegate.onDocumentMouseMove
+                    CustomMouseEvent.onDocumentMouseMove
                 );
-                console.log("MouseMove event not listening");
+                document.removeEventListener(
+                    "click",
+                    CustomMouseEvent.onDocumentLeftClick
+                );
+                document.removeEventListener(
+                    "contextmenu",
+                    CustomMouseEvent.onDocumentRightClick
+                );
+                console.log("MouseEvent stop listening");
             }
         }
 
@@ -259,7 +282,6 @@ export default observer(
 reaction(
     () => State.preferences.visualizationMode,
     (visualizationMode) => {
-        console.log(`changing mode to ${visualizationMode}`);
         switch (visualizationMode) {
             case VisualizationMode.Normal:
                 ComponentRef.visualizer?.setState({
@@ -287,6 +309,8 @@ reaction(
                     nodePointerInteraction: false,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(true);
+                State.clusterInteraction.flush();
+                State.helper.clusterSplittingPanelStackOpen = true;
                 break;
         }
     }
