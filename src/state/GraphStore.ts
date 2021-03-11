@@ -57,6 +57,11 @@ export default class GraphStore {
     }
 
     /**
+     * used in "cluster node" in rightclick panel
+     */
+    numberOfClusters: number = 0;
+
+    /**
      * should be called when individual edges are added to the graph.
      *
      * add the CustomLinkObject to node attributes stored in the data structure
