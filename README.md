@@ -12,13 +12,13 @@ An interactive 2D/3D cluster graph visualization system that runs in your browse
 
 ## About
 
-This project aims to help researchers map the existing information onto the 2D or 3D graphs, and discover the undetected details behind the real-world datasets, as well as modify them in various ways.
+This project aims to help researchers map the existing information onto the 3D graphs, and discover the undetected details behind the real-world datasets, as well as modify them in various ways.
 
 ## Feature Highlights
 
 ### Interactive Graph Visualization
 
-Visualize your graph in 2D or 3D with interactive force-directed layout, with automatic sizing and coloring, and even full control over every node for customization!
+Visualize your graph in 3D with interactive force-directed layout, with automatic sizing and coloring, and even full control over every node for customization!
 
 ### Data Import
 
@@ -90,17 +90,36 @@ The node and edge datasheet shows the detailed information as well as various op
 
 ### Multi-selection
 
-Hold **Control** or **Shift** and left click the node to select or deselect the nodes, Rectangular Marquee Selection is on the way...
+Switch to **Node Selection** mode choose **Click**. Left click the nodes to select or deselect the nodes.
+Choose **Box Selection** and hold the mouse to draw a rectangle for node selection. The nodes' details are shown in the bottom table.
 
 ### Context Menu
 
-right-click on the background or specific node to activate context menu, with rich buttons lick: Add Node, Add Edge, Delete Node and Delete Edge
+right-click on the background or specific node to activate context menu, with rich buttons click: Add Node, Add Edge, Delete Node, Delete Edge, Form a new cluster, Cancel Selection ans Delete Selected Nodes.
 
+-       Add Node: add a new node on the stage
 -   Delete Edge: after clicking Delete Edge, hover the mouse on the candidate edge (listed in the right-bottom corner to preview the edge to be deleted)
+-   Form a new cluster: after node selection and clicking Form a new cluster, a new cluster is generated containing these selected nodes
+-   Add Edge: choose the source node ID and target node ID to form a new edge
+-   Delete Node: delete the single selected node
+-   Cancel Selection: Cancel selection on nodes
+-   Delete Selected Nodes: delete selected nodes in dispatch
 
 ### Graph Options
 
-information regarding the graph options is available in the online documentation website.
+Graph Options are used to change the style of the graph. The colors, shapes, size of nodes, edges, labels and clusters can be modified in this menu.
+
+### Merge Cluster
+
+Merge Several clusters into one cluster in **Cluster Selection** mode.
+
+### Split Cluster
+
+Split one cluster to two clusters following instructions in **Cluster Splitting** mode.
+
+### Export Data
+
+The fixed data can be exported to both the CSV and [GEXF](https://gephi.org/gexf/format/) files.
 
 ```
 
