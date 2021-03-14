@@ -105,16 +105,6 @@ export default class Cluster3dObjectStore {
         return res;
     }
 
-    resetDefaultMaterial() {
-        this.fusionClusterObjects?.children.forEach(
-            (object: THREE.Object3D) => {
-                let mesh = object as THREE.Mesh;
-                let material = mesh.material as THREE.Material;
-                material.opacity = 0.15;
-            }
-        );
-    }
-
     /**
      * dispose the geometries and materials in every clusterObject
      * and set these props to be null, which indicates that no additional 3d object is added into Scene
@@ -217,17 +207,17 @@ export default class Cluster3dObjectStore {
         }, 100);
     }
 
-    private meshHighlightMaterial(mesh: THREE.Mesh) {
+    private static meshHighlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.5;
     }
 
-    private meshSelectedMaterial(mesh: THREE.Mesh) {
+    private static meshSelectedMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.3;
     }
 
-    private meshNormalMaterial(mesh: THREE.Mesh) {
+    private static meshNormalMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.15;
     }
@@ -237,15 +227,15 @@ export default class Cluster3dObjectStore {
             let mesh = _object as THREE.Mesh;
             const meshId = mesh.uuid;
             if (State.clusterInteraction.currentlyHoveredClusterId === meshId) {
-                this.meshHighlightMaterial(mesh);
+                Cluster3dObjectStore.meshHighlightMaterial(mesh);
                 return;
             } else if (
                 State.clusterInteraction.selectedClusters.includes(meshId)
             ) {
-                this.meshSelectedMaterial(mesh);
+                Cluster3dObjectStore.meshSelectedMaterial(mesh);
                 return;
             } else {
-                this.meshNormalMaterial(mesh);
+                Cluster3dObjectStore.meshNormalMaterial(mesh);
             }
         });
     }

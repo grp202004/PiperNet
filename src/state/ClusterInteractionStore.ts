@@ -131,7 +131,7 @@ export default class ClusterInteractionStore {
             }
         );
 
-        screenCoords.map((value) => {
+        screenCoords.forEach((value) => {
             let inside = polygonContains(tempLineSegment, [value.x, value.y]);
 
             if (inside) {

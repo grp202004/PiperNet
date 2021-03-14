@@ -74,7 +74,7 @@ autorun(
 
 // set the graph to suspend animating according to State.css.isAnimating
 autorun(() => {
-    if (State.css.isAnimating === true) {
+    if (State.css.isAnimating) {
         State.graphDelegate.graphDelegateMethods?.resumeAnimation();
     } else {
         State.graphDelegate.graphDelegateMethods?.pauseAnimation();
@@ -156,7 +156,7 @@ reaction(
 // auto highlight the selected Cluster
 reaction(
     () => State.clusterInteraction.selectedCluster,
-    (selectedCluster) => {
+    () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }
 );
@@ -164,7 +164,7 @@ reaction(
 // auto highlight the selected Clusters
 reaction(
     () => State.clusterInteraction.selectedClusters,
-    (selectedClusters) => {
+    () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }
 );

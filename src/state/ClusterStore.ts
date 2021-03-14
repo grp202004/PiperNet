@@ -31,7 +31,8 @@ export default class ClusterStore {
      * the setter of clusterBy
      * will update the front-end 3d graph about the cluster changes
      *
-     * @param {(string | null)} by
+     * @param {string | null} to
+     * @param {boolean = false} forceUpdate
      */
     setCluster(to: string | null, forceUpdate: boolean = false) {
         if (forceUpdate) {

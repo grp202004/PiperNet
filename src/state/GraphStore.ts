@@ -100,8 +100,8 @@ export default class GraphStore {
      * proxy method to set the new graph
      * if intend to set a new graph, please use this method instead of directly modify GraphStore
      *
-     * @param {Graph} newGraph
-     * @param {IMetaData} metadata
+     * @param {Graph} _rawGraph
+     * @param {IMetaData} _metadata
      */
     public setGraph(_rawGraph: Graph, _metadata: IMetaData | null = null) {
         this.rawGraph = this.decorateRawGraph(_rawGraph);
@@ -132,15 +132,6 @@ export default class GraphStore {
      * @see {GraphMutation}
      */
     mutating: GraphMutation;
-
-    /**
-     * if currently there is a graph in the dataset
-     *
-     * @readonly
-     */
-    get hasGraph() {
-        return this.rawGraph.order && this.rawGraph.size !== 0;
-    }
 
     /**
      * the metadata related to the raw graph

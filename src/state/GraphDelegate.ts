@@ -1,11 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import State from ".";
-import {
-    ForceGraphMethods,
-    LinkObject,
-    NodeObject,
-} from "react-force-graph-3d";
+import { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-3d";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
 
 /**
@@ -44,14 +40,13 @@ export function createCustomNodeObject(
     _id: string,
     _cluster: boolean = false
 ): ICustomNodeObject {
-    let result: ICustomNodeObject = {
+    return {
         id: _id,
         hovered: false,
         selected: false,
         multiSelected: false,
         isClusterNode: _cluster,
     };
-    return result;
 }
 
 export function createCustomLinkObject(
@@ -59,14 +54,13 @@ export function createCustomLinkObject(
     _target: string,
     _cluster: boolean = false
 ): ICustomLinkObject {
-    let result: ICustomLinkObject = {
+    return {
         source: _source,
         target: _target,
         hovered: false,
         selected: false,
         isClusterLink: _cluster,
     };
-    return result;
 }
 
 export default class GraphDelegate {
@@ -188,9 +182,9 @@ export default class GraphDelegate {
     /**
      * determine whether this Node is the cluster delegate node
      *
-     * @param {CustomNodeObject} nodeObject
+     * @param {NodeObject} nodeObject
      */
-    nodeVisibility = (nodeObject: NodeObject) => {
+    nodeVisibility(nodeObject: NodeObject) {
         let node = nodeObject as ICustomNodeObject;
         return !node.isClusterNode;
     };
@@ -198,9 +192,9 @@ export default class GraphDelegate {
     /**
      * determine whether this edge is the cluster delegate edge
      *
-     * @param {CustomLinkObject} nodeObject
+     * @param {LinkObject} linkObject
      */
-    linkVisibility = (linkObject: LinkObject) => {
+    linkVisibility (linkObject: LinkObject) {
         let link = linkObject as ICustomLinkObject;
         return !link.isClusterLink;
     };
@@ -241,8 +235,6 @@ export default class GraphDelegate {
     /**
      * set the force inside each cluster in the ForceGraph
      *
-     * @param {number} force the force to be set
-     * @param {number} _default default force of other links
      */
     updateClusterForce() {
         this.graphDelegateMethods
