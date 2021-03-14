@@ -2,6 +2,7 @@
 import React from "react";
 import {
     Button,
+    ButtonGroup,
     Classes,
     Dialog,
     FileInput,
@@ -22,32 +23,42 @@ export default observer(
             return (
                 <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                        <Button
-                            className={classnames({
-                                [Classes.DISABLED]: !this.state.fileIsSelect,
-                            })}
-                            intent={Intent.PRIMARY}
-                            onClick={() => {
-                                State.import.isLoading = true;
-                                State.import
-                                    .importGraphFromGEXF()
-                                    .then((res) => {
-                                        State.graph.setGraph(
-                                            res.graph,
-                                            res.metadata
-                                        );
+                        <ButtonGroup>
+                            <Button
+                                className={classnames({
+                                    [Classes.DISABLED]: !this.state
+                                        .fileIsSelect,
+                                })}
+                                intent={Intent.PRIMARY}
+                                onClick={() => {
+                                    State.import.isLoading = true;
+                                    State.import
+                                        .importGraphFromGEXF()
+                                        .then((res) => {
+                                            State.graph.setGraph(
+                                                res.graph,
+                                                res.metadata
+                                            );
 
-                                        if(State.cluster.rawGraph.hasAttribute('cluster')){
-                                            State.cluster
-                                            .setCluster(State.graph.rawGraph.getAttribute('cluster'));
-                                        }
+                                            if (
+                                                State.cluster.rawGraph.hasAttribute(
+                                                    "default"
+                                                )
+                                            ) {
+                                                State.cluster.setCluster(
+                                                    State.graph.rawGraph.getAttribute(
+                                                        "default"
+                                                    )
+                                                );
+                                            }
 
-                                        State.import.isLoading = false;
-                                        State.import.importGEXFDialogOpen = false;
-                                    });
-                            }}
-                            text="Import"
-                        />
+                                            State.import.isLoading = false;
+                                            State.import.importGEXFDialogOpen = false;
+                                        });
+                                }}
+                                text="Import"
+                            />
+                        </ButtonGroup>
                     </div>
                 </div>
             );
@@ -56,12 +67,12 @@ export default observer(
         render() {
             return (
                 <Dialog
-                    icon="import"
+                    icon="document-open"
                     isOpen={State.import.importGEXFDialogOpen}
                     onClose={() => {
-                        State.import.importGEXFDialogOpen = false;       
+                        State.import.importGEXFDialogOpen = false;
                     }}
-                    title="Import GEXF"
+                    title="Open GEXF"
                 >
                     {/* if is loading, then show Spinner */}
                     {State.import.isLoading ? (

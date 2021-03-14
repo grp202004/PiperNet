@@ -21,6 +21,7 @@ import Cluster3dObjectStore from "./Cluster3dObjectStore";
 export interface ICustomNodeObject extends NodeObject {
     hovered: boolean;
     selected: boolean;
+    multiSelected: boolean;
     isClusterNode?: boolean;
 }
 /**
@@ -47,6 +48,7 @@ export function createCustomNodeObject(
         id: _id,
         hovered: false,
         selected: false,
+        multiSelected: false,
         isClusterNode: _cluster,
     };
     return result;
@@ -163,13 +165,18 @@ export default class GraphDelegate {
                     State.cluster.attributeKeys
                         .get(attribute)
                         ?.forEach((target) => {
-                            graphCopy.addEdge(clusterID, target, {
-                                _visualize: createCustomLinkObject(
-                                    clusterID,
-                                    target,
-                                    true
-                                ),
-                            });
+                            graphCopy.addEdgeWithKey(
+                                `${clusterID}-${target}`,
+                                clusterID,
+                                target,
+                                {
+                                    _visualize: createCustomLinkObject(
+                                        clusterID,
+                                        target,
+                                        true
+                                    ),
+                                }
+                            );
                         });
                 }
             );

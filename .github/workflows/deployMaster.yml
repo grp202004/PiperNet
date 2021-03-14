@@ -1,11 +1,11 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Deploy master to GitHub Pages
+name: Deploy master to GitHub | Gitee Pages
 env:
     CI: false
 on:
     push:
+        branches:
+            - master
+    pull_request:
         branches:
             - master
 jobs:
@@ -21,10 +21,35 @@ jobs:
               run: |
                   npm install
                   npm run build
-            - name: Deploy 🚀
+
+            - name: Deploy to GitHub Pages🚀
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:
-                  REPOSITORY_NAME: Kaby-Lake/pipernet.github.io
+                  REPOSITORY_NAME: grp202004/pipernet.github.io
                   ACCESS_TOKEN: ${{ secrets.PAGES }}
                   BRANCH: gh-pages
                   FOLDER: build
+
+            - name: Sync to Gitee
+              uses: wearerequired/git-mirror-action@master
+              env:
+                  SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+                  with:
+                      source-repo: git@github.com:grp202004/PiperNet.git
+                      destination-repo: git@gitee.com:kaby_lake/PiperNet.git
+
+            - name: Sync to Gitee Pages
+              uses: wearerequired/git-mirror-action@master
+              env:
+                  SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+                  with:
+                      source-repo: git@github.com:grp202004/pipernet.github.io.git
+                      destination-repo: git@gitee.com:kaby_lake/pipernet.github.io.git
+
+            - name: Build Gitee Pages
+              uses: yanglbme/gitee-pages-action@main
+              with:
+                  gitee-username: kaby_lake
+                  gitee-password: ${{ secrets.GITEE_PASSWORD }}
+                  gitee-repo: kaby_lake/pipernet.github.io
+                  branch: gh-pages

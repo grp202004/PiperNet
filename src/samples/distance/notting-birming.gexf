@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:viz="http:///www.gexf.net/1.1draft/viz">
+  <meta/>
+  <graph defaultedgetype="undirected">
+    <attributes class="node">
+      <attribute id="1" title="1" type="string"/>
+    </attributes>
+    <nodes>
+      <node id="0">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="1">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="2">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="3">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="4">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="5">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="6">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="7">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="8">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="9">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="10">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="11">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="12">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="13">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="14">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="15">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="16">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="17">
+        <attvalues>
+          <attvalue for="1" value="Nottingham"/>
+        </attvalues>
+      </node>
+      <node id="18">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+      <node id="19">
+        <attvalues>
+          <attvalue for="1" value="Birmingham"/>
+        </attvalues>
+      </node>
+    </nodes>
+    <edges>
+      <edge id="_geid0_" source="0" target="5"/>
+      <edge id="_geid1_" source="0" target="7"/>
+      <edge id="_geid2_" source="0" target="19"/>
+      <edge id="_geid3_" source="0" target="10"/>
+      <edge id="_geid4_" source="1" target="19"/>
+      <edge id="_geid5_" source="1" target="14"/>
+      <edge id="_geid6_" source="1" target="5"/>
+      <edge id="_geid7_" source="1" target="9"/>
+      <edge id="_geid8_" source="1" target="7"/>
+      <edge id="_geid9_" source="1" target="2"/>
+      <edge id="_geid10_" source="2" target="6"/>
+      <edge id="_geid11_" source="2" target="19"/>
+      <edge id="_geid12_" source="2" target="17"/>
+      <edge id="_geid13_" source="2" target="4"/>
+      <edge id="_geid14_" source="3" target="8"/>
+      <edge id="_geid15_" source="3" target="19"/>
+      <edge id="_geid16_" source="3" target="13"/>
+      <edge id="_geid17_" source="4" target="16"/>
+      <edge id="_geid18_" source="4" target="10"/>
+      <edge id="_geid19_" source="4" target="8"/>
+      <edge id="_geid20_" source="4" target="12"/>
+      <edge id="_geid21_" source="4" target="17"/>
+      <edge id="_geid22_" source="4" target="6"/>
+      <edge id="_geid23_" source="4" target="18"/>
+      <edge id="_geid24_" source="4" target="11"/>
+      <edge id="_geid25_" source="5" target="19"/>
+      <edge id="_geid26_" source="5" target="7"/>
+      <edge id="_geid27_" source="6" target="14"/>
+      <edge id="_geid28_" source="6" target="19"/>
+      <edge id="_geid29_" source="7" target="18"/>
+      <edge id="_geid30_" source="7" target="12"/>
+      <edge id="_geid31_" source="7" target="8"/>
+      <edge id="_geid32_" source="8" target="9"/>
+      <edge id="_geid33_" source="8" target="19"/>
+      <edge id="_geid34_" source="8" target="14"/>
+      <edge id="_geid35_" source="9" target="14"/>
+      <edge id="_geid36_" source="9" target="19"/>
+      <edge id="_geid37_" source="9" target="15"/>
+      <edge id="_geid38_" source="10" target="16"/>
+      <edge id="_geid39_" source="10" target="12"/>
+      <edge id="_geid40_" source="10" target="18"/>
+      <edge id="_geid41_" source="11" target="14"/>
+      <edge id="_geid42_" source="11" target="16"/>
+      <edge id="_geid43_" source="11" target="17"/>
+      <edge id="_geid44_" source="12" target="17"/>
+      <edge id="_geid45_" source="12" target="18"/>
+      <edge id="_geid46_" source="12" target="15"/>
+      <edge id="_geid47_" source="12" target="19"/>
+      <edge id="_geid48_" source="13" target="16"/>
+      <edge id="_geid49_" source="13" target="18"/>
+      <edge id="_geid50_" source="14" target="15"/>
+      <edge id="_geid51_" source="15" target="17"/>
+      <edge id="_geid52_" source="15" target="16"/>
+      <edge id="_geid53_" source="15" target="19"/>
+      <edge id="_geid54_" source="16" target="18"/>
+      <edge id="_geid55_" source="16" target="17"/>
+      <edge id="_geid56_" source="18" target="19"/>
+    </edges>
+  </graph>
+</gexf>

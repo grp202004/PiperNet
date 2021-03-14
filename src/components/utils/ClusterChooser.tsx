@@ -47,11 +47,7 @@ export default observer(
 
         get fullProperties(): string[] {
             let propertiesWithNone = copy(State.graph.metadata.nodeProperties);
-            if (State.graph.rawGraph.hasAttribute('cluster')){
-                propertiesWithNone.unshift(State.graph.rawGraph.getAttribute('cluster'));
-                propertiesWithNone.unshift("None");
-            }else{
-            propertiesWithNone.unshift("None");}
+            propertiesWithNone.unshift("None");
             return propertiesWithNone;
         }
 
@@ -94,7 +90,9 @@ export default observer(
                         this.props.onSelect(selected);
                     }}
                 >
-                    <Button text={this.props.syncWith ?? this.fullProperties[0]} />
+                    <Button
+                        text={this.props.syncWith ?? this.fullProperties[0]}
+                    />
                 </Select>
             );
         }

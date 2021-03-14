@@ -4,19 +4,21 @@
 
 An interactive 2D/3D cluster graph visualization system that runs in your browsers as well as on desktop.
 
-[**Stable Beta** - Launch stable beta version of PiperNet in your browser](https://kaby-lake.github.io/pipernet.github.io/)
+[**Stable Beta** - Launch stable beta version of PiperNet in your browser](https://grp202004.github.io/pipernet.github.io/)
+
+[**Documentation** - Documentation of this project](https://grp202004.github.io/PiperNet-Docs/)
 
 [**Canary** - Launch early access canary version of PiperNet in your browser](https://kaby-lake.github.io/pipernetDev.github.io/)
 
 ## About
 
-This project aims to help researchers map the existing information onto the 2D or 3D graphs, and discover the undetected details behind the real-world datasets, as well as modify them in various ways.
+This project aims to help researchers map the existing information onto the 3D graphs, and discover the undetected details behind the real-world datasets, as well as modify them in various ways.
 
 ## Feature Highlights
 
 ### Interactive Graph Visualization
 
-Visualize your graph in 2D or 3D with interactive force-directed layout, with automatic sizing and coloring, and even full control over every node for customization!
+Visualize your graph in 3D with interactive force-directed layout, with automatic sizing and coloring, and even full control over every node for customization!
 
 ### Data Import
 
@@ -68,12 +70,59 @@ The [Dynamic GEXF](https://gephi.org/gexf/format/dynamics.html) is currently not
 
 [Sample Datasets](./src/samples/) are located inside this repository, enjoy and have fun :\)
 
-### More Features on the Way !
+### Data Visualization in 3D
 
-This project is currently under development, and we have a lot more existing new features coming soon.
+To view the graph from different angle and size, the following operations can be applied:
+
+-   Rotate: hold the left mouse
+-   Pan: hold the right mouse
+-   Zoom: mouse wheel
+
+For more details of a certain node, mouse hovering can show a label of the node ID while the node turns red, with detailed information of the node such as node ID and other attributes being displayed in a table that is editable on the right-top corner
+
+### 3D Clusters
+
+Choose **Clustered by** at the top-right of the scene. All attributes of the nodes will be shown in the menu. By default, the cluster is none and no cluster is formed. When a new attribute is picked for cluster, the graph will be refreshed. Nodes in different clusters will be packed by spheres or convex hull (can be set in Graph Options on the left panel) in different colors.
+
+### Node and Edge Datasheet
+
+The node and edge datasheet shows the detailed information as well as various operation on the node and edge, including but not limited to: **Add** new Nodes and Edges, **Delete** Nodes and Edges, **Search** and **Filter** the table, **Alter** the attributes...
+
+### Multi-selection
+
+Switch to **Node Selection** mode choose **Click**. Left click the nodes to select or deselect the nodes.
+Choose **Box Selection** and hold the mouse to draw a rectangle for node selection. The nodes' details are shown in the bottom table.
+
+### Context Menu
+
+right-click on the background or specific node to activate context menu, with rich buttons click: Add Node, Add Edge, Delete Node, Delete Edge, Form a new cluster, Cancel Selection ans Delete Selected Nodes.
+
+-       Add Node: add a new node on the stage
+-   Delete Edge: after clicking Delete Edge, hover the mouse on the candidate edge (listed in the right-bottom corner to preview the edge to be deleted)
+-   Form a new cluster: after node selection and clicking Form a new cluster, a new cluster is generated containing these selected nodes
+-   Add Edge: choose the source node ID and target node ID to form a new edge
+-   Delete Node: delete the single selected node
+-   Cancel Selection: Cancel selection on nodes
+-   Delete Selected Nodes: delete selected nodes in dispatch
+
+### Graph Options
+
+Graph Options are used to change the style of the graph. The colors, shapes, size of nodes, edges, labels and clusters can be modified in this menu.
+
+### Merge Cluster
+
+Merge Several clusters into one cluster in **Cluster Selection** mode.
+
+### Split Cluster
+
+Split one cluster to two clusters following instructions in **Cluster Splitting** mode.
+
+### Export Data
+
+The fixed data can be exported to both the CSV and [GEXF](https://gephi.org/gexf/format/) files.
 
 ```
 
 ```
 
-♥ Developed and maintained by [UNNC GRP 2020.04](https://github.com/grp202004). We are currently not accepting any contribution from other than the team members.
+♥ Developed and maintained by [UNNC GRP 2020.04](https://github.com/grp202004). We are currently not accepting any contribution from other than the team members, but we are welcome will any issues raising and features advice.

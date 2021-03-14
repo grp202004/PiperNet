@@ -6,10 +6,10 @@ import State from "../state";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import SearchPanel from "./panels/SearchPanel";
-import RightClickNodePanel from "./panels/RightClickNodePanel";
-import RightClickBackgroundPanel from "./panels/RightClickBackgroundPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 import GraphOptionsCard from "./panels/GraphOptionsCard";
+import InteractionModePanel from "./panels/InteractionModePanel/InteractionModePanel";
+import RightClickPanel from "./panels/RightClickPanel";
 
 export default observer(
     class FloatingCards extends React.Component {
@@ -26,8 +26,8 @@ export default observer(
             marginLeft: "-15px",
         };
         toggleOptions = () => {
-            State.preferences.isGraphOptionsCardHidden = !State.preferences
-                .isGraphOptionsCardHidden;
+            State.preferences.graphOptionsCardOpen = !State.preferences
+                .graphOptionsCardOpen;
         };
         render() {
             return (
@@ -42,9 +42,9 @@ export default observer(
                                 "left-cards"
                             )}
                             style={
-                                State.preferences.isGraphOptionsCardHidden
-                                    ? this.optionsInvisible
-                                    : this.optionsVisible
+                                State.preferences.graphOptionsCardOpen
+                                    ? this.optionsVisible
+                                    : this.optionsInvisible
                             }
                         >
                             <br />
@@ -76,9 +76,9 @@ export default observer(
                                 className="openbtn"
                                 onClick={this.toggleOptions}
                                 style={
-                                    State.preferences.isGraphOptionsCardHidden
-                                        ? this.sideButtonVis
-                                        : this.sideButtonInv
+                                    State.preferences.graphOptionsCardOpen
+                                        ? this.sideButtonInv
+                                        : this.sideButtonVis
                                 }
                             />
                         </div>
@@ -106,19 +106,19 @@ export default observer(
                     )}
 
                     <SearchPanel />
-                    {State.preferences.rightClickNodePanelOpen && (
-                        <RightClickNodePanel />
-                    )}
-
-                    {State.preferences.rightClickBackgroundPanelOpen && (
-                        <RightClickBackgroundPanel />
-                    )}
+                    {State.preferences.rightClickPanelOpen &&
+                        State.preferences.rightClickOn && (
+                            <RightClickPanel
+                                on={State.preferences.rightClickOn}
+                            />
+                        )}
                     {State.preferences.deleteEdgePanelOpen &&
                         State.interaction.selectedNode && (
                             <DeleteEdgeInteractionPanel
                                 onNode={State.interaction.selectedNode}
                             />
                         )}
+                    <InteractionModePanel />
                 </div>
             );
         }

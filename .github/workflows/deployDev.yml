@@ -5,6 +5,7 @@ name: Deploy Dev branch to GitHub Pages
 env:
     CI: false
 on: [push]
+
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
