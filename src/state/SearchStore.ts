@@ -1,6 +1,13 @@
 import Graph from "graphology";
 import { makeAutoObservable, observable } from "mobx";
 
+/**
+ * @description this file is the backend support for the NodeSearch feature
+ * and will compute the possible searching candidates according to the query parameters
+ * @author Zichen XU
+ * @export
+ * @class SearchStore
+ */
 export default class SearchStore {
     constructor() {
         makeAutoObservable(this, {
@@ -8,12 +15,21 @@ export default class SearchStore {
         });
     }
 
-    // if is previewing, ignore all mouse hovers detected by NodeDetailPanel because it is showing the detail of selected node
+    //
+    /**
+     * @description if is previewing, ignore all mouse hovers detected by NodeDetailPanel
+     * because it is showing the detail of selected node
+     * @author Zichen XU
+     */
     isPreviewing = false;
 
-    // can use defined regex
-    // id:123
-    // attr:color:red
+    /**
+     * @description the search string typed in by user
+     * can use defined regex like:
+     * id:123
+     * attr:color:red
+     * @author Zichen XU
+     */
     searchStr = "";
 
     /**
@@ -21,11 +37,16 @@ export default class SearchStore {
      * the reference bounded to the GraphStore/rawGraph
      *
      * @type {Graph}
-     * @memberof ClusterStore
      */
     rawGraph!: Graph;
 
     // contains node ids
+
+    /**
+     * @description compute a list of nodeids queried by the searchStr
+     * @author Zichen XU
+     * @type {string[]}
+     */
     get candidates(): string[] {
         let list: string[] = [];
         let searchStrIgnoreCase = this.searchStr.toLocaleLowerCase();
