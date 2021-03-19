@@ -1,3 +1,7 @@
+/**
+* Test functions in ImportStore.ts
+* @author Tianyi Zhang
+*/
 import ImportStore from "../../state/ImportStore";
 import fs from "fs";
 
@@ -22,8 +26,13 @@ const csvDataOfDh11Node = fs.readFileSync(
     "utf-8"
 );
 
-const gexfData = fs.readFileSync(
+const gexfDataOfLesmiserables = fs.readFileSync(
     "src/samples/lesmiserables/lesmiserables.gexf",
+    "utf-8"
+);
+
+const gexfDataOfDiseasome = fs.readFileSync(
+    "src/samples/diseasome.gexf",
     "utf-8"
 );
 
@@ -41,9 +50,14 @@ const csvFileOfDh11Node = new File([csvDataOfDh11Node], "dh11_nodes.csv", {
     type: "text/csv",
 });
 
-const gexfFile = new File([gexfData], "lesmiserable.gexf", {
+const gexfFileOfLesmiserables = new File([gexfDataOfLesmiserables], "lesmiserable.gexf", {
     type: "text/gexf",
 });
+
+const gexfFileOfDiseasome = new File([gexfDataOfDiseasome], "diseasome.gexf", {
+    type: "text/gexf",
+});
+
 
 describe("the outer", () => {
     beforeEach(() => {
@@ -496,17 +510,17 @@ describe("the outer", () => {
     });
 
     describe("test function readGEXF", () => {
-        //31
         //Test file: src/samples/lesmiserables/lesmiserables.gexf
+        //31
         test("number of nodes", async () => {
-            store.selectedGEXFFileFromInput = gexfFile;
+            store.selectedGEXFFileFromInput = gexfFileOfLesmiserables;
             // @ts-ignore
             const data = await store.readGEXF();
             expect(data.order).toEqual(77);
         });
         //32
         test("first element of nodes", async () => {
-            store.selectedGEXFFileFromInput = gexfFile;
+            store.selectedGEXFFileFromInput = gexfFileOfLesmiserables;
             // @ts-ignore
             const data = await store.readGEXF();
             data.forEachNodeUntil((node, attributes) => {
@@ -523,14 +537,14 @@ describe("the outer", () => {
         });
         //33
         test("number of edges", async () => {
-            store.selectedGEXFFileFromInput = gexfFile;
+            store.selectedGEXFFileFromInput = gexfFileOfLesmiserables;
             // @ts-ignore
             const data = await store.readGEXF();
             expect(data.size).toEqual(254);
         });
         //34
         test("first element of edges", async () => {
-            store.selectedGEXFFileFromInput = gexfFile;
+            store.selectedGEXFFileFromInput = gexfFileOfLesmiserables;
             // @ts-ignore
             const data = await store.readGEXF();
             data.forEachEdgeUntil((node, attributes) => {
@@ -541,4 +555,29 @@ describe("the outer", () => {
             });
         });
     });
+
+    describe("test function importGraphFromGEXF", () => {
+        //Test file: src/samples/diseasome.gexf
+        //35
+        test("the nodeProperties of the graph", async () => {
+            store.selectedEdgeFileFromInput = gexfFileOfDiseasome;
+            const data = await store.importGraphFromGEXF();
+            expect(data.metadata.nodeProperties).toEqual(["label", "size", "x", "y"]);
+        });
+
+        //36
+        test("the number of nodes of the graph", async () => {
+            store.selectedEdgeFileFromInput = gexfFileOfDiseasome;
+            const data = await store.importGraphFromGEXF();
+            expect(data.graph.order).toEqual(77);
+        });
+
+        //37
+        test("the number of edges of the graph", async () => {
+            store.selectedEdgeFileFromInput = gexfFileOfDiseasome;
+            const data = await store.importGraphFromGEXF();
+            expect(data.graph.size).toEqual(254);
+        });
+    })
+    
 });

@@ -1,3 +1,7 @@
+/**
+* Test functions in ClusterStore.ts
+* @author Tianyi Zhang
+*/
 import State from "../../state";
 import fs from "fs";
 const clusterStore = State.cluster;
@@ -8,15 +12,15 @@ const gexfData = fs.readFileSync(
 );
 
 
-const gexfOfDiseasome = new File([gexfData], "diseasome.gexf", { type: "text/gexf" });
+const gexfFileOfDiseasome = new File([gexfData], "diseasome.gexf", { type: "text/gexf" });
 
-//test file: diseasome.gexf
+//Test file: src/samples/diseasome.gexf
 describe('the attribute is undefined', () => {
 
     describe('test function keyAttribute', () => {
         //1
         test("first key of the keyVauleMap", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -28,7 +32,7 @@ describe('the attribute is undefined', () => {
 
         //2
         test("first value of the keyVauleMap", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -42,7 +46,7 @@ describe('the attribute is undefined', () => {
     describe('test function getAttributeValues', () => {
         //3
         test("the number of the AttributeValues", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -51,7 +55,7 @@ describe('the attribute is undefined', () => {
 
         //4
         test("the first element of the AttributeValues", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -62,7 +66,7 @@ describe('the attribute is undefined', () => {
     describe('test function attributeKeys', () => {
         //5
         test("the size of the AttributesKeys", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -71,7 +75,7 @@ describe('the attribute is undefined', () => {
 
         //6
         test("the key of the AttributeKeys", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -83,7 +87,7 @@ describe('the attribute is undefined', () => {
 
         //7
         test("the first array element of the value of the AttributeKeys", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -97,7 +101,7 @@ describe('the attribute is undefined', () => {
     describe('test function attributeColor', () => {
         //8
         test("the size of the color map", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -112,7 +116,7 @@ describe('the attribute is defined', () => {
     describe('test function keyAttribute', () => {
         //9
         test("first key of the keyVauleMap", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             clusterStore.clusterBy = "disclass"
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
@@ -124,7 +128,7 @@ describe('the attribute is defined', () => {
         })
         //10
         test("first value of the keyVauleMap", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -139,7 +143,7 @@ describe('the attribute is defined', () => {
     describe('test function getAttributeValues', () => {
         //11
         test("the number of the AttributeValues", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -148,7 +152,7 @@ describe('the attribute is defined', () => {
 
         //12
         test("the first element of the AttributeValues", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -159,7 +163,7 @@ describe('the attribute is defined', () => {
     describe('test function attributeKeys', () => {
         //13
         test("the size of the AttributesKeys", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -168,7 +172,7 @@ describe('the attribute is defined', () => {
 
         //14
         test("the first key of the AttributeKeys", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -180,7 +184,7 @@ describe('the attribute is defined', () => {
 
         //15
         test("the first value of the AttributeKeys", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
@@ -197,7 +201,7 @@ describe('the attribute is defined', () => {
     describe('test function attributeColor', () => {
         //16
         test("the size of the color map", async () => {
-            importStore.selectedGEXFFileFromInput = gexfOfDiseasome;
+            importStore.selectedGEXFFileFromInput = gexfFileOfDiseasome;
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
