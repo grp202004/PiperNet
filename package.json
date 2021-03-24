@@ -41,7 +41,8 @@
         "eject": "react-scripts eject",
         "electron-start": "electron .",
         "pack-win": "electron-packager . pipernet-win-0.5.0-beta --platform=win32 --arch=x64 --overwrite --ignore=/node_modules",
-        "pack-mac": "electron-packager . pipernet-mac-0.5.0-beta --platform=darwin --arch=x64 --overwrite --ignore=/node_modules"
+        "pack-mac": "electron-packager . pipernet-mac-0.5.0-beta --platform=darwin --arch=x64 --overwrite --ignore=/node_modules",
+        "pack-Win": "electron-builder --win --ia32"
     },
     "eslintConfig": {
         "extends": [
@@ -74,9 +75,40 @@
         "@types/react-dom": "^17.0.2",
         "electron": "^11.3.0",
         "electron-packager": "^15.2.0",
+        "electron-builder": "^22.10.5",
         "prettier": "2.2.1"
     },
     "prettier": {
         "tabWidth": 4
+    },
+    "build": {
+    "extends": null,
+    "productName":"Pipernet",
+    "appId": "Pipernet_Setup",
+    "asar": true,
+    "directories": {
+        "buildResources": "public",
+        "output": "dist"
+    },
+    "win": {
+        "icon": "public/111.ico",
+        "target": ["nsis"]
+    },
+    "nsis": {
+        "oneClick": false,
+      "allowElevation": true, 
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Pipernet"
+    },
+    "mac": {
+        "target": ["dmg"],
+        "icon": "public/111.ico"
+    },
+    "dmg": {
+        "contents": [
+            {"x": 410,"y": 190, "type": "link", "path":"/Applications"},
+            {"x": 130, "y": 190,"type": "file"}
+        ],
+        "iconSize": 128
     }
-}
+}}
