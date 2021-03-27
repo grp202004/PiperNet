@@ -14,7 +14,7 @@ import {
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
-import SelectionBox from "../SelectionBox";
+import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDrawPanel";
 

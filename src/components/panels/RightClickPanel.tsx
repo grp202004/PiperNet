@@ -33,7 +33,7 @@ export default observer(
 
         formNewCluster() {
             let date = new Date().toLocaleString("en");
-            let clusterId: string = `Cluster Generated @ ${date}`;
+            let newClusterAttributeValue: string = `Cluster Generated @ ${date}`;
             if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
                 State.graph.metadata.nodeProperties.push("new-cluster");
             }
@@ -44,13 +44,24 @@ export default observer(
                 State.graph.rawGraph.setNodeAttribute(
                     nodeId,
                     "new-cluster",
-                    clusterId
+                    newClusterAttributeValue
                 );
             });
             State.preferences.rightClickPanelOpen = false;
             State.cluster.setCluster("new-cluster");
 
             State.interaction.flush();
+        }
+
+        releaseFromCluster() {
+            const clusterName = State.cluster.clusterBy as string;
+            State.interaction.selectedNodes.map((nodeId) => {
+                State.graph.rawGraph.setNodeAttribute(
+                    nodeId,
+                    clusterName,
+                    ""
+                );
+            }); 
         }
 
         renderNodeMenu() {
@@ -84,6 +95,12 @@ export default observer(
                         icon="inner-join"
                         text="Form a New Cluster"
                         onClick={this.formNewCluster}
+                        disabled={State.interaction.selectedNodes.length === 0}
+                    />
+                    <MenuItem
+                        icon="ungroup-objects"
+                        text="Release from Cluster"
+                        onClick={this.releaseFromCluster}
                         disabled={State.interaction.selectedNodes.length === 0}
                     />
                     <MenuItem

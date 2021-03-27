@@ -73,10 +73,13 @@ export default class ClusterStore {
         this.rawGraph?.forEachNode((key, attributes) => {
             // if this attribute is defined
             if (attributes.hasOwnProperty(attribute)) {
-                keyValueMap.set(key, attributes[attribute]);
+                if (attributes[attribute] === "") {
+                    // ignore those which empty attribute
+                } else {
+                    keyValueMap.set(key, attributes[attribute]);
+                }
             } else {
                 // this attribute is undefined in this node
-                keyValueMap.set(key, "undefined");
             }
         });
         return keyValueMap;

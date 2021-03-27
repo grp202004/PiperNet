@@ -22,7 +22,10 @@ export default observer(
     class Navbar extends React.Component {
         render() {
             return (
-                <nav className={classnames([Classes.NAVBAR])}>
+                <nav
+                    className={classnames([Classes.NAVBAR])}
+                    style={{ zIndex: 2 }}
+                >
                     <div
                         className={classnames([
                             Classes.NAVBAR_GROUP,

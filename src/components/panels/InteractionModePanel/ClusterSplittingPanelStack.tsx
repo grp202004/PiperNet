@@ -155,19 +155,23 @@ export default observer(
 
         private renderPanelStack = () => {
             return (
-                <div
-                    style={{ width: "300px", height: "100px", display: "flex" }}
-                >
+                <div style={{ width: "300px", height: "100px" }}>
+                    <PanelStack2
+                        initialPanel={this.firstPanel}
+                        stack={this.currentPanelStack}
+                    />
                     <Button
                         icon="cross"
+                        style={{
+                            position: "absolute",
+                            top: -1,
+                            right: -1,
+                            zIndex: 99,
+                        }}
                         minimal={true}
                         onClick={() => {
                             State.helper.clusterSplittingPanelStackOpen = false;
                         }}
-                    ></Button>
-                    <PanelStack2
-                        initialPanel={this.firstPanel}
-                        stack={this.currentPanelStack}
                     />
                 </div>
             );

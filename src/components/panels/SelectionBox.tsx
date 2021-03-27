@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { Attributes } from "graphology-types";
 import classnames from "classnames";
-import State from "../state/index";
+import State from "../../state/index";
 
 export default observer(
     class SelectionBox extends React.Component {
@@ -68,8 +68,6 @@ export default observer(
                 mouseDown: false,
             });
             State.interaction.boxSelectNode();
-
-            State.interaction.boxSelectionOpen = false;
         };
 
         _calculateSelectionBox(
