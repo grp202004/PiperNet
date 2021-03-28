@@ -54,7 +54,7 @@ export default observer(
             if (!drawPoints) {
                 return;
             }
-            drawPoints.map((value) => {
+            drawPoints.forEach((value) => {
                 value.y += hightDiff;
             });
 

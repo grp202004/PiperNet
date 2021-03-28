@@ -17,6 +17,8 @@ import { VisualizationMode } from "../../state/PreferencesStore";
 import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDrawPanel";
+import { createToaster } from "../../state/utils/ToasterUtils";
+import { Position } from "@blueprintjs/core";
 
 interface Props {
     controlType: "trackball" | "orbit" | "fly";
@@ -295,6 +297,13 @@ reaction(
                     nodePointerInteraction: true,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(false);
+                createToaster(
+                    <p>
+                        Select one or more <b>Nodes</b> and <b>Right-click</b>{" "}
+                        on one of them to open <b>Context Menu</b>
+                    </p>,
+                    Position.BOTTOM
+                );
                 break;
 
             case VisualizationMode.ClusterSelection:
@@ -302,6 +311,14 @@ reaction(
                     nodePointerInteraction: false,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(true);
+                createToaster(
+                    <p>
+                        Select one or more <b>Clusters</b> and{" "}
+                        <b>Right-click</b> on one of them to open{" "}
+                        <b>Context Menu</b>
+                    </p>,
+                    Position.BOTTOM
+                );
                 break;
 
             case VisualizationMode.ClusterSplitting:

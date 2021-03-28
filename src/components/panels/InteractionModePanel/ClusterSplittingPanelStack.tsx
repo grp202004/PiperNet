@@ -16,6 +16,7 @@ import State from "../../../state";
 import { VisualizationMode } from "../../../state/PreferencesStore";
 import { observer } from "mobx-react";
 import ComponentRef from "../../ComponentRef";
+import { getMessage } from "./InteractionModePanel";
 
 interface CustomPanelEntry {
     step: number;
@@ -194,7 +195,7 @@ export default observer(
                 >
                     <Tooltip2
                         usePortal={false}
-                        content={VisualizationMode.ClusterSplitting}
+                        content={getMessage(VisualizationMode.ClusterSplitting)}
                     >
                         <Button
                             className={classnames([

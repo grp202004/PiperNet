@@ -1,22 +1,12 @@
 import React from "react";
 
-import {
-    Button,
-    Intent,
-    Panel,
-    PanelProps,
-    PanelStack2,
-    Classes,
-    H4,
-    Callout,
-    RadioGroup,
-    Radio,
-} from "@blueprintjs/core";
+import { Button, Intent, Classes, RadioGroup, Radio } from "@blueprintjs/core";
 import { Popover2, Tooltip2 } from "@blueprintjs/labs";
 import classnames from "classnames";
 import State from "../../../state";
 import { VisualizationMode } from "../../../state/PreferencesStore";
 import { observer } from "mobx-react";
+import { getMessage } from "./InteractionModePanel";
 
 export default observer(
     class NodeSelectionPanel extends React.Component {
@@ -72,7 +62,7 @@ export default observer(
                 >
                     <Tooltip2
                         usePortal={false}
-                        content={VisualizationMode.NodeSelection}
+                        content={getMessage(VisualizationMode.NodeSelection)}
                     >
                         <Button
                             className={classnames([

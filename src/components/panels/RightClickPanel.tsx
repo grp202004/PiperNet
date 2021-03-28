@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../state";
 import { computed, makeObservable } from "mobx";
-import { VisualizationMode } from "../../state/PreferencesStore";
 
 interface Props {
     /**
@@ -40,7 +39,7 @@ export default observer(
             State.graph.rawGraph.forEachNode((_, attributes) => {
                 attributes["new-cluster"] = "";
             });
-            State.interaction.selectedNodes.map((nodeId) => {
+            State.interaction.selectedNodes.forEach((nodeId) => {
                 State.graph.rawGraph.setNodeAttribute(
                     nodeId,
                     "new-cluster",
@@ -55,13 +54,9 @@ export default observer(
 
         releaseFromCluster() {
             const clusterName = State.cluster.clusterBy as string;
-            State.interaction.selectedNodes.map((nodeId) => {
-                State.graph.rawGraph.setNodeAttribute(
-                    nodeId,
-                    clusterName,
-                    ""
-                );
-            }); 
+            State.interaction.selectedNodes.forEach((nodeId) => {
+                State.graph.rawGraph.setNodeAttribute(nodeId, clusterName, "");
+            });
         }
 
         renderNodeMenu() {

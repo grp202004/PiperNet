@@ -1,37 +1,33 @@
 import React from "react";
 import { observer } from "mobx-react";
-import classnames from "classnames";
 import {
     Button,
-    ButtonGroup,
-    Classes,
     Menu,
     MenuDivider,
     MenuItem,
-    Popover,
     Position,
     Switch,
+    Navbar as BlueprintNavbar,
+    NavbarGroup,
+    Alignment,
+    NavbarHeading,
+    NavbarDivider,
 } from "@blueprintjs/core";
 import ClusterChooser from "./utils/ClusterChooser";
 import logo from "../images/logo.png";
 import State from "../state";
-import SimpleSelect from "./utils/SimpleSelect";
-import ComponentRef from "./ComponentRef";
+import { Popover2 } from "@blueprintjs/popover2";
+import SearchPanel from "./panels/SearchPanel";
 
 export default observer(
     class Navbar extends React.Component {
         render() {
             return (
-                <nav
-                    className={classnames([Classes.NAVBAR])}
+                <BlueprintNavbar
+                    //@ts-ignore
                     style={{ zIndex: 2 }}
                 >
-                    <div
-                        className={classnames([
-                            Classes.NAVBAR_GROUP,
-                            Classes.ALIGN_LEFT,
-                        ])}
-                    >
+                    <NavbarGroup align={Alignment.LEFT}>
                         <img
                             title="PiperNet"
                             id="PiperNet Logo"
@@ -40,12 +36,8 @@ export default observer(
                             height="35"
                             alt="PiperNet Logo"
                         />
-                        <div className={classnames([Classes.NAVBAR_HEADING])}>
-                            {" "}
-                            PiperNet{" "}
-                        </div>
-
-                        <Popover
+                        <NavbarHeading> PiperNet </NavbarHeading>
+                        <Popover2
                             content={
                                 <Menu>
                                     <MenuItem
@@ -111,19 +103,13 @@ export default observer(
                                     />
                                 </Menu>
                             }
-                            position={Position.BOTTOM}
+                            placement={Position.BOTTOM}
                         >
-                            <Button
-                                className={classnames([
-                                    Classes.BUTTON,
-                                    Classes.MINIMAL,
-                                ])}
-                                icon="document"
-                            >
+                            <Button minimal={true} icon="document">
                                 Graph
                             </Button>
-                        </Popover>
-                        <Popover
+                        </Popover2>
+                        <Popover2
                             content={
                                 <Menu>
                                     <MenuItem
@@ -149,18 +135,12 @@ export default observer(
                                     /> */}
                                 </Menu>
                             }
-                            position={Position.BOTTOM}
+                            placement={Position.BOTTOM}
                         >
-                            <Button
-                                className={classnames([
-                                    Classes.BUTTON,
-                                    Classes.MINIMAL,
-                                ])}
-                                icon="wrench"
-                            >
+                            <Button minimal={true} icon="wrench">
                                 Tools
                             </Button>
-                        </Popover>
+                        </Popover2>
                         <Switch
                             style={{ marginTop: 10, marginLeft: 8 }}
                             label="Graph Animation"
@@ -169,69 +149,21 @@ export default observer(
                                 (State.css.isAnimating = !State.css.isAnimating)
                             }
                         />
-                    </div>
-                    {/* <div
-                    className={classnames([
-                        Classes.NAVBAR_GROUP,
-                        Classes.ALIGN_LEFT,
-                    ])}
-                >
-                    <span className={Classes.NAVBAR_DIVIDER} />
-                    {appState.graph.hasGraph && appState.graph.frame && (
-                        <div style={{ display: "inline" }}>
-                            <Tooltip
-                                content={
-                                    appState.graph.frame.paused
-                                        ? "Resume Layout Algorithm"
-                                        : "Pause Layout Algorithm"
-                                }
-                                position={Position.BOTTOM}
-                            >
-                                <Button
-                                    className={classnames([
-                                        Classes.BUTTON,
-                                        Classes.MINIMAL,
-                                    ])}
-                                    icon={
-                                        appState.graph.frame.paused
-                                            ? "play"
-                                            : "pause"
-                                    }
-                                    text={
-                                        appState.graph.frame.paused
-                                            ? "Resume Layout"
-                                            : "Pause Layout"
-                                    }
-                                    onClick={() => {
-                                        if (appState.graph.frame.paused) {
-                                            appState.graph.frame.resumeLayout();
-                                            this.forceUpdate();
-                                        } else {
-                                            appState.graph.frame.pauseLayout();
-                                            this.forceUpdate();
-                                        }
-                                    }}
-                                />
-                            </Tooltip>
-                        </div>
-                    )}
-                </div> */}
-                    <ButtonGroup>
-                        {/* <SimpleSelect
+                    </NavbarGroup>
+
+                    {/* <ButtonGroup>
+                        <SimpleSelect
                             className={classnames([Classes.ALERT_CONTENTS])}
                             items={["3D", "2D"]}
                             value={State.preferences.view}
                             onSelect={(it) => (State.preferences.view = it)}
                         />
-                        <Divider /> */}
-                    </ButtonGroup>
+                        <Divider />
+                    </ButtonGroup> */}
 
-                    <div
-                        className={classnames([
-                            Classes.NAVBAR_GROUP,
-                            Classes.ALIGN_RIGHT,
-                        ])}
-                    >
+                    <NavbarGroup align={Alignment.RIGHT}>
+                        <SearchPanel />
+                        <NavbarDivider />
                         <div style={{ marginRight: 6 }}>Clustered by</div>
                         <ClusterChooser
                             onSelect={(cluster) => {
@@ -239,8 +171,8 @@ export default observer(
                             }}
                             syncWith={State.cluster.clusterBy}
                         />
-                        <span className={Classes.NAVBAR_DIVIDER} />
-                        <SimpleSelect
+                        <NavbarDivider />
+                        {/* <SimpleSelect
                             items={["trackball", "orbit", "fly"]}
                             text={State.preferences.controlType}
                             onSelect={(it) => {
@@ -248,23 +180,17 @@ export default observer(
                                 ComponentRef.visualizer.updateVisualizationGraph();
                             }}
                         />
-                        <span className={Classes.NAVBAR_DIVIDER} />
+                        <NavbarDivider />
                         <Button
-                            className={classnames([
-                                Classes.BUTTON,
-                                Classes.MINIMAL,
-                            ])}
+                            minimal={true}
                             icon="cog"
                             disabled={true}
                             onClick={() => {
                                 State.preferences.preferenceDialogOpen = true;
                             }}
-                        />
+                        /> */}
                         <Button
-                            className={classnames([
-                                Classes.BUTTON,
-                                Classes.MINIMAL,
-                            ])}
+                            minimal={true}
                             icon="code"
                             onClick={() => {
                                 window.open(
@@ -272,8 +198,8 @@ export default observer(
                                 );
                             }}
                         />
-                    </div>
-                </nav>
+                    </NavbarGroup>
+                </BlueprintNavbar>
             );
         }
     }
