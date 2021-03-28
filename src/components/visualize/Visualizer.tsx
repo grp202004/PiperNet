@@ -19,13 +19,10 @@ import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
-
-interface Props {
-    controlType: "trackball" | "orbit" | "fly";
-}
+import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
 
 export default observer(
-    class ThreeJSVis extends React.Component<Props, {}> {
+    class ThreeJSVis extends React.Component {
         state = {
             visualizationGraph: State.graphDelegate.visualizationGraph(),
             nodePointerInteraction: true,
@@ -148,6 +145,14 @@ export default observer(
                 return State.css.edge.defaultWidth;
             }
         }
+
+        renderDrawCanvas = () => {
+            if (State.clusterInteraction.drawStraightLine) {
+                return <CanvasDrawStraightLinePanel />;
+            } else {
+                return <CanvasDrawPanel />;
+            }
+        };
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
@@ -159,14 +164,12 @@ export default observer(
                             )}
                         {State.preferences.visualizationMode ===
                             VisualizationMode.ClusterSplitting &&
-                            State.clusterInteraction.drawPanelActivate && (
-                                <CanvasDrawPanel />
-                            )}
+                            State.clusterInteraction.drawPanelActivate &&
+                            this.renderDrawCanvas()}
                         <ForceGraph3D
                             // Data Segment
                             ref={this.graphRef}
                             graphData={this.state.visualizationGraph}
-                            controlType={this.props.controlType}
                             // Node Visualization Segment
                             nodeLabel="id"
                             nodeRelSize={State.css.node.size}
@@ -302,7 +305,8 @@ reaction(
                         Select one or more <b>Nodes</b> and <b>Right-click</b>{" "}
                         on one of them to open <b>Context Menu</b>
                     </p>,
-                    Position.BOTTOM
+                    Position.BOTTOM,
+                    10000
                 );
                 break;
 
@@ -317,7 +321,8 @@ reaction(
                         <b>Right-click</b> on one of them to open{" "}
                         <b>Context Menu</b>
                     </p>,
-                    Position.BOTTOM
+                    Position.BOTTOM,
+                    10000
                 );
                 break;
 

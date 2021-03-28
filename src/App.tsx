@@ -12,6 +12,7 @@ import ThreeJSVis from "./components/visualize/Visualizer";
 // import GlobalPanel from "./components/panels/GlobalPanel";
 // import NodesPanel from "./components/panels/NodesPanel";
 import FloatingCards from "./components/FloatingCards";
+import CanvasDrawStraightLinePanel from "./components/panels/CanvasDrawStraightLinePanel";
 
 function App() {
     return (

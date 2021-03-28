@@ -155,6 +155,15 @@ export default class ClusterInteractionStore {
     drawPanelActivate: boolean = false;
 
     /**
+     * whether to draw a straight line or a curved line when clustering
+     *
+     * @author Zichen XU
+     * @type {boolean}
+     * @memberof ClusterInteractionStore
+     */
+    drawStraightLine: boolean = false;
+
+    /**
      * @description the line segments returned by drawing a line
      * it has the left/right-top points as well to form a polygon
      * @author Zichen XU
@@ -198,7 +207,13 @@ export default class ClusterInteractionStore {
             y: number;
             value: number;
         }[];
-        State.graph.rawGraph.forEachNode((node, attribute) => {
+        const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+            State.clusterInteraction.selectedCluster as string
+        );
+        console.log(clusterValue);
+        let keys = State.cluster.attributeKeys.get(clusterValue!) as string[];
+        keys.forEach((node) => {
+            let attribute = State.graph.rawGraph.getNodeAttributes(node);
             let coord = State.graphDelegate.graphDelegateMethods.graph2ScreenCoords(
                 attribute._visualize.x,
                 attribute._visualize.y,

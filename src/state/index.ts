@@ -92,6 +92,8 @@ autorun(() => {
             State.clusterInteraction.drawPanelActivate = true;
             console.log("cluster selected");
         }
+    } else {
+        State.clusterInteraction.drawPanelActivate = false;
     }
 });
 
@@ -109,7 +111,12 @@ reaction(
                 break;
 
             case 2:
-                ComponentRef?.canvasDrawPanel.clearDrawing();
+                if (State.clusterInteraction.drawStraightLine) {
+                    ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
+                } else {
+                    ComponentRef?.canvasDrawPanel.clearDrawing();
+                }
+
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,

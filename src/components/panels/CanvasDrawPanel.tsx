@@ -23,7 +23,12 @@ export default observer(
             return (
                 <div
                     onMouseUp={() => {
-                        this.exportDrawing();
+                        const data = JSON.parse(
+                            this.canvasMethods.getSaveData()
+                        );
+                        if (data.lines[0].points.length > 4) {
+                            this.exportDrawing();
+                        }
                     }}
                 >
                     <CanvasDraw

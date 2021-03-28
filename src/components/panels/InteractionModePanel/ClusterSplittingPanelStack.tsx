@@ -9,6 +9,8 @@ import {
     Classes,
     H4,
     Callout,
+    RadioGroup,
+    Radio,
 } from "@blueprintjs/core";
 import { Popover2, Tooltip2 } from "@blueprintjs/labs";
 import classnames from "classnames";
@@ -17,6 +19,7 @@ import { VisualizationMode } from "../../../state/PreferencesStore";
 import { observer } from "mobx-react";
 import ComponentRef from "../../ComponentRef";
 import { getMessage } from "./InteractionModePanel";
+import { handleStringChange } from "../../utils/InputFormUtils";
 
 interface CustomPanelEntry {
     step: number;
@@ -44,8 +47,25 @@ const allPanelStacks = [
                 }}
             >
                 <p>
-                    Use the mouse to <b>hold and draw a line </b> to split this
-                    Cluster
+                    <RadioGroup
+                        label="Use the mouse to"
+                        onChange={handleStringChange((value) => {
+                            if (value === "straight") {
+                                State.clusterInteraction.drawStraightLine = true;
+                            } else {
+                                State.clusterInteraction.drawStraightLine = false;
+                            }
+                        })}
+                        selectedValue={
+                            State.clusterInteraction.drawStraightLine
+                                ? "straight"
+                                : "curve"
+                        }
+                    >
+                        <Radio label="Draw a Curved Line" value="curve" />
+                        <Radio label="Draw a Straight Line" value="straight" />
+                    </RadioGroup>
+                    hold and draw a line to split this Cluster
                 </p>
                 <div>
                     <Button
