@@ -135,17 +135,12 @@ export default class InteractionStore {
         }
     }
 
-    setNodeToDefault(node: string) {
-        this.updateNodeVisualizeAttribute(node, {
-            hovered: false,
-            selected: false,
-        });
-    }
     /**
      * update the _visualize object inside node attribute and calls graph refresh
      *
      * @param {string} id
      * @param {Attributes} attribute
+     * @param {Attributes | null = null} oldAttributeVisualize
      * @memberof GraphMutation
      */
     updateNodeVisualizeAttribute(
@@ -168,8 +163,9 @@ export default class InteractionStore {
     /**
      * update the _visualize object inside edge attribute and calls graph refresh
      *
-     * @param {string} id
+     * @param {string} key
      * @param {Attributes} attribute
+     * @param {Attributes | null = null} oldAttributeVisualize
      * @memberof GraphMutation
      */
     updateEdgeVisualizeAttribute(
@@ -198,10 +194,6 @@ export default class InteractionStore {
             oldAttributes.multiSelected = newAttribute.multiSelected;
         }
     }
-
-    // setupSelectionBox(){
-    //     let selectionBox=new THREE.Line(Rect,new THREE.LineBasicMaterial({ linewidth: 3, color: 0x999999 }));
-    // }
 
     /**
      * should call this on every refresh of graph DS

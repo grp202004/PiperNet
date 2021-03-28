@@ -14,7 +14,7 @@ interface Props {
     search: boolean;
 }
 
-interface CustomIItemRendererProps {
+export interface CustomIItemRendererProps {
     handleClick: MouseEventHandler<HTMLElement>;
 }
 

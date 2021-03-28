@@ -14,16 +14,15 @@ import {
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
-import SelectionBox from "../SelectionBox";
+import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDrawPanel";
-
-interface Props {
-    controlType: "trackball" | "orbit" | "fly";
-}
+import { createToaster } from "../../state/utils/ToasterUtils";
+import { Position } from "@blueprintjs/core";
+import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
 
 export default observer(
-    class ThreeJSVis extends React.Component<Props, {}> {
+    class ThreeJSVis extends React.Component {
         state = {
             visualizationGraph: State.graphDelegate.visualizationGraph(),
             nodePointerInteraction: true,
@@ -146,6 +145,14 @@ export default observer(
                 return State.css.edge.defaultWidth;
             }
         }
+
+        renderDrawCanvas = () => {
+            if (State.clusterInteraction.drawStraightLine) {
+                return <CanvasDrawStraightLinePanel />;
+            } else {
+                return <CanvasDrawPanel />;
+            }
+        };
         renderGraph = () => {
             if (State.preferences.view === "3D") {
                 return (
@@ -157,14 +164,12 @@ export default observer(
                             )}
                         {State.preferences.visualizationMode ===
                             VisualizationMode.ClusterSplitting &&
-                            State.clusterInteraction.drawPanelActivate && (
-                                <CanvasDrawPanel />
-                            )}
+                            State.clusterInteraction.drawPanelActivate &&
+                            this.renderDrawCanvas()}
                         <ForceGraph3D
                             // Data Segment
                             ref={this.graphRef}
                             graphData={this.state.visualizationGraph}
-                            controlType={this.props.controlType}
                             // Node Visualization Segment
                             nodeLabel="id"
                             nodeRelSize={State.css.node.size}
@@ -295,6 +300,14 @@ reaction(
                     nodePointerInteraction: true,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(false);
+                createToaster(
+                    <p>
+                        Select one or more <b>Nodes</b> and <b>Right-click</b>{" "}
+                        on one of them to open <b>Context Menu</b>
+                    </p>,
+                    Position.BOTTOM,
+                    10000
+                );
                 break;
 
             case VisualizationMode.ClusterSelection:
@@ -302,6 +315,15 @@ reaction(
                     nodePointerInteraction: false,
                 });
                 ComponentRef.visualizer?.clusterInteractionListener(true);
+                createToaster(
+                    <p>
+                        Select one or more <b>Clusters</b> and{" "}
+                        <b>Right-click</b> on one of them to open{" "}
+                        <b>Context Menu</b>
+                    </p>,
+                    Position.BOTTOM,
+                    10000
+                );
                 break;
 
             case VisualizationMode.ClusterSplitting:

@@ -1,4 +1,3 @@
-import React from "react";
 import classnames from "classnames";
 import { Classes } from "@blueprintjs/core";
 import Navbar from "./components/Navbar";

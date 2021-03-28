@@ -7,6 +7,13 @@ export enum VisualizationMode {
     ClusterSplitting = "Cluster Splitting", // drawing the line to split the cluster
 }
 
+/**
+ * @description it controls the open/close of dialogs/panels
+ * and the VisualizationMode(Normal/NodeSelection/ClusterSelection/ClusterSplitting) as well
+ * @author Zichen XU
+ * @export
+ * @class PreferencesStore
+ */
 export default class PreferencesStore {
     constructor() {
         makeAutoObservable(this);
@@ -21,7 +28,6 @@ export default class PreferencesStore {
     exportDialogOpen = false;
     preferenceDialogOpen = false;
     statisticsDialogOpen = false;
-    helpDialogOpen = false;
 
     AddNodeDialogOpen = false;
     AddEdgeDialogOpen = false;

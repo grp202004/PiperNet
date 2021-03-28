@@ -5,7 +5,6 @@ import { observer } from "mobx-react";
 import State from "../state";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
-import SearchPanel from "./panels/SearchPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 import GraphOptionsCard from "./panels/GraphOptionsCard";
 import InteractionModePanel from "./panels/InteractionModePanel/InteractionModePanel";
@@ -105,7 +104,6 @@ export default observer(
                         <MultiDetailPanel />
                     )}
 
-                    <SearchPanel />
                     {State.preferences.rightClickPanelOpen &&
                         State.preferences.rightClickOn && (
                             <RightClickPanel

@@ -1,9 +1,7 @@
 import React from "react";
 import {
     Callout,
-    Card,
     Classes,
-    Divider,
     FileInput,
     Spinner,
     Switch,
@@ -20,7 +18,6 @@ import { observer } from "mobx-react";
 import State from "../../state";
 import SimpleSelect from "../utils/SimpleSelect";
 import { IEdgeFileConfig, INodeFileConfig } from "../../state/ImportStore";
-import ClusterChooser from "../utils/ClusterChooser";
 
 interface PreviewTableProps {
     file: INodeFileConfig | IEdgeFileConfig;

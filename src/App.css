@@ -194,9 +194,9 @@ html {
 
 .boxCanvas {
     position: fixed;
-    z-index: 999;
     width: 100vw;
     height: 100vh;
+    z-index: 1.01;
 }
 
 .left-bottom-overlay-card {
@@ -349,6 +349,14 @@ div.pt-card.sub-option.legend {
     pointer-events: all;
 }
 
+.bp3-panel-stack-header-back {
+    display: none;
+}
+
+.bp3-overlay {
+    z-index: 1.1;
+}
+
 .search {
     font-size: 0.4em;
     pointer-events: all;
@@ -380,6 +388,7 @@ div.pt-card.sub-option.legend {
     top: 50px;
     position: absolute;
     pointer-events: all;
+    z-index: 30;
 }
 
 /* Override blueprint numeric input, since it's useless unless inline */

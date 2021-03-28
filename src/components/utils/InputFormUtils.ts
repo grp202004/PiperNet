@@ -40,6 +40,9 @@ export function stringifyNodeDetail(attributes: Attributes): string {
 }
 
 export function parseNumberOrString(value: string): string | number {
+    if (value === "") {
+        return "";
+    }
     let numberVal = Number(value);
     if (isNaN(numberVal)) {
         return value;

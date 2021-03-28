@@ -105,16 +105,6 @@ export default class Cluster3dObjectStore {
         return res;
     }
 
-    resetDefaultMaterial() {
-        this.fusionClusterObjects?.children.forEach(
-            (object: THREE.Object3D) => {
-                let mesh = object as THREE.Mesh;
-                let material = mesh.material as THREE.Material;
-                material.opacity = 0.15;
-            }
-        );
-    }
-
     /**
      * dispose the geometries and materials in every clusterObject
      * and set these props to be null, which indicates that no additional 3d object is added into Scene
@@ -153,19 +143,33 @@ export default class Cluster3dObjectStore {
      */
     convexHullObject(key: string | number): THREE.BufferGeometry {
         let points = State.cluster.attributePoints.get(key) as THREE.Vector3[];
-        if (State.css.cluster.shape === "convexHull") {
-            if (!points || points.length < 4) {
-                return new THREE.BufferGeometry();
-            } else {
-                return new ConvexGeometry(Array.from(points));
-            }
-        } else {
-            // State.css.clusterShape === "Sphere"
-            let convexGeometry = new ConvexGeometry(Array.from(points));
-            convexGeometry.computeBoundingSphere();
-            let sphereGeo = convexGeometry.boundingSphere as THREE.Sphere;
+
+        if (!points || points.length === 0) {
+            return new THREE.BufferGeometry();
+        } else if (points.length === 1) {
             let sphere = new SphereGeometry(
-                sphereGeo.radius,
+                State.css.node.size + 5,
+                State.css.cluster.resolution,
+                State.css.cluster.resolution
+            );
+            sphere.translate(points[0].x, points[0].y, points[0].z);
+            return sphere;
+        } else if (points.length < 4) {
+            // there are 2 or 3 points in this cluster
+            let geometry = new THREE.BufferGeometry();
+            let tempArray: number[] = [];
+            points.forEach((vector) => {
+                tempArray.push(vector.x, vector.y, vector.z);
+            });
+            const positions = new Float32Array(tempArray);
+            geometry.setAttribute(
+                "position",
+                new THREE.BufferAttribute(positions, 3)
+            );
+            geometry.computeBoundingSphere();
+            let sphereGeo = geometry.boundingSphere as THREE.Sphere;
+            let sphere = new SphereGeometry(
+                sphereGeo.radius + 5,
                 State.css.cluster.resolution,
                 State.css.cluster.resolution
             );
@@ -175,6 +179,27 @@ export default class Cluster3dObjectStore {
                 sphereGeo.center.z
             );
             return sphere;
+        } else {
+            if (State.css.cluster.shape === "convexHull") {
+                // when there are more than 3 points, simply gnerate a convexgeometry
+                return new ConvexGeometry(Array.from(points));
+            } else {
+                // State.css.clusterShape === "Sphere"
+                let convexGeometry = new ConvexGeometry(Array.from(points));
+                convexGeometry.computeBoundingSphere();
+                let sphereGeo = convexGeometry.boundingSphere as THREE.Sphere;
+                let sphere = new SphereGeometry(
+                    sphereGeo.radius + 5,
+                    State.css.cluster.resolution,
+                    State.css.cluster.resolution
+                );
+                sphere.translate(
+                    sphereGeo.center.x,
+                    sphereGeo.center.y,
+                    sphereGeo.center.z
+                );
+                return sphere;
+            }
         }
     }
 
@@ -217,17 +242,17 @@ export default class Cluster3dObjectStore {
         }, 100);
     }
 
-    private meshHighlightMaterial(mesh: THREE.Mesh) {
+    private static meshHighlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.5;
     }
 
-    private meshSelectedMaterial(mesh: THREE.Mesh) {
+    private static meshSelectedMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.3;
     }
 
-    private meshNormalMaterial(mesh: THREE.Mesh) {
+    private static meshNormalMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.15;
     }
@@ -237,15 +262,15 @@ export default class Cluster3dObjectStore {
             let mesh = _object as THREE.Mesh;
             const meshId = mesh.uuid;
             if (State.clusterInteraction.currentlyHoveredClusterId === meshId) {
-                this.meshHighlightMaterial(mesh);
+                Cluster3dObjectStore.meshHighlightMaterial(mesh);
                 return;
             } else if (
                 State.clusterInteraction.selectedClusters.includes(meshId)
             ) {
-                this.meshSelectedMaterial(mesh);
+                Cluster3dObjectStore.meshSelectedMaterial(mesh);
                 return;
             } else {
-                this.meshNormalMaterial(mesh);
+                Cluster3dObjectStore.meshNormalMaterial(mesh);
             }
         });
     }

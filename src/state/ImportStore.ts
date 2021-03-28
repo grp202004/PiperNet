@@ -42,6 +42,17 @@ export interface IEdgeFileConfig {
     delimiter: string;
 }
 
+/**
+ * @description this class defines some necessary configs for the graph-importing procedures
+ * such as the `INodeFileConfig` and `IEdgeFileConfig` for customizing the csv/gexf file parsing procedure
+ * Other functions like `renderImportNode/EdgePreview` renders the preview table in the ImportDialog
+ * and `importGraphFromCSV/GEXF` reads the file input and produce the `graphology` object to be assigned to `GraphStore`
+ * with some basic error handling strategies
+ * These functions are designed to be synchronized to prevent frozen of UI.
+ * @author Zichen XU
+ * @export
+ * @class ImportStore
+ */
 export default class ImportStore {
     constructor() {
         makeAutoObservable(this);

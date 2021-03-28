@@ -74,7 +74,7 @@ autorun(
 
 // set the graph to suspend animating according to State.css.isAnimating
 autorun(() => {
-    if (State.css.isAnimating === true) {
+    if (State.css.isAnimating) {
         State.graphDelegate.graphDelegateMethods?.resumeAnimation();
     } else {
         State.graphDelegate.graphDelegateMethods?.pauseAnimation();
@@ -92,6 +92,8 @@ autorun(() => {
             State.clusterInteraction.drawPanelActivate = true;
             console.log("cluster selected");
         }
+    } else {
+        State.clusterInteraction.drawPanelActivate = false;
     }
 });
 
@@ -109,7 +111,12 @@ reaction(
                 break;
 
             case 2:
-                ComponentRef?.canvasDrawPanel.clearDrawing();
+                if (State.clusterInteraction.drawStraightLine) {
+                    ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
+                } else {
+                    ComponentRef?.canvasDrawPanel.clearDrawing();
+                }
+
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
@@ -156,7 +163,7 @@ reaction(
 // auto highlight the selected Cluster
 reaction(
     () => State.clusterInteraction.selectedCluster,
-    (selectedCluster) => {
+    () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }
 );
@@ -164,7 +171,7 @@ reaction(
 // auto highlight the selected Clusters
 reaction(
     () => State.clusterInteraction.selectedClusters,
-    (selectedClusters) => {
+    () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }
 );

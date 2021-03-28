@@ -31,7 +31,8 @@ export default class ClusterStore {
      * the setter of clusterBy
      * will update the front-end 3d graph about the cluster changes
      *
-     * @param {(string | null)} by
+     * @param {string | null} to
+     * @param {boolean = false} forceUpdate
      */
     setCluster(to: string | null, forceUpdate: boolean = false) {
         if (forceUpdate) {
@@ -72,10 +73,13 @@ export default class ClusterStore {
         this.rawGraph?.forEachNode((key, attributes) => {
             // if this attribute is defined
             if (attributes.hasOwnProperty(attribute)) {
-                keyValueMap.set(key, attributes[attribute]);
+                if (attributes[attribute] === "") {
+                    // ignore those which empty attribute
+                } else {
+                    keyValueMap.set(key, attributes[attribute]);
+                }
             } else {
                 // this attribute is undefined in this node
-                keyValueMap.set(key, "undefined");
             }
         });
         return keyValueMap;
