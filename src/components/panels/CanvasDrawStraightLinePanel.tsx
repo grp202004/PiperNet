@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import State from "../../state";
 import ComponentRef from "../ComponentRef";
