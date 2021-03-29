@@ -77,6 +77,7 @@ export default observer(
                                     text={State.css.cluster.shape}
                                     onSelect={(it) => {
                                         State.css.cluster.shape = it;
+                                        State.graphDelegate.clusterObject.alterNodePosition();
                                     }}
                                     small={true}
                                 />

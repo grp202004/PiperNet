@@ -53,8 +53,5 @@ export default class PreferencesStore {
 
     // 3D Graph
 
-    view = "3D";
-    controlType: "trackball" | "orbit" | "fly" = "trackball";
-
     visualizationMode: VisualizationMode = VisualizationMode.Normal;
 }

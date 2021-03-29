@@ -69,13 +69,16 @@ export default class SearchStore {
             // have specify the attribute
             const searchAttr = this.filterProps as string;
             this.rawGraph.forEachNode((node, attributes) => {
-                if (
-                    attributes.hasOwnProperty(searchAttr) &&
-                    (attributes[searchAttr] as string)
-                        .toLocaleLowerCase()
-                        .includes(searchStrIgnoreCase)
-                ) {
-                    outputList.push(node);
+                if (attributes.hasOwnProperty(searchAttr)) {
+                    let attribute = attributes[searchAttr];
+                    if (
+                        attribute
+                            .toString()
+                            .toLocaleLowerCase()
+                            .includes(searchStrIgnoreCase)
+                    ) {
+                        outputList.push(node);
+                    }
                 }
             });
         }

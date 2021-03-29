@@ -3,6 +3,8 @@ import * as THREE from "three";
 import { SphereGeometry } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import State from ".";
+import chaser from "chaser";
+import ComponentRef from "../components/ComponentRef";
 
 export default class Cluster3dObjectStore {
     constructor() {
@@ -273,5 +275,94 @@ export default class Cluster3dObjectStore {
                 Cluster3dObjectStore.meshNormalMaterial(mesh);
             }
         });
+    }
+
+    alterNodePosition() {
+        State.cluster.attributeKeys.forEach((points, cluster) => {
+            const sphereGeometry = this.clusterObjectsMap?.get(
+                cluster
+            ) as THREE.Mesh;
+            const radius = sphereGeometry.geometry.boundingSphere?.radius!;
+            let position = sphereGeometry.geometry.boundingSphere?.center!;
+            let newPositions = this.computeNodeSphereDistribution(
+                radius,
+                points.length
+            );
+
+            let chaserListX: any[] = [];
+            let chaserListY: any[] = [];
+            let chaserListZ: any[] = [];
+
+            newPositions.forEach((value, index) => {
+                let attribute = State.graph.rawGraph.getNodeAttribute(
+                    points[index],
+                    "_visualize"
+                );
+
+                console.log(attribute);
+
+                const chaserX = chaser({
+                    initialValue: attribute.x,
+                    duration: 1000,
+                });
+                chaserX.target = value.x + position.x;
+                chaserListX.push(chaserX);
+
+                const chaserY = chaser({
+                    initialValue: attribute.y,
+                    duration: 1000,
+                });
+                chaserY.target = value.y + position.y;
+                chaserListY.push(chaserY);
+
+                const chaserZ = chaser({
+                    initialValue: attribute.z,
+                    duration: 1000,
+                });
+                chaserZ.target = value.z + position.z;
+                chaserListZ.push(chaserZ);
+            });
+
+            const startTime = new Date().getTime();
+            let interval = setInterval(function () {
+                if (new Date().getTime() - startTime > 1000) {
+                    clearInterval(interval);
+                    return;
+                }
+                newPositions.forEach((value, index) => {
+                    let attribute = State.graph.rawGraph.getNodeAttribute(
+                        points[index],
+                        "_visualize"
+                    );
+                    attribute.x = chaserListX[index].value;
+                    attribute.y = chaserListY[index].value;
+                    attribute.z = chaserListZ[index].value;
+                });
+                State.graphDelegate.graphDelegateMethods.refresh();
+            }, 100);
+        });
+    }
+
+    private computeNodeSphereDistribution(
+        radius: number,
+        numberOfPoints = 45
+    ): { x: number; y: number; z: number }[] {
+        let dlong = Math.PI * (3.0 - Math.sqrt(5.0));
+        let dz = 2.0 / numberOfPoints;
+        let long = 0.0;
+        let z = 1.0 - dz / 2.0;
+        let ptsOnSphere: { x: number; y: number; z: number }[] = [];
+        for (let index = 0; index < numberOfPoints; index++) {
+            let r = Math.sqrt(1.0 - z * z);
+            let ptNew = {
+                x: Math.cos(long) * r * radius,
+                y: Math.sin(long) * r * radius,
+                z: z * radius,
+            };
+            ptsOnSphere.push(ptNew);
+            z = z - dz;
+            long = long + dlong;
+        }
+        return ptsOnSphere;
     }
 }
