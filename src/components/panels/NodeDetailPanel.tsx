@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Classes } from "@blueprintjs/core";
+import { Card } from "@blueprintjs/core";
 import { Cell, Column, EditableCell, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import State from "../../state/index";
@@ -68,12 +68,7 @@ export default observer(
                         "transparent-frame"
                     )}
                 >
-                    <div
-                        className={classnames(
-                            Classes.CARD,
-                            "node-details-table"
-                        )}
-                    >
+                    <Card className={"node-details-table"}>
                         <Table
                             numRows={State.graph.metadata.nodeProperties.length}
                             enableRowHeader={false}
@@ -87,7 +82,7 @@ export default observer(
                                 cellRenderer={this.cellRenderer_value}
                             />
                         </Table>
-                    </div>
+                    </Card>
                 </div>
             );
         }

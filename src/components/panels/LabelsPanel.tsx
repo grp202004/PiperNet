@@ -1,8 +1,7 @@
 import React from "react";
-import { Classes, Slider, Switch } from "@blueprintjs/core";
+import { Card, Slider, Switch } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import State from "../../state";
-import classnames from "classnames";
 import ColorPicker from "../utils/ColorPicker";
 
 export default observer(
@@ -19,7 +18,7 @@ export default observer(
                         }}
                     />
                     <br />
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         Label Size:
                         <br />
                         <Slider
@@ -46,7 +45,7 @@ export default observer(
                                 />
                             </span>
                         </p>
-                    </div>
+                    </Card>
                 </div>
             );
         }

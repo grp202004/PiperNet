@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Classes } from "@blueprintjs/core";
+import { Card } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import ComponentRef from "../ComponentRef";
@@ -16,7 +16,7 @@ export default observer(
                         "transparent-frame"
                     )}
                 >
-                    <div className={classnames(Classes.CARD)}>
+                    <Card>
                         <Table numRows={State.interaction.selectedNodes.length}>
                             {State.graph.metadata.nodeProperties.map((it) => (
                                 <Column
@@ -35,7 +35,7 @@ export default observer(
                                 />
                             ))}
                         </Table>
-                    </div>
+                    </Card>
                 </div>
             );
         }

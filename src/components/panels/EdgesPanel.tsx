@@ -1,8 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import { Classes } from "@blueprintjs/core";
-import classnames from "classnames";
+import { Card } from "@blueprintjs/core";
 import Collapsable from "../utils/Collapsable";
 import ColorPicker from "../utils/ColorPicker";
 
@@ -18,7 +17,7 @@ export default observer(
         render() {
             return (
                 <div>
-                    <p>{`Modifying All Edges`}</p>
+                    <p>Modifying All Edges</p>
 
                     {/* Collapsable Option: Color */}
                     <Collapsable
@@ -30,7 +29,7 @@ export default observer(
                             })
                         }
                     >
-                        <div className={classnames(Classes.CARD, "sub-option")}>
+                        <Card className={"sub-option"}>
                             <section>
                                 <p style={{ textAlign: "left" }}>
                                     Default Color:
@@ -83,7 +82,7 @@ export default observer(
                                     </span>
                                 </p>
                             </section>
-                        </div>
+                        </Card>
                     </Collapsable>
                 </div>
             );

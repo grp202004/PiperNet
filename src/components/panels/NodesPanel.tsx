@@ -1,8 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import { Classes, Slider } from "@blueprintjs/core";
-import classnames from "classnames";
+import { Card, Slider } from "@blueprintjs/core";
 import Collapsable from "../utils/Collapsable";
 import ColorPicker from "../utils/ColorPicker";
 
@@ -26,7 +25,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         <section>
                             <p style={{ textAlign: "left" }}>
                                 Default Color:
@@ -77,7 +76,7 @@ export default observer(
                                 </span>
                             </p>
                         </section>
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };
@@ -93,7 +92,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         Node Size:
                         <br />
                         <Slider
@@ -107,7 +106,7 @@ export default observer(
                             }}
                             value={State.css.node.size}
                         />
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };
@@ -123,7 +122,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         Node Resolution:
                         <br />
                         <Slider
@@ -136,7 +135,7 @@ export default observer(
                             }}
                             value={State.css.node.resolution}
                         />
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };

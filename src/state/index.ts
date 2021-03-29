@@ -104,6 +104,7 @@ reaction(
         console.log(`Graph Splitting change to step ${step}`);
         switch (step) {
             case 1:
+                State.clusterInteraction.drawPanelActivate = false;
                 State.clusterInteraction.confirmClusterSplittingTempData = null;
                 State.interaction.flush();
                 State.clusterInteraction.flush();
@@ -111,6 +112,8 @@ reaction(
                 break;
 
             case 2:
+                State.clusterInteraction.drawPanelActivate = true;
+
                 if (State.clusterInteraction.drawStraightLine) {
                     ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
                 } else {
@@ -131,6 +134,7 @@ reaction(
                 break;
 
             case 3:
+                State.clusterInteraction.drawPanelActivate = false;
                 break;
         }
     }
