@@ -50,7 +50,7 @@ describe('the attribute is undefined', () => {
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
-            expect(clusterStore.getAttributeValues.length).toEqual(1)
+            expect(clusterStore.getAttributeValues.length).toEqual(0)
         })
 
         //4
@@ -59,7 +59,7 @@ describe('the attribute is undefined', () => {
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
-            expect(clusterStore.getAttributeValues[0]).toEqual("undefined")
+            expect(clusterStore.getAttributeValues[0]).toEqual(undefined)
         })
     })
 
@@ -70,7 +70,7 @@ describe('the attribute is undefined', () => {
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
-            expect(clusterStore.attributeKeys.size).toEqual(1)
+            expect(clusterStore.attributeKeys.size).toEqual(0)
         })
 
         //6
@@ -80,7 +80,7 @@ describe('the attribute is undefined', () => {
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
             for (let key of clusterStore.attributeKeys.keys()) {
-                expect(key).toEqual("undefined")
+                expect(key).toEqual(undefined)
                 return;
             }
         })
@@ -105,7 +105,7 @@ describe('the attribute is undefined', () => {
             //@ts-ignore
             const data = await importStore.importGraphFromGEXF();
             clusterStore.rawGraph = data.graph
-            expect(clusterStore.attributeColor.size).toEqual(1)
+            expect(clusterStore.attributeColor.size).toEqual(0)
         })
     })
 
