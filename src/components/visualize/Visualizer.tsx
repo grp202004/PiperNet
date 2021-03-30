@@ -295,6 +295,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
@@ -302,6 +304,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(false);
                 createToaster(
                     <p>
@@ -317,6 +321,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 createToaster(
                     <p>
@@ -333,8 +339,9 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
-                ComponentRef.visualizer?.clusterInteractionListener(true);
+                State.interaction.flush();
                 State.clusterInteraction.flush();
+                ComponentRef.visualizer?.clusterInteractionListener(true);
                 State.helper.clusterSplittingPanelStackOpen = true;
                 break;
         }

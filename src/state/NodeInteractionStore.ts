@@ -1,24 +1,29 @@
 import { Attributes } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import State from ".";
+import { NAVBAR_HEIGHT } from "../constants";
 export default class InteractionStore {
     constructor() {
         makeAutoObservable(this);
     }
 
+    /**
+     * @description the currently selected node
+     * represents the node being right-clicked on
+     * @type {(string | null)}
+     */
     selectedNode: string | null = null;
 
     /**
-     * the currently selected node ids
+     * @description the currently selected nodes id
      * the singleNodeDetailPanel will render and refresh if this changes
-     *
+     * used in NodeSelection panel to do actions on those selected nodes
      * @type {string[]}
      */
     selectedNodes: string[] = [];
 
     selectedEdge: string | null = null;
 
-    selectedEdges: string[] = [];
     /**
      * when the menuItem 'box-select Node' of RightClickPanel is clicked, then this will be set to true,
      *  and the component'SelectionBox' will be  visualized only the mode is 'Node Selection' and this variable is true
@@ -49,18 +54,20 @@ export default class InteractionStore {
             this.boxSelection_startPoint.x,
             this.boxSelection_endPoint.x
         );
-        let top = Math.min(
-            this.boxSelection_startPoint.y,
-            this.boxSelection_endPoint.y
-        );
+        let top =
+            Math.min(
+                this.boxSelection_startPoint.y,
+                this.boxSelection_endPoint.y
+            ) - NAVBAR_HEIGHT;
         let right = Math.max(
             this.boxSelection_startPoint.x,
             this.boxSelection_endPoint.x
         );
-        let down = Math.max(
-            this.boxSelection_startPoint.y,
-            this.boxSelection_endPoint.y
-        );
+        let down =
+            Math.max(
+                this.boxSelection_startPoint.y,
+                this.boxSelection_endPoint.y
+            ) - NAVBAR_HEIGHT;
 
         //check which node is inside the box,if true push them into selectedNodes
         State.graph.rawGraph.forEachNode((node, Attributes) => {
@@ -91,7 +98,6 @@ export default class InteractionStore {
     /**
      * the currently hovered node id that used for display at RightClickPanel
      */
-
     get currentlyHoveredNodeNeighbors(): string[] | null {
         if (this.currentlyHoveredNodeId === null) {
             return null;
@@ -185,7 +191,10 @@ export default class InteractionStore {
         );
     }
 
-    updateVisualizeAttributeParser(newAttribute: any, oldAttributes: any) {
+    private updateVisualizeAttributeParser(
+        newAttribute: any,
+        oldAttributes: any
+    ) {
         if (newAttribute.hasOwnProperty("hovered")) {
             oldAttributes.hovered = newAttribute.hovered;
         } else if (newAttribute.hasOwnProperty("selected")) {
@@ -196,14 +205,14 @@ export default class InteractionStore {
     }
 
     /**
-     * should call this on every refresh of graph DS
-     *
+     * @description should call this on every refresh of graph DS
+     * or simply change the InteractionMode
+     * @author Zichen XU
      */
     flush() {
         this.selectedNode = null;
         this.selectedNodes = [];
         this.selectedEdge = null;
-        this.selectedEdges = [];
         this.currentlyHoveredNodeId = null;
     }
 }

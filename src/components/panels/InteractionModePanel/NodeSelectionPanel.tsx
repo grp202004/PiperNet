@@ -1,6 +1,14 @@
 import React from "react";
 
-import { Button, Intent, Classes, RadioGroup, Radio } from "@blueprintjs/core";
+import {
+    Button,
+    Intent,
+    Classes,
+    RadioGroup,
+    Radio,
+    Card,
+    Text,
+} from "@blueprintjs/core";
 import { Popover2, Tooltip2 } from "@blueprintjs/labs";
 import classnames from "classnames";
 import State from "../../../state";
@@ -16,34 +24,39 @@ export default observer(
         };
         private renderPanelStack = () => {
             return (
-                <div style={{ width: "300px", height: "100px" }}>
-                    <div style={{ marginLeft: 20 }}>
-                        <RadioGroup
-                            label="Node Multi-Selection Mode"
-                            onChange={this.handleChange}
-                            selectedValue={
-                                State.interaction.boxSelectionOpen
-                                    ? "two"
-                                    : "one"
-                            }
-                        >
-                            <Radio label="Click" value="one" />
-                            <Radio label="Box-Selection" value="two" />
-                        </RadioGroup>
-                        <Button
-                            icon="cross"
-                            style={{
-                                position: "absolute",
-                                top: -1,
-                                right: -1,
-                                zIndex: 99,
-                            }}
-                            minimal={true}
-                            onClick={() => {
-                                State.helper.NodeSelectionPanelOpen = false;
-                            }}
-                        />
+                <div
+                    className={Classes.PANEL_STACK_VIEW}
+                    style={{ position: "unset" }}
+                >
+                    <div style={{ maxWidth: "400px", minHeight: "100px" }}>
+                        <Card>
+                            <RadioGroup
+                                label="Node Multi-Selection Mode"
+                                onChange={this.handleChange}
+                                selectedValue={
+                                    State.interaction.boxSelectionOpen
+                                        ? "two"
+                                        : "one"
+                                }
+                            >
+                                <Radio label="Left Click" value="one" />
+                                <Radio label="Box-Selection" value="two" />
+                            </RadioGroup>
+                        </Card>
                     </div>
+                    <Button
+                        icon="cross"
+                        style={{
+                            position: "absolute",
+                            top: -1,
+                            right: -1,
+                            zIndex: 99,
+                        }}
+                        minimal={true}
+                        onClick={() => {
+                            State.helper.NodeSelectionPanelOpen = false;
+                        }}
+                    />
                 </div>
             );
         };

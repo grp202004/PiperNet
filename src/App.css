@@ -196,7 +196,7 @@ html {
     position: fixed;
     width: 100vw;
     height: 100vh;
-    z-index: 1.01;
+    z-index: 19;
 }
 
 .left-bottom-overlay-card {

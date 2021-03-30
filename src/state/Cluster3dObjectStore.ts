@@ -4,7 +4,6 @@ import { SphereGeometry } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import State from ".";
 import chaser from "chaser";
-import ComponentRef from "../components/ComponentRef";
 
 export default class Cluster3dObjectStore {
     constructor() {

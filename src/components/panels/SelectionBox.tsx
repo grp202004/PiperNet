@@ -24,6 +24,7 @@ export default observer(
             let startpoint = { x: event.clientX, y: event.clientY };
             this.setState({
                 startPoint: startpoint,
+                endPoint: startpoint,
                 mouseDown: true,
             });
         };
@@ -33,7 +34,6 @@ export default observer(
         ) => {
             if (this.state.mouseDown) {
                 let endPoint = { x: event.clientX, y: event.clientY };
-                // this.setState({ endPoint: endPoint });
                 this.setState({
                     endPoint: endPoint,
                     boxStyle: this._calculateSelectionBox(
