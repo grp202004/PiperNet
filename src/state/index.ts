@@ -89,7 +89,6 @@ autorun(() => {
     ) {
         if (State.clusterInteraction.selectedCluster) {
             State.helper.clusterSplittingCurrentStep = 2;
-            State.clusterInteraction.drawPanelActivate = true;
             console.log("cluster selected");
         }
     } else {
@@ -104,6 +103,7 @@ reaction(
         console.log(`Graph Splitting change to step ${step}`);
         switch (step) {
             case 1:
+                State.clusterInteraction.drawPanelActivate = false;
                 State.clusterInteraction.confirmClusterSplittingTempData = null;
                 State.interaction.flush();
                 State.clusterInteraction.flush();
@@ -111,12 +111,12 @@ reaction(
                 break;
 
             case 2:
+                State.clusterInteraction.drawPanelActivate = true;
                 if (State.clusterInteraction.drawStraightLine) {
                     ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
                 } else {
                     ComponentRef?.canvasDrawPanel.clearDrawing();
                 }
-
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
@@ -131,6 +131,7 @@ reaction(
                 break;
 
             case 3:
+                State.clusterInteraction.drawPanelActivate = false;
                 break;
         }
     }
@@ -176,7 +177,7 @@ reaction(
     }
 );
 
-// auto highlight the hovered Node
+// auto color the hovered Node
 reaction(
     () => State.interaction.currentlyHoveredNodeId,
     (currentlyHoveredNodeId) => {
@@ -196,54 +197,10 @@ reaction(
                 );
             }
         });
-        State.graph.rawGraph.forEachEdge((edge, oldAttributes) => {
-            if (
-                State.interaction.currentlyHoveredNodeNeighborEdges?.includes(
-                    edge
-                )
-            ) {
-                State.interaction.updateEdgeVisualizeAttribute(
-                    edge,
-                    { hovered: true },
-                    oldAttributes._visualize
-                );
-            } else {
-                State.interaction.updateEdgeVisualizeAttribute(
-                    edge,
-                    { hovered: false },
-                    oldAttributes._visualize
-                );
-            }
-        });
-        State.graphDelegate.graphDelegateMethods.refresh();
     }
 );
 
-// auto highlight the selected nodes
-reaction(
-    () => State.interaction.selectedNodes.map((node) => node),
-    (selectedNodes) => {
-        console.log("selectedNodes", selectedNodes);
-        State.graph.rawGraph.forEachNode((node, oldAttributes) => {
-            if (selectedNodes.includes(node)) {
-                State.interaction.updateNodeVisualizeAttribute(
-                    node,
-                    { multiSelected: true },
-                    oldAttributes._visualize
-                );
-            } else {
-                State.interaction.updateNodeVisualizeAttribute(
-                    node,
-                    { multiSelected: false },
-                    oldAttributes._visualize
-                );
-            }
-        });
-        State.graphDelegate.graphDelegateMethods.refresh();
-    }
-);
-
-// auto highlight the selected node
+// auto color the selected node
 reaction(
     () => State.interaction.selectedNode,
     (selectedNode) => {
@@ -267,7 +224,31 @@ reaction(
     }
 );
 
-// auto highlight the selected edges
+// auto color the selected nodes
+reaction(
+    () => State.interaction.selectedNodes.map((node) => node),
+    (selectedNodes) => {
+        console.log("selectedNodes", selectedNodes);
+        State.graph.rawGraph.forEachNode((node, oldAttributes) => {
+            if (selectedNodes.includes(node)) {
+                State.interaction.updateNodeVisualizeAttribute(
+                    node,
+                    { multiSelected: true },
+                    oldAttributes._visualize
+                );
+            } else {
+                State.interaction.updateNodeVisualizeAttribute(
+                    node,
+                    { multiSelected: false },
+                    oldAttributes._visualize
+                );
+            }
+        });
+        State.graphDelegate.graphDelegateMethods.refresh();
+    }
+);
+
+// auto color the selected edge
 reaction(
     () => State.interaction.selectedEdge,
     (selectedEdge) => {
@@ -283,6 +264,29 @@ reaction(
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
                     { selected: false },
+                    oldAttributes._visualize
+                );
+            }
+        });
+        State.graphDelegate.graphDelegateMethods.refresh();
+    }
+);
+
+// auto color the neighbor edges
+reaction(
+    () => State.interaction.currentlyHoveredNodeNeighborEdges,
+    (neighborEdges) => {
+        State.graph.rawGraph.forEachEdge((edge, oldAttributes) => {
+            if (neighborEdges?.includes(edge)) {
+                State.interaction.updateEdgeVisualizeAttribute(
+                    edge,
+                    { hovered: true },
+                    oldAttributes._visualize
+                );
+            } else {
+                State.interaction.updateEdgeVisualizeAttribute(
+                    edge,
+                    { hovered: false },
                     oldAttributes._visualize
                 );
             }

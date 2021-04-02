@@ -4,6 +4,7 @@ import {
     Button,
     ButtonGroup,
     Classes,
+    ControlGroup,
     Dialog,
     FileInput,
     Intent,
@@ -25,10 +26,7 @@ export default observer(
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                         <ButtonGroup>
                             <Button
-                                className={classnames({
-                                    [Classes.DISABLED]: !this.state
-                                        .fileIsSelect,
-                                })}
+                                disabled={!this.state.fileIsSelect}
                                 intent={Intent.PRIMARY}
                                 onClick={() => {
                                     State.import.isLoading = true;
@@ -85,40 +83,29 @@ export default observer(
                             )}
                         >
                             <div>
-                                <div
-                                    className={classnames(
-                                        Classes.CONTROL_GROUP
-                                    )}
-                                >
-                                    <div
-                                        className={classnames(
-                                            Classes.INPUT_GROUP,
-                                            Classes.FILL
-                                        )}
-                                    >
-                                        <FileInput
-                                            text={State.import.gexfFileName}
-                                            onInputChange={(event) => {
-                                                let target = event.target as HTMLInputElement;
-                                                if (
-                                                    !target.files ||
-                                                    target.files.length < 1
-                                                ) {
-                                                    return;
-                                                }
-                                                State.import.gexfFileName =
-                                                    target.files[0].name;
-                                                // after setting the selectedNodeFileFromInput, it will auto render the preview table
-                                                State.import.selectedGEXFFileFromInput =
-                                                    target.files[0];
+                                <ControlGroup>
+                                    <FileInput
+                                        text={State.import.gexfFileName}
+                                        onInputChange={(event) => {
+                                            let target = event.target as HTMLInputElement;
+                                            if (
+                                                !target.files ||
+                                                target.files.length < 1
+                                            ) {
+                                                return;
+                                            }
+                                            State.import.gexfFileName =
+                                                target.files[0].name;
+                                            // after setting the selectedNodeFileFromInput, it will auto render the preview table
+                                            State.import.selectedGEXFFileFromInput =
+                                                target.files[0];
 
-                                                this.setState({
-                                                    fileIsSelect: true,
-                                                });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                                            this.setState({
+                                                fileIsSelect: true,
+                                            });
+                                        }}
+                                    />
+                                </ControlGroup>
                             </div>
                             {this.renderImportButton()}
                         </div>

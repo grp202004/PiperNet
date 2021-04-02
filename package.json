@@ -11,6 +11,7 @@
         "@blueprintjs/popover2": "^0.3.2",
         "@blueprintjs/select": "^3.15.7",
         "@blueprintjs/table": "3.5.0",
+        "chaser": "^0.4.3",
         "classnames": "^2.2.6",
         "copy-anything": "^2.0.1",
         "csv-parse": "^4.14.2",

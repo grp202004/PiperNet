@@ -135,6 +135,7 @@ export default observer(
                 return State.css.edge.defaultColor;
             }
         }
+
         computeEdgeWidth(_edge: LinkObject) {
             let edge = _edge as ICustomLinkObject;
             if (edge.hovered) {
@@ -153,85 +154,87 @@ export default observer(
                 return <CanvasDrawPanel />;
             }
         };
+
         renderGraph = () => {
-            if (State.preferences.view === "3D") {
-                return (
-                    <div>
-                        {State.preferences.visualizationMode ===
-                            VisualizationMode.NodeSelection &&
-                            State.interaction.boxSelectionOpen && (
-                                <SelectionBox />
-                            )}
-                        {State.preferences.visualizationMode ===
-                            VisualizationMode.ClusterSplitting &&
-                            State.clusterInteraction.drawPanelActivate &&
-                            this.renderDrawCanvas()}
-                        <ForceGraph3D
-                            // Data Segment
-                            ref={this.graphRef}
-                            graphData={this.state.visualizationGraph}
-                            // Node Visualization Segment
-                            nodeLabel="id"
-                            nodeRelSize={State.css.node.size}
-                            nodeColor={this.computeNodeColor}
-                            nodeVisibility={this.graphDelegate.nodeVisibility}
-                            nodeResolution={State.css.node.resolution}
-                            nodeThreeObjectExtend={true}
-                            nodeThreeObject={(node) => {
-                                const sprite = new SpriteText(`${node.id}`);
-                                sprite.color = State.css.label.color;
-                                sprite.textHeight = State.css.label.size;
-                                sprite.visible = State.css.label.show;
-                                sprite.backgroundColor = "";
-                                sprite.translateX(State.css.node.size + 2);
-                                return sprite;
-                            }}
-                            // Node Manipulation Segment
-                            onNodeHover={this.hoverNodeCallback}
-                            onNodeClick={this.nodeLeftClickCallback}
-                            onNodeRightClick={this.nodeRightClickCallback}
-                            onNodeDragEnd={(node) => {
-                                node.fx = node.x;
-                                node.fy = node.y;
-                                node.fz = node.z;
-                            }}
-                            // Link Visualization Segment
-                            linkVisibility={this.graphDelegate.linkVisibility}
-                            linkWidth={this.computeEdgeWidth}
-                            linkColor={this.computeEdgeColor}
-                            // Graph Manipulation Segment
-                            onBackgroundRightClick={
-                                this.backgroundRightClickCallback
+            return (
+                <div>
+                    {State.preferences.visualizationMode ===
+                        VisualizationMode.NodeSelection &&
+                        State.interaction.boxSelectionOpen && <SelectionBox />}
+                    {State.preferences.visualizationMode ===
+                        VisualizationMode.ClusterSplitting &&
+                        State.clusterInteraction.drawPanelActivate &&
+                        this.renderDrawCanvas()}
+                    <ForceGraph3D
+                        // Data Segment
+                        ref={this.graphRef}
+                        graphData={this.state.visualizationGraph}
+                        // Node Visualization Segment
+                        nodeLabel="id"
+                        nodeRelSize={State.css.node.size}
+                        nodeColor={this.computeNodeColor}
+                        nodeVisibility={this.graphDelegate.nodeVisibility}
+                        nodeResolution={State.css.node.resolution}
+                        nodeThreeObjectExtend={true}
+                        nodeThreeObject={(node) => {
+                            const sprite = new SpriteText(`${node.id}`);
+                            sprite.color = State.css.label.color;
+                            sprite.textHeight = State.css.label.size;
+                            sprite.visible = State.css.label.show;
+                            sprite.backgroundColor = "";
+                            sprite.translateX(State.css.node.size + 2);
+                            return sprite;
+                        }}
+                        // Node Manipulation Segment
+                        onNodeHover={this.hoverNodeCallback}
+                        onNodeClick={this.nodeLeftClickCallback}
+                        onNodeRightClick={this.nodeRightClickCallback}
+                        onNodeDragEnd={(node) => {
+                            node.fx = node.x;
+                            node.fy = node.y;
+                            node.fz = node.z;
+                        }}
+                        // Link Visualization Segment
+                        linkVisibility={this.graphDelegate.linkVisibility}
+                        linkWidth={this.computeEdgeWidth}
+                        linkColor={this.computeEdgeColor}
+                        // Graph Manipulation Segment
+                        onBackgroundRightClick={
+                            this.backgroundRightClickCallback
+                        }
+                        onBackgroundClick={this.backgroundClickCallback}
+                        enablePointerInteraction={
+                            this.state.nodePointerInteraction
+                        }
+                        // Engine
+                        onEngineTick={() => {
+                            this.graphDelegate.clusterObject.clusterDelegation();
+                        }}
+                        onEngineStop={() => {
+                            if (State.css.cluster.shape === "sphere") {
+                                this.graphDelegate.clusterObject.alterNodePosition();
                             }
-                            onBackgroundClick={this.backgroundClickCallback}
-                            enablePointerInteraction={
-                                this.state.nodePointerInteraction
-                            }
-                            // Engine
-                            onEngineTick={() => {
-                                this.graphDelegate.clusterObject.clusterDelegation();
-                            }}
-                        />
-                    </div>
-                );
-                // } else {
-                //     return (
-                //         <ForceGraph2D
-                //             graphData={State.graph.adapterGraph}
-                //             dagMode={"td"}
-                //             // dagLevelDistance={300}
-                //             // backgroundColor="#101020"
-                //             nodeRelSize={1}
-                //             // nodeId="path"
-                //             // nodeVal={(node) => 100 / (node.level + 1)}
-                //             // nodeLabel="path"
-                //             // nodeAutoColorBy="module"
-                //             // linkDirectionalParticles={2}
-                //             // linkDirectionalParticleWidth={2}
-                //             d3VelocityDecay={0.3}
-                //         />
-                //     );
-            }
+                        }}
+                    />
+                </div>
+            );
+            // } else {
+            //     return (
+            //         <ForceGraph2D
+            //             graphData={State.graph.adapterGraph}
+            //             dagMode={"td"}
+            //             // dagLevelDistance={300}
+            //             // backgroundColor="#101020"
+            //             nodeRelSize={1}
+            //             // nodeId="path"
+            //             // nodeVal={(node) => 100 / (node.level + 1)}
+            //             // nodeLabel="path"
+            //             // nodeAutoColorBy="module"
+            //             // linkDirectionalParticles={2}
+            //             // linkDirectionalParticleWidth={2}
+            //             d3VelocityDecay={0.3}
+            //         />
+            //     );
         };
 
         render() {
@@ -292,6 +295,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
@@ -299,6 +304,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(false);
                 createToaster(
                     <p>
@@ -314,6 +321,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 createToaster(
                     <p>
@@ -330,8 +339,9 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
-                ComponentRef.visualizer?.clusterInteractionListener(true);
+                State.interaction.flush();
                 State.clusterInteraction.flush();
+                ComponentRef.visualizer?.clusterInteractionListener(true);
                 State.helper.clusterSplittingPanelStackOpen = true;
                 break;
         }

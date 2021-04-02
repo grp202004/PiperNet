@@ -171,22 +171,13 @@ export default observer(
                             }}
                             syncWith={State.cluster.clusterBy}
                         />
-                        <NavbarDivider />
-                        {/* <SimpleSelect
+                        {/* <NavbarDivider />
+                        <SimpleSelect
                             items={["trackball", "orbit", "fly"]}
                             text={State.preferences.controlType}
                             onSelect={(it) => {
                                 State.preferences.controlType = it;
                                 ComponentRef.visualizer.updateVisualizationGraph();
-                            }}
-                        />
-                        <NavbarDivider />
-                        <Button
-                            minimal={true}
-                            icon="cog"
-                            disabled={true}
-                            onClick={() => {
-                                State.preferences.preferenceDialogOpen = true;
                             }}
                         /> */}
                         <Button

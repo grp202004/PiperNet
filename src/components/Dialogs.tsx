@@ -17,16 +17,8 @@ export default class Dialogs extends React.Component {
     render() {
         return (
             <div style={{ display: "none" }}>
-                {/* <PreferencesDialog /> */}
                 <ImportGEXFDialog />
                 <ImportDialog />
-                {/*
-                <ProjectDetailDialog />
-                <RenameSnapshotDialog />
-                <StatisticsDialog />
-                <HelpDialog />
-                <NeighborDialog />\
-                */}
                 <AddNodeDialog />
                 <AddEdgeDialog />
                 <NodeDataSheetDialog />
