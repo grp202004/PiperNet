@@ -7,9 +7,8 @@ import {
     RadioGroup,
     Radio,
     Card,
-    Text,
 } from "@blueprintjs/core";
-import { Popover2, Tooltip2 } from "@blueprintjs/labs";
+import { Popover2, Tooltip2 } from "@blueprintjs/popover2";
 import classnames from "classnames";
 import State from "../../../state";
 import { VisualizationMode } from "../../../state/PreferencesStore";

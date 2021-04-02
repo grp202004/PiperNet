@@ -276,7 +276,18 @@ export default class Cluster3dObjectStore {
         });
     }
 
+    canAlterNodePosition: boolean = false;
+
     alterNodePosition() {
+        interface chaserAndPosition {
+            chaser: any;
+            position: { x: number; y: number; z: number };
+        }
+
+        let chaserListX: chaserAndPosition[] = [];
+        let chaserListY: chaserAndPosition[] = [];
+        let chaserListZ: chaserAndPosition[] = [];
+
         State.cluster.attributeKeys.forEach((points, cluster) => {
             const sphereGeometry = this.clusterObjectsMap?.get(
                 cluster
@@ -288,58 +299,47 @@ export default class Cluster3dObjectStore {
                 points.length
             );
 
-            let chaserListX: any[] = [];
-            let chaserListY: any[] = [];
-            let chaserListZ: any[] = [];
-
             newPositions.forEach((value, index) => {
                 let attribute = State.graph.rawGraph.getNodeAttribute(
                     points[index],
                     "_visualize"
                 );
-
-                console.log(attribute);
-
                 const chaserX = chaser({
                     initialValue: attribute.x,
                     duration: 1000,
                 });
                 chaserX.target = value.x + position.x;
-                chaserListX.push(chaserX);
+                chaserListX.push({ chaser: chaserX, position: attribute });
 
                 const chaserY = chaser({
                     initialValue: attribute.y,
                     duration: 1000,
                 });
                 chaserY.target = value.y + position.y;
-                chaserListY.push(chaserY);
+                chaserListY.push({ chaser: chaserY, position: attribute });
 
                 const chaserZ = chaser({
                     initialValue: attribute.z,
                     duration: 1000,
                 });
                 chaserZ.target = value.z + position.z;
-                chaserListZ.push(chaserZ);
+                chaserListZ.push({ chaser: chaserZ, position: attribute });
             });
-
-            const startTime = new Date().getTime();
-            let interval = setInterval(function () {
-                if (new Date().getTime() - startTime > 1000) {
-                    clearInterval(interval);
-                    return;
-                }
-                newPositions.forEach((value, index) => {
-                    let attribute = State.graph.rawGraph.getNodeAttribute(
-                        points[index],
-                        "_visualize"
-                    );
-                    attribute.x = chaserListX[index].value;
-                    attribute.y = chaserListY[index].value;
-                    attribute.z = chaserListZ[index].value;
-                });
-                State.graphDelegate.graphDelegateMethods.refresh();
-            }, 100);
         });
+
+        let interval = setInterval(() => {
+            chaserListX.forEach((value) => {
+                value.position.x = value.chaser.value;
+            });
+            chaserListY.forEach((value) => {
+                value.position.y = value.chaser.value;
+            });
+            chaserListZ.forEach((value) => {
+                value.position.z = value.chaser.value;
+            });
+            State.graphDelegate.graphDelegateMethods.refresh();
+        }, 50);
+        setTimeout(() => clearInterval(interval), 1000);
     }
 
     private computeNodeSphereDistribution(

@@ -39,7 +39,7 @@ export default observer(
                                             );
 
                                             if (
-                                                State.cluster.rawGraph.hasAttribute(
+                                                State.graph.rawGraph.hasAttribute(
                                                     "default"
                                                 )
                                             ) {

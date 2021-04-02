@@ -1,5 +1,4 @@
-import { makeAutoObservable, observable } from "mobx";
-import Graph from "graphology";
+import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
 import randomcolor from "randomcolor";
 import State from ".";
@@ -12,9 +11,7 @@ import State from ".";
  */
 export default class ClusterStore {
     constructor() {
-        makeAutoObservable(this, {
-            rawGraph: observable.ref,
-        });
+        makeAutoObservable(this);
     }
     /**
      * @observable
@@ -47,14 +44,6 @@ export default class ClusterStore {
     }
 
     /**
-     * @observable .ref
-     * the reference bounded to the GraphStore/rawGraph
-     *
-     * @type {Graph}
-     */
-    rawGraph!: Graph;
-
-    /**
      * @computed
      * a auto computed map
      * will auto-update if $rawGraph or $clusterBy is changed
@@ -70,7 +59,7 @@ export default class ClusterStore {
         }
         const attribute = this.clusterBy as string;
 
-        this.rawGraph?.forEachNode((key, attributes) => {
+        State.graph.rawGraph.forEachNode((key, attributes) => {
             // if this attribute is defined
             if (attributes.hasOwnProperty(attribute)) {
                 if (attributes[attribute] === "") {
@@ -154,7 +143,7 @@ export default class ClusterStore {
             let vectorList: THREE.Vector3[] = [];
             map.set(attribute, vectorList);
         });
-        this.rawGraph.forEachNode((key, attributes) => {
+        State.graph.rawGraph.forEachNode((key, attributes) => {
             map.get(this.keyAttribute.get(key) as string | number)?.push(
                 new THREE.Vector3(
                     attributes._visualize.x,

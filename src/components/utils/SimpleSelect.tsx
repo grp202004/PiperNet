@@ -1,6 +1,6 @@
 import React, { MouseEventHandler } from "react";
 import { Button, MenuItem } from "@blueprintjs/core";
-import { ItemPredicate, Select } from "@blueprintjs/labs";
+import { ItemPredicate, Select } from "@blueprintjs/select";
 import { observer } from "mobx-react";
 
 interface Props {

@@ -110,6 +110,7 @@ export default class GraphStore {
         }
         State.interaction.flush();
         State.cluster.clusterBy = null;
+        State.graphDelegate.clusterObject.initEmptyMapAndFusion()
         ComponentRef.visualizer.updateVisualizationGraph();
     }
 

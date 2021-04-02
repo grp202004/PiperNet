@@ -1,5 +1,5 @@
-import Graph from "graphology";
-import { makeAutoObservable, observable } from "mobx";
+import { makeAutoObservable } from "mobx";
+import State from ".";
 
 /**
  * @description this file is the backend support for the NodeSearch feature
@@ -10,9 +10,7 @@ import { makeAutoObservable, observable } from "mobx";
  */
 export default class SearchStore {
     constructor() {
-        makeAutoObservable(this, {
-            rawGraph: observable.ref,
-        });
+        makeAutoObservable(this);
     }
 
     //
@@ -40,14 +38,6 @@ export default class SearchStore {
      */
     filterProps: string | null = null;
 
-    /**
-     * @observable .ref
-     * the reference bounded to the GraphStore/rawGraph
-     *
-     * @type {Graph}
-     */
-    rawGraph!: Graph;
-
     // contains node ids
 
     /**
@@ -60,7 +50,7 @@ export default class SearchStore {
         let searchStrIgnoreCase = this.searchStr.toLocaleLowerCase();
         if (this.filterProps === null) {
             // search on id
-            this.rawGraph.forEachNode((node) => {
+            State.graph.rawGraph.forEachNode((node) => {
                 if (node.toLocaleLowerCase().includes(searchStrIgnoreCase)) {
                     outputList.push(node);
                 }
@@ -68,7 +58,7 @@ export default class SearchStore {
         } else {
             // have specify the attribute
             const searchAttr = this.filterProps as string;
-            this.rawGraph.forEachNode((node, attributes) => {
+            State.graph.rawGraph.forEachNode((node, attributes) => {
                 if (attributes.hasOwnProperty(searchAttr)) {
                     let attribute = attributes[searchAttr];
                     if (

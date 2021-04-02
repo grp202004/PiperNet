@@ -66,12 +66,6 @@ autorun(() => State.import.renderImportEdgePreview());
 // will auto run if selectedNodeFileFromInput or delimiter or anything is changed.
 autorun(() => State.import.renderImportNodePreview());
 
-// sync the rawGraph bi-directionally
-autorun(
-    () =>
-        (State.cluster.rawGraph = State.search.rawGraph = State.graph.rawGraph)
-);
-
 // set the graph to suspend animating according to State.css.isAnimating
 autorun(() => {
     if (State.css.isAnimating) {

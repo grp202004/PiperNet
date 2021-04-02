@@ -4,8 +4,6 @@ import State from "../../state";
 import { Button, ControlGroup, MenuItem } from "@blueprintjs/core";
 import { Select, Suggest } from "@blueprintjs/select";
 import { CustomIItemRendererProps } from "../utils/SimpleSelect";
-import { Tooltip2 } from "@blueprintjs/popover2";
-import { stringifyNodeDetail } from "../utils/InputFormUtils";
 
 interface IFilterOption {
     text: React.ReactNode;
@@ -74,28 +72,19 @@ export default observer(
                             }
                             itemListPredicate={() => State.search.candidates}
                             itemRenderer={(value: string) => (
-                                <Tooltip2
-                                    usePortal={false}
-                                    content={stringifyNodeDetail(
-                                        State.graph.rawGraph.getNodeAttributes(
+                                <MenuItem
+                                    text={value}
+                                    onMouseOver={() => {
+                                        State.search.isPreviewing = true;
+                                        State.interaction.currentlyHoveredNodeId = value;
+                                        State.graphDelegate.cameraFocusOn(
                                             value
-                                        )
-                                    )}
-                                >
-                                    <MenuItem
-                                        text={value}
-                                        onMouseOver={() => {
-                                            State.search.isPreviewing = true;
-                                            State.interaction.currentlyHoveredNodeId = value;
-                                            State.graphDelegate.cameraFocusOn(
-                                                value
-                                            );
-                                        }}
-                                        onMouseLeave={() => {
-                                            State.search.isPreviewing = false;
-                                        }}
-                                    />
-                                </Tooltip2>
+                                        );
+                                    }}
+                                    onMouseLeave={() => {
+                                        State.search.isPreviewing = false;
+                                    }}
+                                />
                             )}
                             items={State.search.candidates}
                             openOnKeyDown={true}

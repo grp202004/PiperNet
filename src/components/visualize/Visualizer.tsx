@@ -180,8 +180,8 @@ export default observer(
                             const sprite = new SpriteText(`${node.id}`);
                             sprite.color = State.css.label.color;
                             sprite.textHeight = State.css.label.size;
-                            sprite.visible = State.css.label.show;
                             sprite.backgroundColor = "";
+                            sprite.visible = State.css.label.show;
                             sprite.translateX(State.css.node.size + 2);
                             return sprite;
                         }}
@@ -208,11 +208,21 @@ export default observer(
                         }
                         // Engine
                         onEngineTick={() => {
+                            State.graphDelegate.clusterObject.canAlterNodePosition = true;
                             this.graphDelegate.clusterObject.clusterDelegation();
                         }}
+                        cooldownTicks={100}
                         onEngineStop={() => {
-                            if (State.css.cluster.shape === "sphere") {
+                            if (
+                                State.css.cluster.shape === "sphere" &&
+                                State.graphDelegate.clusterObject
+                                    .canAlterNodePosition
+                            ) {
+                                console.log(
+                                    "starts to plot points on the surface of the sphere"
+                                );
                                 this.graphDelegate.clusterObject.alterNodePosition();
+                                State.graphDelegate.clusterObject.canAlterNodePosition = false;
                             }
                         }}
                     />

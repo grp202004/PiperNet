@@ -10,7 +10,7 @@ import {
     Text,
     Card,
 } from "@blueprintjs/core";
-import { Popover2, Tooltip2 } from "@blueprintjs/labs";
+import { Popover2, Tooltip2 } from "@blueprintjs/popover2";
 import classnames from "classnames";
 import State from "../../../state";
 import { VisualizationMode } from "../../../state/PreferencesStore";
@@ -53,7 +53,10 @@ export default observer(
                                 : "curve"
                         }
                     >
-                        <Radio label="Draw a Curved Line" value="curve" />
+                        <Radio
+                            label="Draw a Freehand(Curved) Line"
+                            value="curve"
+                        />
                         <Radio label="Draw a Straight Line" value="straight" />
                     </RadioGroup>
                     hold and draw a line to split this Cluster

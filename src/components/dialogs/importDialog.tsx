@@ -235,7 +235,7 @@ export default observer(
                 State.import.importGraphFromCSV().then((res) => {
                     State.graph.setGraph(res.graph, res.metadata);
 
-                    if (State.cluster.rawGraph.hasAttribute("default")) {
+                    if (State.graph.rawGraph.hasAttribute("default")) {
                         State.cluster.setCluster(
                             State.graph.rawGraph.getAttribute("default")
                         );
