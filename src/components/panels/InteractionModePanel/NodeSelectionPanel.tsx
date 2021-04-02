@@ -1,13 +1,6 @@
 import React from "react";
 
-import {
-    Button,
-    Intent,
-    Classes,
-    RadioGroup,
-    Radio,
-    Card,
-} from "@blueprintjs/core";
+import { Button, Intent, Classes, Card, Text } from "@blueprintjs/core";
 import { Popover2, Tooltip2 } from "@blueprintjs/popover2";
 import classnames from "classnames";
 import State from "../../../state";
@@ -17,30 +10,36 @@ import { getMessage } from "./InteractionModePanel";
 
 export default observer(
     class NodeSelectionPanel extends React.Component {
-        handleChange = () => {
-            State.interaction.boxSelectionOpen = !State.interaction
-                .boxSelectionOpen;
-        };
         private renderPanelStack = () => {
             return (
                 <div
                     className={Classes.PANEL_STACK_VIEW}
                     style={{ position: "unset" }}
                 >
-                    <div style={{ maxWidth: "400px", minHeight: "100px" }}>
+                    <div style={{ minWidth: "300px", minHeight: "100px" }}>
+                        <div className={Classes.PANEL_STACK_HEADER}>
+                            <span />
+                            <Text className={Classes.HEADING} ellipsize={true}>
+                                Node Multi-Selection Mode
+                            </Text>
+                            <span />
+                        </div>
                         <Card>
-                            <RadioGroup
-                                label="Node Multi-Selection Mode"
-                                onChange={this.handleChange}
-                                selectedValue={
+                            <Button
+                                icon="select"
+                                intent={
                                     State.interaction.boxSelectionOpen
-                                        ? "two"
-                                        : "one"
+                                        ? Intent.PRIMARY
+                                        : Intent.NONE
+                                }
+                                active={State.interaction.boxSelectionOpen}
+                                onClick={() =>
+                                    (State.interaction.boxSelectionOpen = !State
+                                        .interaction.boxSelectionOpen)
                                 }
                             >
-                                <Radio label="Left Click" value="one" />
-                                <Radio label="Box-Selection" value="two" />
-                            </RadioGroup>
+                                Use Box-Selection
+                            </Button>
                         </Card>
                     </div>
                     <Button

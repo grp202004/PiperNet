@@ -144,7 +144,7 @@ export default observer(
                     className={Classes.PANEL_STACK_VIEW}
                     style={{ position: "unset" }}
                 >
-                    <div style={{ maxWidth: "400px", minHeight: "100px" }}>
+                    <div style={{ minWidth: "300px", minHeight: "100px" }}>
                         <div className={Classes.PANEL_STACK_HEADER}>
                             {this.renderWhichBack()}
                             <Text className={Classes.HEADING} ellipsize={true}>

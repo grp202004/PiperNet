@@ -121,7 +121,7 @@ export default class ClusterInteractionStore {
      * other nodes unrelated will be set to empty string in this attribute
      * @author Zichen XU
      */
-    mergeSelectedCluster() {
+    mergeSelectedClusters() {
         let date = new Date().toLocaleString("en");
         let clusterId: string = `Cluster Merged @ ${date}`;
         if (!State.graph.metadata.nodeProperties.includes("_merge-cluster")) {
@@ -144,6 +144,28 @@ export default class ClusterInteractionStore {
             });
         });
         State.cluster.setCluster("_merge-cluster");
+        this.flush();
+    }
+
+    /**
+     * @description loop through the selected clusters and set the nodes within that cluster
+     * @author Zichen XU
+     */
+    releaseSelectedClusters() {
+        this.selectedClusters.forEach((uuid) => {
+            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+                uuid
+            ) as string | number;
+            const keys = State.cluster.attributeKeys.get(clusterValue);
+            keys?.forEach((nodeId) => {
+                State.graph.rawGraph.setNodeAttribute(
+                    nodeId,
+                    State.cluster.clusterBy as string,
+                    ""
+                );
+            });
+        });
+        State.cluster.setCluster(State.cluster.clusterBy, true);
         this.flush();
     }
 

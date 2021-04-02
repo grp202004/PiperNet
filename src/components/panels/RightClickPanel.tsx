@@ -36,9 +36,11 @@ export default observer(
             if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
                 State.graph.metadata.nodeProperties.push("new-cluster");
             }
-            State.graph.rawGraph.forEachNode((_, attributes) => {
-                attributes["new-cluster"] = "";
-            });
+            if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
+                State.graph.rawGraph.forEachNode((_, attributes) => {
+                    attributes["new-cluster"] = "";
+                });
+            }
             State.interaction.selectedNodes.forEach((nodeId) => {
                 State.graph.rawGraph.setNodeAttribute(
                     nodeId,
@@ -48,7 +50,6 @@ export default observer(
             });
             State.preferences.rightClickPanelOpen = false;
             State.cluster.setCluster("new-cluster");
-
             State.interaction.flush();
         }
 
@@ -57,6 +58,9 @@ export default observer(
             State.interaction.selectedNodes.forEach((nodeId) => {
                 State.graph.rawGraph.setNodeAttribute(nodeId, clusterName, "");
             });
+            State.preferences.rightClickPanelOpen = false;
+            State.cluster.setCluster(State.cluster.clusterBy, true);
+            State.interaction.flush();
         }
 
         renderNodeMenu() {
@@ -153,11 +157,18 @@ export default observer(
                         icon="group-objects"
                         text="Merge Cluster"
                         onClick={() => {
-                            State.clusterInteraction.mergeSelectedCluster();
+                            State.clusterInteraction.mergeSelectedClusters();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                     />
-                    <MenuDivider />
+                    <MenuItem
+                        icon="group-objects"
+                        text="Release Cluster"
+                        onClick={() => {
+                            State.clusterInteraction.releaseSelectedClusters();
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
+                    />
                 </Menu>
             );
         }
