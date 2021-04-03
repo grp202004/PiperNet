@@ -1,5 +1,11 @@
 import { makeAutoObservable } from "mobx";
 
+/**
+ * @description the four interaction modes
+ * @author Zichen XU, Zhiyuan LYU
+ * @export
+ * @enum {number}
+ */
 export enum VisualizationMode {
     Normal = "Normal", // normal state
     ClusterSelection = "Cluster Selection", // selecting the cluster to be Merged

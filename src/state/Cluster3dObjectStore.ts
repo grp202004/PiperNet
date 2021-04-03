@@ -5,41 +5,51 @@ import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import State from ".";
 import chaser from "chaser";
 
+/**
+ * @description the code in this file basically initialize the corresponding Object3D for each cluster
+ * control the addition/deletion/disposition/accessing/updatePosition/updateMaterial of clusters inside the scene
+ * according to the updated map from ClusterStore
+ * @author Zichen XU
+ * @export
+ * @class Cluster3dObjectStore
+ */
 export default class Cluster3dObjectStore {
     constructor() {
         makeAutoObservable(this);
     }
 
     /**
-     * the THREE.js WebGL Scene of the visualization
-     *
+     * @description the THREE.js WebGL Scene of the visualization
+     * @author Zichen XU
+     * @type {THREE.Scene}
      */
     threeScene!: THREE.Scene;
 
     /**
-     * all the clusters should form a 3D Group to be imported into Scene
+     * @description all the clusters should form a 3D Group to be imported into Scene
      * if no cluster attribute is set, this will be set to null
      *
      * each children is a THREE.Mesh
-     *
-     * @type {THREE.Group}
+     * @author Zichen XU
+     * @type {(THREE.Group | null)}
      */
     fusionClusterObjects: THREE.Group | null = null;
 
     /**
-     * the map between attribute value and its corresponding Mesh Group
+     * @description the map between attribute value and its corresponding Mesh Group
      * if you want to update the geometry, plz update all the children inside which Mesh Group
      * if no cluster attribute is set, this will be set to null
-     *
-     * @type {(Map<string | number, THREE.Group> | null)}
+     * @author Zichen XU
+     * @type {(Map<string | number, THREE.Mesh> | null)}
      */
     clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
 
     /**
-     * create empty BufferGeometry and mesh with colour
+     * @description create empty BufferGeometry and mesh with colour
      * then initialize $fusionClusterObjects and $clusterObjectsMap with it
      * and then add the THREE.Group to the Scene
-     *
+     * @author Zichen XU
+     * @returns {*}
      */
     initEmptyMapAndFusion() {
         if (this.fusionClusterObjects) {
@@ -67,13 +77,14 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * should be called on each render frame
+     * @description should be called on each render frame
      * will update the geometry inside each cluster object
      *
      * if is the first time (both are null), will run initEmptyMapAndFusion() first
      *
      * if meet with clusterBy == null, will dispose all Object3d
-     *
+     * @author Zichen XU
+     * @returns {*}
      */
     clusterDelegation() {
         if (State.cluster.clusterBy === null) {
@@ -93,6 +104,12 @@ export default class Cluster3dObjectStore {
         }
     }
 
+    /**
+     * @description get the THREE.Mesh object by its uuid
+     * @author Zichen XU
+     * @param {string} uuid
+     * @returns {*}  {(THREE.Mesh | null)}
+     */
     getObjectById(uuid: string): THREE.Mesh | null {
         let res: THREE.Object3D | null = null;
         this.fusionClusterObjects?.children.every((item: THREE.Object3D) => {
@@ -107,9 +124,9 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * dispose the geometries and materials in every clusterObject
+     * @description dispose the geometries and materials in every clusterObject
      * and set these props to be null, which indicates that no additional 3d object is added into Scene
-     *
+     * @author Zichen XU
      */
     dispose() {
         this.clusterObjectsMap?.forEach((mesh: THREE.Mesh) => {
@@ -123,10 +140,10 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * the map between the value of the cluster and the BufferGeometry that this cluster created
-     *
+     * @description the map between the value of the cluster and the BufferGeometry that this cluster created
+     * @author Zichen XU
      * @readonly
-     * @type {(Map<string | number, THREE.Group>)}
+     * @type {(Map<string | number, THREE.BufferGeometry>)}
      */
     get convexHullObjects(): Map<string | number, THREE.BufferGeometry> {
         let newMap = new Map<string | number, THREE.BufferGeometry>();
@@ -137,8 +154,8 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * get the computed convexHull BufferGeometry of the specified attribute value
-     *
+     * @description get the computed convexHull BufferGeometry of the specified attribute value
+     * @author Zichen XU
      * @param {(string | number)} key
      * @returns {*}  {THREE.BufferGeometry}
      */
@@ -205,14 +222,12 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * create a Three.Group, which contains 2 Three.Mesh, of the input geometry
-     *
+     * @description create a Three.Group, which contains 2 Three.Mesh, of the input geometry
+     * @author Zichen XU
      * @private
      * @param {THREE.BufferGeometry} geom
      * @param {(string | number)} name
-     * @returns {*}  {THREE.Group}
-     *
-     * @see THREE.Mesh
+     * @returns {*}  {THREE.Mesh}
      */
     private createMesh(
         geom: THREE.BufferGeometry,
@@ -232,8 +247,18 @@ export default class Cluster3dObjectStore {
         return mesh;
     }
 
+    /**
+     * @description a map from (the uuid that get from the WebGL) to (the cluster value of this cluster)
+     * @author Zichen XU
+     * @type {(Map<string, string | number>)}
+     */
     UUID2ClusterValueMap!: Map<string, string | number>;
 
+    /**
+     * @description add the mesh material a short highlight
+     * @author Zichen XU
+     * @param {THREE.Mesh} mesh
+     */
     meshSpotlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         const oldOpacity = material.opacity;
@@ -243,21 +268,46 @@ export default class Cluster3dObjectStore {
         }, 100);
     }
 
+    /**
+     * @description set the mesh material to be highlighted
+     * @author Zichen XU
+     * @private
+     * @static
+     * @param {THREE.Mesh} mesh
+     */
     private static meshHighlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.5;
     }
 
+    /**
+     * @description set the mesh material to be as selected
+     * @author Zichen XU
+     * @private
+     * @static
+     * @param {THREE.Mesh} mesh
+     */
     private static meshSelectedMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.3;
     }
 
+    /**
+     * @description set the mesh material back to normal
+     * @author Zichen XU
+     * @private
+     * @static
+     * @param {THREE.Mesh} mesh
+     */
     private static meshNormalMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.15;
     }
 
+    /**
+     * @description update and refresh all materials of all the cluster objects
+     * @author Zichen XU
+     */
     updateAllMaterials() {
         this.fusionClusterObjects?.children.forEach((_object) => {
             let mesh = _object as THREE.Mesh;
@@ -276,8 +326,19 @@ export default class Cluster3dObjectStore {
         });
     }
 
+    /**
+     * @description determine whether at this time can the node to be auto-altered to the surface of the sphere
+     * if the engine reheat, will set this to true.
+     * @author Zichen XU
+     * @type {boolean}
+     */
     canAlterNodePosition: boolean = false;
 
+    /**
+     * @description alter the nodes onto the surface of the sphere in 1s
+     * using the computeNodeSphereDistribution() to compute the position
+     * @author Zichen XU
+     */
     alterNodePosition() {
         interface chaserAndPosition {
             chaser: any;
@@ -342,6 +403,14 @@ export default class Cluster3dObjectStore {
         setTimeout(() => clearInterval(interval), 1000);
     }
 
+    /**
+     * @description using a algorithm to compute a array of points that distribute on the sphere specified by the radius
+     * @author Zichen XU
+     * @private
+     * @param {number} radius
+     * @param {number} [numberOfPoints=45]
+     * @returns {*}  {{ x: number; y: number; z: number }[]}
+     */
     private computeNodeSphereDistribution(
         radius: number,
         numberOfPoints = 45

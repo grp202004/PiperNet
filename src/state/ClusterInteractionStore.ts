@@ -177,11 +177,10 @@ export default class ClusterInteractionStore {
     drawPanelActivate: boolean = false;
 
     /**
-     * whether to draw a straight line or a curved line when clustering
+     * @description whether to draw a straight line or a curved line when clustering
      *
      * @author Zichen XU
      * @type {boolean}
-     * @memberof ClusterInteractionStore
      */
     drawStraightLine: boolean = false;
 

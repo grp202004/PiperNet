@@ -12,6 +12,12 @@ import ClusterInteractionStore from "./ClusterInteractionStore";
 import HelperStackPanelStore from "./HelperStackPanelStore";
 import ComponentRef from "../components/ComponentRef";
 
+/**
+ * @description the overall state to store all information of this project
+ * use the observable and observer to refresh the React UI
+ * @author Zichen XU
+ * @class AppState
+ */
 class AppState {
     static _instance: AppState | null = null;
 

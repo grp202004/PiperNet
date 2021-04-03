@@ -1,10 +1,8 @@
 import { makeAutoObservable } from "mobx";
 
 /**
- * changing the config inside .global will cause to change every config of every node iteratively
- *
- * but changing the else does not
- *
+ * @description the global configurations for the css of all nodes
+ * @author Zichen XU
  * @class NodeGlobalConfig
  */
 class NodeGlobalConfig {
@@ -22,12 +20,11 @@ class NodeGlobalConfig {
 }
 
 /**
- * changing the config inside .global will cause to change every config of every edge iteratively
- *
- * but changing the else does not
- *
+ * @description the global configurations for the css of all edges
+ * @author Zichen XU
  * @class EdgeGlobalConfig
- */ class EdgeGlobalConfig {
+ */
+class EdgeGlobalConfig {
     constructor() {
         makeAutoObservable(this);
     }
@@ -43,6 +40,11 @@ class NodeGlobalConfig {
 
     resolution = 6;
 }
+/**
+ * @description the global configurations for the css of all labels
+ * @author Zichen XU
+ * @class LabelConfig
+ */
 class LabelConfig {
     constructor() {
         makeAutoObservable(this);
@@ -52,7 +54,11 @@ class LabelConfig {
     color = "#d3d3d3";
     size = 4;
 }
-
+/**
+ * @description the global configurations for the css of all clusters
+ * @author Zichen XU
+ * @class ClusterConfig
+ */
 class ClusterConfig {
     constructor() {
         makeAutoObservable(this);
@@ -63,9 +69,11 @@ class ClusterConfig {
     resolution = 10;
     shape: "convexHull" | "sphere" = "convexHull";
 }
+
 /**
- * the configurations to set to cascade the graph
- *
+ * @description as the name indicates, it stores the customized style of Nodes/Edges/Label/Clusters
+ * and any change on it should then call State.graphDelegate.graphDelegateMethods.refresh() to apply changes
+ * @author Zichen XU, Zhiyuan LYU
  * @export
  * @class CssStore
  */

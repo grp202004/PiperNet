@@ -10,6 +10,7 @@ export default class InteractionStore {
     /**
      * @description the currently selected node
      * represents the node being right-clicked on
+     * @author Zhiyuan LYU
      * @type {(string | null)}
      */
     selectedNode: string | null = null;
@@ -18,19 +19,30 @@ export default class InteractionStore {
      * @description the currently selected nodes id
      * the singleNodeDetailPanel will render and refresh if this changes
      * used in NodeSelection panel to do actions on those selected nodes
+     * @author Zhiyuan LYU
      * @type {string[]}
      */
     selectedNodes: string[] = [];
 
+    /**
+     * @description the currently selected edge id
+     * @author Zhiyuan LYU
+     * @type {(string | null)}
+     */
     selectedEdge: string | null = null;
 
     /**
-     * when the menuItem 'box-select Node' of RightClickPanel is clicked, then this will be set to true,
-     *  and the component'SelectionBox' will be  visualized only the mode is 'Node Selection' and this variable is true
+     * @description when the menuItem 'box-select Node' of RightClickPanel is clicked, then this will be set to true,
+     *  and the component 'SelectionBox' will be  visualized only the mode is 'Node Selection' and this variable is true
+     * @author Zhiyuan LYU
+     * @type {boolean}
      */
     boxSelectionOpen: boolean = false;
+
     /**
-     * this stores the x and y coordinates when mouse clicked down for box selection
+     * @description this stores the x and y coordinates when mouse clicked down for box selection
+     * @author Zhiyuan LYU
+     * @type {Attributes}
      */
     boxSelection_startPoint: Attributes = {
         x: 0,
@@ -38,13 +50,19 @@ export default class InteractionStore {
     };
 
     /**
-     * this stores the x and y coordinates when mouse clicked up for box selection
+     * @description this stores the x and y coordinates when mouse clicked up for box selection
+     * @author Zhiyuan LYU
+     * @type {Attributes}
      */
     boxSelection_endPoint: Attributes = {
         x: 0,
         y: 0,
     };
 
+    /**
+     * @description compute the selected node within this selection box
+     * @author Zhiyuan LYU
+     */
     boxSelectNode() {
         //clear selectedNodes
         State.interaction.selectedNodes = [];
@@ -88,42 +106,42 @@ export default class InteractionStore {
     }
 
     /**
-     * the currently hovered node id
+     * @description the currently hovered node id
      * the multiNodeDetailPanel will render and refresh if this changes
-     *
-     * @type {string}
+     * @author Zhiyuan LYU
+     * @type {(string | null)}
      */
     currentlyHoveredNodeId: string | null = null;
 
     /**
-     * the currently hovered node id that used for display at RightClickPanel
+     * @description compute the neighbors of the currently hovered node id
+     * @author Zichen XU
+     * @readonly
+     * @type {(string[] | null)}
      */
-    get currentlyHoveredNodeNeighbors(): string[] | null {
-        if (this.currentlyHoveredNodeId === null) {
-            return null;
-        } else {
-            return State.graph.rawGraph.neighbors(this.currentlyHoveredNodeId);
-        }
-    }
-
     get currentlyHoveredNodeNeighborEdges(): string[] | null {
         if (this.currentlyHoveredNodeId === null) {
             return null;
         } else {
-            return this.getNodeNeighborEdges(this.currentlyHoveredNodeId);
+            let neighbors = State.graph.rawGraph.neighbors(
+                this.currentlyHoveredNodeId
+            );
+            return neighbors?.map((neighbor: string) => {
+                return this.getEdgeKey(
+                    neighbor,
+                    this.currentlyHoveredNodeId as string
+                ) as string;
+            });
         }
     }
 
-    getNodeNeighborEdges(node: string): string[] {
-        let neighbors = State.graph.rawGraph.neighbors(node);
-        return neighbors?.map((neighbor: string) => {
-            return this.getEdgeKey(
-                neighbor,
-                this.currentlyHoveredNodeId as string
-            ) as string;
-        });
-    }
-
+    /**
+     * @description get the key of the edge with source and target bidirectional
+     * @author Zhiyuan LYU
+     * @param {string} node1
+     * @param {string} node2
+     * @returns {*}  {(string | null)}
+     */
     getEdgeKey(node1: string, node2: string): string | null {
         let go: string | undefined = State.graph.rawGraph.edge(node1, node2);
         if (go === undefined) {
@@ -142,12 +160,11 @@ export default class InteractionStore {
     }
 
     /**
-     * update the _visualize object inside node attribute and calls graph refresh
-     *
+     * @description update the _visualize object inside node attribute and calls graph refresh
+     * @author Zichen XU
      * @param {string} id
      * @param {Attributes} attribute
-     * @param {Attributes | null = null} oldAttributeVisualize
-     * @memberof GraphMutation
+     * @param {(Attributes | null)} [oldAttributeVisualize=null]
      */
     updateNodeVisualizeAttribute(
         id: string,
@@ -166,13 +183,13 @@ export default class InteractionStore {
             oldAttributeVisualize as Attributes
         );
     }
+
     /**
-     * update the _visualize object inside edge attribute and calls graph refresh
-     *
+     * @description update the _visualize object inside edge attribute and calls graph refresh
+     * @author Zichen XU
      * @param {string} key
      * @param {Attributes} attribute
-     * @param {Attributes | null = null} oldAttributeVisualize
-     * @memberof GraphMutation
+     * @param {(Attributes | null)} [oldAttributeVisualize=null]
      */
     updateEdgeVisualizeAttribute(
         key: string,
@@ -191,6 +208,13 @@ export default class InteractionStore {
         );
     }
 
+    /**
+     * @description helper method to call by updateEdgeVisualizeAttribute and updateNodeVisualizeAttribute
+     * @author Zichen XU
+     * @private
+     * @param {*} newAttribute
+     * @param {*} oldAttributes
+     */
     private updateVisualizeAttributeParser(
         newAttribute: any,
         oldAttributes: any
