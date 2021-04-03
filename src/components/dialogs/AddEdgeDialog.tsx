@@ -14,7 +14,7 @@ import NodeChooser from "../utils/NodeChooser";
 export default observer(
     /**
      * @description This component will be used when adding a edge
-     * @author Zhiyuan Lyu
+     * @author Zhiyuan LYU
      * @extends {React.Component}
      */
     class AddEdgeDialog extends React.Component {

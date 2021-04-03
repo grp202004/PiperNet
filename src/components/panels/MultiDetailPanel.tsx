@@ -9,7 +9,7 @@ import State from "../../state/index";
 export default observer(
     /**
      * @description This component will be used when multiple-choose nodes.
-     * @author Zhiyuan Lyu
+     * @author Zhiyuan LYU
      * @extends {React.Component}
      */
     class MultipleNodeDetail extends React.Component {

@@ -17,7 +17,7 @@ interface Props {
 export default observer(
     /**
      * @description This component will be used when mouse right-clicked. There will be some operation choices on this panel.
-     * @author Zichen Xu, Zhiyuan Lyu
+     * @author Zichen XU, Zhiyuan LYU
      * @extends {React.Component}
      */
     class RightClickPanel extends React.Component<Props, {}> {

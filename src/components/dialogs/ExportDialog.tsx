@@ -19,7 +19,7 @@ import { CSVLink } from "react-csv";
 export default observer(
     /**
      * @description Dialog used to export the graph into GEXF file or CSV Node/Edge files
-     * @author Chenghao Shi
+     * @author Chenghao SHI
      * @extends {React.Component}
      */
     class ExportDialog extends React.Component {

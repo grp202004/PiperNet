@@ -19,7 +19,7 @@ interface Props {
 export default observer(
     /**
      * @description Impletementing a table showing the detail in formation of hovered Node， in which the information could be changed by users
-     * @author Zhiyuan Lyu Chenghao Shi
+     * @author Zhiyuan LYU Chenghao SHI
      * @extends {React.Component<Props, {}>}
      */
     class NodeDetail extends React.Component<Props, {}> {

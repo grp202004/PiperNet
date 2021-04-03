@@ -7,7 +7,7 @@ import ColorPicker from "../utils/ColorPicker";
 export default observer(
     /**
      * @description This component will be used to change style of label
-     * @author Zhiyuan Lyu, Zichen Xu
+     * @author Zhiyuan LYU, Zichen XU
      * @extends {React.Component}
      */
     class LabelsPanel extends React.Component {

@@ -69,7 +69,7 @@ let PreviewTable = observer(
 export default observer(
     /**
      * @description The multistep dialog for importing csv Node and Edge files
-     * @author Chenghao Shi
+     * @author Chenghao SHI
      * @extends {React.Component}
      */
     class ImportDialog extends React.Component {

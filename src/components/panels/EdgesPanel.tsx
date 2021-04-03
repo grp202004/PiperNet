@@ -8,7 +8,7 @@ import ColorPicker from "../utils/ColorPicker";
 export default observer(
     /**
      * @description This component will be used to change styles of edge
-     * @author Zhiyuan Lyu Zichen Xu
+     * @author Zhiyuan LYU Zichen XU
      * @extends {React.Component}
      */
     class EdgesPanel extends React.Component {
