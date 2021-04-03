@@ -17,6 +17,11 @@ interface Props {
 }
 
 export default observer(
+    /**
+     * @description Impletementing a table showing the detail in formation of hovered Node， in which the information could be changed by users
+     * @author Zhiyuan LYU Chenghao SHI
+     * @extends {React.Component<Props, {}>}
+     */
     class NodeDetail extends React.Component<Props, {}> {
         cellRenderer_property = (rowIndex: number) => {
             return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>;
