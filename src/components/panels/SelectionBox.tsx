@@ -5,6 +5,11 @@ import classnames from "classnames";
 import State from "../../state/index";
 
 export default observer(
+    /**
+     * @description This component will be used when mutil-select in the mode 'node selection'.
+     * @author Zhiyuan Lyu
+     * @extends {React.Component}
+     */
     class SelectionBox extends React.Component {
         state = {
             boxStyle: {

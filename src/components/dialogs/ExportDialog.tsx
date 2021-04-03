@@ -17,6 +17,11 @@ import State from "../../state";
 import { CSVLink } from "react-csv";
 
 export default observer(
+    /**
+     * @description Dialog used to export the graph into GEXF file or CSV Node/Edge files
+     * @author Chenghao Shi
+     * @extends {React.Component}
+     */
     class ExportDialog extends React.Component {
         state = {
             ready: true,
@@ -49,7 +54,7 @@ export default observer(
                 headers.push({ label: value, key: value });
                 return null;
             });
-            
+
             let exportData = State.graph.rawGraph.export();
             let data: any[] = [];
             exportData.nodes.forEach((node) => {

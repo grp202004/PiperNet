@@ -28,6 +28,11 @@ interface Props {
 }
 
 export default observer(
+    /**
+     * @description This component will be used to be part of addNodeDialog
+     * @author Zichen Xu,Zhiyuan Lyu
+     * @extends {React.Component}
+     */
     class NodeAdder extends React.Component<Props, {}> {
         state = {
             newNodeId: "",

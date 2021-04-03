@@ -6,6 +6,11 @@ import Collapsable from "../utils/Collapsable";
 import ColorPicker from "../utils/ColorPicker";
 
 export default observer(
+    /**
+     * @description This component will be used to change style of nodes. Including color, size,etc
+     * @author Zhiyuan Lyu, Zichen Xu
+     * @extends {React.Component}
+     */
     class NodesPanel extends React.Component {
         state = {
             timeOutRef: null,

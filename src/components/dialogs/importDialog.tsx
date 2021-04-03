@@ -67,6 +67,11 @@ let PreviewTable = observer(
 );
 
 export default observer(
+    /**
+     * @description The multistep dialog for importing csv Node and Edge files
+     * @author Chenghao Shi
+     * @extends {React.Component}
+     */
     class ImportDialog extends React.Component {
         private multiDialogRef = React.createRef<MultistepDialog>();
 
