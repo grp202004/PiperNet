@@ -41,11 +41,8 @@
         "eject": "react-scripts eject",
         "electron-start": "electron .",
         "docs": "typedoc --exclude '**/*+test.ts' src/components src/state",
-        "pack-win": "electron-packager . pipernet-win-0.5.0-beta --platform=win32 --arch=x64 --overwrite --ignore=/node_modules",
-        "pack-mac": "electron-packager . pipernet-mac-0.5.0-beta --platform=darwin --arch=x64 --overwrite --ignore=/node_modules",
-        "pack-Win": "electron-builder --win --ia32",
-        "pack-Mac": "electron-builder --mac",
-        "pack-Linux": "electron-builder --linux --ia32"
+        "pack-win": "electron-builder --win --x64",
+        "pack-mac": "electron-builder --mac"
     },
     "eslintConfig": {
         "extends": [
@@ -98,10 +95,10 @@
             "output": "dist"
         },
         "linux": {
-            "icon": "public/111.ico"
+            "icon": "public/icon.ico"
         },
         "win": {
-            "icon": "public/111.ico",
+            "icon": "public/icon.ico",
             "target": [
                 "nsis"
             ]
@@ -119,7 +116,7 @@
             "target": [
                 "dmg"
             ],
-            "icon": "public/111.ico"
+            "icon": "public/icon.icns"
         },
         "dmg": {
             "contents": [

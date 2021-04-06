@@ -14,7 +14,7 @@ import {
     NavbarDivider,
 } from "@blueprintjs/core";
 import ClusterChooser from "./utils/ClusterChooser";
-import logo from "../images/logo.png";
+import logo from "../images/icon.png";
 import State from "../state";
 import { Popover2 } from "@blueprintjs/popover2";
 import SearchPanel from "./panels/SearchPanel";
@@ -36,7 +36,8 @@ export default observer(
                             height="35"
                             alt="PiperNet Logo"
                         />
-                        <NavbarHeading> PiperNet </NavbarHeading>
+                        <MenuDivider />
+                        <NavbarHeading>PiperNet</NavbarHeading>
                         <Popover2
                             content={
                                 <Menu>
