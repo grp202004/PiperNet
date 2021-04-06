@@ -1,6 +1,6 @@
 {
     "name": "pipernet",
-    "version": "1.0.0-beta",
+    "version": "1.0.0",
     "discription": "A 3D Data Visualization Software",
     "private": true,
     "main": "main.js",
