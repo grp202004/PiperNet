@@ -257,7 +257,7 @@ export default class GraphDelegate {
      * @param {number} [distance=40] the ending distance between the camera and the node
      * @returns {*}
      */
-    cameraFocusOn(nodeId: string, distance: number = 40) {
+    cameraFocusOn(nodeId: string, distance: number = 80) {
         let node = State.graph.rawGraph.getNodeAttribute(nodeId, "_visualize");
         if (!(node.x && node.y && node.z)) return;
         // Aim at node from outside it

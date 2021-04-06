@@ -189,6 +189,7 @@ export default observer(
                     <Tooltip2
                         usePortal={false}
                         content={getMessage(VisualizationMode.ClusterSplitting)}
+                        placement={"bottom"}
                     >
                         <Button
                             className={classnames([

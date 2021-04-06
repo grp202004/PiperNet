@@ -53,9 +53,11 @@ export default observer(
                                 Selected Color:
                                 <span style={{ float: "right" }}>
                                     <ColorPicker
-                                        color={State.css.node.selectedColor}
+                                        color={
+                                            State.css.node.multiSelectedColor
+                                        }
                                         onChange={(it) => {
-                                            State.css.node.selectedColor =
+                                            State.css.node.multiSelectedColor =
                                                 it.hex;
 
                                             State.graphDelegate.graphDelegateMethods.refresh();

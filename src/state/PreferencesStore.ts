@@ -32,8 +32,8 @@ export default class PreferencesStore {
 
     // Dialog
     exportDialogOpen = false;
-    preferenceDialogOpen = false;
-    statisticsDialogOpen = false;
+    private preferenceDialogOpen = false;
+    private statisticsDialogOpen = false;
 
     AddNodeDialogOpen = false;
     AddEdgeDialogOpen = false;

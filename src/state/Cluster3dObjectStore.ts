@@ -42,7 +42,7 @@ export default class Cluster3dObjectStore {
      * @author Zichen XU
      * @type {(Map<string | number, THREE.Mesh> | null)}
      */
-    clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
+    private clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
 
     /**
      * @description create empty BufferGeometry and mesh with colour
@@ -128,7 +128,7 @@ export default class Cluster3dObjectStore {
      * and set these props to be null, which indicates that no additional 3d object is added into Scene
      * @author Zichen XU
      */
-    dispose() {
+    private dispose() {
         this.clusterObjectsMap?.forEach((mesh: THREE.Mesh) => {
             let material = mesh.material as THREE.Material;
             material.dispose();
@@ -159,7 +159,7 @@ export default class Cluster3dObjectStore {
      * @param {(string | number)} key
      * @returns {*}  {THREE.BufferGeometry}
      */
-    convexHullObject(key: string | number): THREE.BufferGeometry {
+    private convexHullObject(key: string | number): THREE.BufferGeometry {
         let points = State.cluster.attributePoints.get(key) as THREE.Vector3[];
 
         if (!points || points.length === 0) {
