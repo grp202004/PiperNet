@@ -14,16 +14,15 @@ import {
 } from "../../state/GraphDelegate";
 import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
-import SelectionBox from "../SelectionBox";
+import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDrawPanel";
-
-interface Props {
-    controlType: "trackball" | "orbit" | "fly";
-}
+import { createToaster } from "../../state/utils/ToasterUtils";
+import { Position } from "@blueprintjs/core";
+import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
 
 export default observer(
-    class ThreeJSVis extends React.Component<Props, {}> {
+    class ThreeJSVis extends React.Component {
         state = {
             visualizationGraph: State.graphDelegate.visualizationGraph(),
             nodePointerInteraction: true,
@@ -136,6 +135,7 @@ export default observer(
                 return State.css.edge.defaultColor;
             }
         }
+
         computeEdgeWidth(_edge: LinkObject) {
             let edge = _edge as ICustomLinkObject;
             if (edge.hovered) {
@@ -146,87 +146,105 @@ export default observer(
                 return State.css.edge.defaultWidth;
             }
         }
-        renderGraph = () => {
-            if (State.preferences.view === "3D") {
-                return (
-                    <div>
-                        {State.preferences.visualizationMode ===
-                            VisualizationMode.NodeSelection &&
-                            State.interaction.boxSelectionOpen && (
-                                <SelectionBox />
-                            )}
-                        {State.preferences.visualizationMode ===
-                            VisualizationMode.ClusterSplitting &&
-                            State.clusterInteraction.drawPanelActivate && (
-                                <CanvasDrawPanel />
-                            )}
-                        <ForceGraph3D
-                            // Data Segment
-                            ref={this.graphRef}
-                            graphData={this.state.visualizationGraph}
-                            controlType={this.props.controlType}
-                            // Node Visualization Segment
-                            nodeLabel="id"
-                            nodeRelSize={State.css.node.size}
-                            nodeColor={this.computeNodeColor}
-                            nodeVisibility={this.graphDelegate.nodeVisibility}
-                            nodeResolution={State.css.node.resolution}
-                            nodeThreeObjectExtend={true}
-                            nodeThreeObject={(node) => {
-                                const sprite = new SpriteText(`${node.id}`);
-                                sprite.color = State.css.label.color;
-                                sprite.textHeight = State.css.label.size;
-                                sprite.visible = State.css.label.show;
-                                sprite.backgroundColor = "";
-                                sprite.translateX(State.css.node.size + 2);
-                                return sprite;
-                            }}
-                            // Node Manipulation Segment
-                            onNodeHover={this.hoverNodeCallback}
-                            onNodeClick={this.nodeLeftClickCallback}
-                            onNodeRightClick={this.nodeRightClickCallback}
-                            onNodeDragEnd={(node) => {
-                                node.fx = node.x;
-                                node.fy = node.y;
-                                node.fz = node.z;
-                            }}
-                            // Link Visualization Segment
-                            linkVisibility={this.graphDelegate.linkVisibility}
-                            linkWidth={this.computeEdgeWidth}
-                            linkColor={this.computeEdgeColor}
-                            // Graph Manipulation Segment
-                            onBackgroundRightClick={
-                                this.backgroundRightClickCallback
-                            }
-                            onBackgroundClick={this.backgroundClickCallback}
-                            enablePointerInteraction={
-                                this.state.nodePointerInteraction
-                            }
-                            // Engine
-                            onEngineTick={() => {
-                                this.graphDelegate.clusterObject.clusterDelegation();
-                            }}
-                        />
-                    </div>
-                );
-                // } else {
-                //     return (
-                //         <ForceGraph2D
-                //             graphData={State.graph.adapterGraph}
-                //             dagMode={"td"}
-                //             // dagLevelDistance={300}
-                //             // backgroundColor="#101020"
-                //             nodeRelSize={1}
-                //             // nodeId="path"
-                //             // nodeVal={(node) => 100 / (node.level + 1)}
-                //             // nodeLabel="path"
-                //             // nodeAutoColorBy="module"
-                //             // linkDirectionalParticles={2}
-                //             // linkDirectionalParticleWidth={2}
-                //             d3VelocityDecay={0.3}
-                //         />
-                //     );
+
+        renderDrawCanvas = () => {
+            if (State.clusterInteraction.drawStraightLine) {
+                return <CanvasDrawStraightLinePanel />;
+            } else {
+                return <CanvasDrawPanel />;
             }
+        };
+
+        renderGraph = () => {
+            return (
+                <div>
+                    {State.preferences.visualizationMode ===
+                        VisualizationMode.NodeSelection &&
+                        State.interaction.boxSelectionOpen && <SelectionBox />}
+                    {State.preferences.visualizationMode ===
+                        VisualizationMode.ClusterSplitting &&
+                        State.clusterInteraction.drawPanelActivate &&
+                        this.renderDrawCanvas()}
+                    <ForceGraph3D
+                        // Data Segment
+                        ref={this.graphRef}
+                        graphData={this.state.visualizationGraph}
+                        // Node Visualization Segment
+                        nodeLabel="id"
+                        nodeRelSize={State.css.node.size}
+                        nodeColor={this.computeNodeColor}
+                        nodeVisibility={this.graphDelegate.nodeVisibility}
+                        nodeResolution={State.css.node.resolution}
+                        nodeThreeObjectExtend={true}
+                        nodeThreeObject={(node) => {
+                            const sprite = new SpriteText(`${node.id}`);
+                            sprite.color = State.css.label.color;
+                            sprite.textHeight = State.css.label.size;
+                            sprite.backgroundColor = "";
+                            sprite.visible = State.css.label.show;
+                            sprite.translateX(State.css.node.size + 2);
+                            return sprite;
+                        }}
+                        // Node Manipulation Segment
+                        onNodeHover={this.hoverNodeCallback}
+                        onNodeClick={this.nodeLeftClickCallback}
+                        onNodeRightClick={this.nodeRightClickCallback}
+                        onNodeDragEnd={(node) => {
+                            node.fx = node.x;
+                            node.fy = node.y;
+                            node.fz = node.z;
+                        }}
+                        // Link Visualization Segment
+                        linkVisibility={this.graphDelegate.linkVisibility}
+                        linkWidth={this.computeEdgeWidth}
+                        linkColor={this.computeEdgeColor}
+                        // Graph Manipulation Segment
+                        onBackgroundRightClick={
+                            this.backgroundRightClickCallback
+                        }
+                        onBackgroundClick={this.backgroundClickCallback}
+                        enablePointerInteraction={
+                            this.state.nodePointerInteraction
+                        }
+                        // Engine
+                        onEngineTick={() => {
+                            State.graphDelegate.clusterObject.canAlterNodePosition = true;
+                            this.graphDelegate.clusterObject.clusterDelegation();
+                        }}
+                        cooldownTicks={100}
+                        onEngineStop={() => {
+                            if (
+                                State.css.cluster.shape === "sphere" &&
+                                State.graphDelegate.clusterObject
+                                    .canAlterNodePosition
+                            ) {
+                                console.log(
+                                    "starts to plot points on the surface of the sphere"
+                                );
+                                this.graphDelegate.clusterObject.alterNodePosition();
+                                State.graphDelegate.clusterObject.canAlterNodePosition = false;
+                            }
+                        }}
+                    />
+                </div>
+            );
+            // } else {
+            //     return (
+            //         <ForceGraph2D
+            //             graphData={State.graph.adapterGraph}
+            //             dagMode={"td"}
+            //             // dagLevelDistance={300}
+            //             // backgroundColor="#101020"
+            //             nodeRelSize={1}
+            //             // nodeId="path"
+            //             // nodeVal={(node) => 100 / (node.level + 1)}
+            //             // nodeLabel="path"
+            //             // nodeAutoColorBy="module"
+            //             // linkDirectionalParticles={2}
+            //             // linkDirectionalParticleWidth={2}
+            //             d3VelocityDecay={0.3}
+            //         />
+            //     );
         };
 
         render() {
@@ -287,6 +305,8 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
@@ -294,22 +314,44 @@ reaction(
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: true,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(false);
+                createToaster(
+                    <p>
+                        Select one or more <b>Nodes</b> and <b>Right-click</b>{" "}
+                        on one of them to open <b>Context Menu</b>
+                    </p>,
+                    Position.BOTTOM,
+                    10000
+                );
                 break;
 
             case VisualizationMode.ClusterSelection:
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
+                State.interaction.flush();
+                State.clusterInteraction.flush();
                 ComponentRef.visualizer?.clusterInteractionListener(true);
+                createToaster(
+                    <p>
+                        Select one or more <b>Clusters</b> and{" "}
+                        <b>Right-click</b> on one of them to open{" "}
+                        <b>Context Menu</b>
+                    </p>,
+                    Position.BOTTOM,
+                    10000
+                );
                 break;
 
             case VisualizationMode.ClusterSplitting:
                 ComponentRef.visualizer?.setState({
                     nodePointerInteraction: false,
                 });
-                ComponentRef.visualizer?.clusterInteractionListener(true);
+                State.interaction.flush();
                 State.clusterInteraction.flush();
+                ComponentRef.visualizer?.clusterInteractionListener(true);
                 State.helper.clusterSplittingPanelStackOpen = true;
                 break;
         }

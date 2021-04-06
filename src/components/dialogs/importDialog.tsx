@@ -1,9 +1,7 @@
 import React from "react";
 import {
     Callout,
-    Card,
     Classes,
-    Divider,
     FileInput,
     Spinner,
     Switch,
@@ -20,7 +18,6 @@ import { observer } from "mobx-react";
 import State from "../../state";
 import SimpleSelect from "../utils/SimpleSelect";
 import { IEdgeFileConfig, INodeFileConfig } from "../../state/ImportStore";
-import ClusterChooser from "../utils/ClusterChooser";
 
 interface PreviewTableProps {
     file: INodeFileConfig | IEdgeFileConfig;
@@ -70,6 +67,11 @@ let PreviewTable = observer(
 );
 
 export default observer(
+    /**
+     * @description The multistep dialog for importing csv Node and Edge files
+     * @author Chenghao SHI
+     * @extends {React.Component}
+     */
     class ImportDialog extends React.Component {
         private multiDialogRef = React.createRef<MultistepDialog>();
 
@@ -238,7 +240,7 @@ export default observer(
                 State.import.importGraphFromCSV().then((res) => {
                     State.graph.setGraph(res.graph, res.metadata);
 
-                    if (State.cluster.rawGraph.hasAttribute("default")) {
+                    if (State.graph.rawGraph.hasAttribute("default")) {
                         State.cluster.setCluster(
                             State.graph.rawGraph.getAttribute("default")
                         );

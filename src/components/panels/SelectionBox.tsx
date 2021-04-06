@@ -2,9 +2,14 @@ import React from "react";
 import { observer } from "mobx-react";
 import { Attributes } from "graphology-types";
 import classnames from "classnames";
-import State from "../state/index";
+import State from "../../state/index";
 
 export default observer(
+    /**
+     * @description This component will be used when mutil-select in the mode 'node selection'.
+     * @author Zhiyuan LYU
+     * @extends {React.Component}
+     */
     class SelectionBox extends React.Component {
         state = {
             boxStyle: {
@@ -24,6 +29,7 @@ export default observer(
             let startpoint = { x: event.clientX, y: event.clientY };
             this.setState({
                 startPoint: startpoint,
+                endPoint: startpoint,
                 mouseDown: true,
             });
         };
@@ -33,7 +39,6 @@ export default observer(
         ) => {
             if (this.state.mouseDown) {
                 let endPoint = { x: event.clientX, y: event.clientY };
-                // this.setState({ endPoint: endPoint });
                 this.setState({
                     endPoint: endPoint,
                     boxStyle: this._calculateSelectionBox(
@@ -68,8 +73,6 @@ export default observer(
                 mouseDown: false,
             });
             State.interaction.boxSelectNode();
-
-            State.interaction.boxSelectionOpen = false;
         };
 
         _calculateSelectionBox(

@@ -16,6 +16,8 @@ class ComponentRef {
 
     canvasDrawPanel!: React.Component | any;
 
+    canvasDrawStraightLinePanel!: React.Component | any;
+
     clusterSplittingPanelStack!: React.Component | any;
 
     // add singleton to prevent creating multiple instances of the State class

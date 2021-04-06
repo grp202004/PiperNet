@@ -12,6 +12,11 @@ import { observer } from "mobx-react";
 import State from "../../state";
 import NodeChooser from "../utils/NodeChooser";
 export default observer(
+    /**
+     * @description This component will be used when adding a edge
+     * @author Zhiyuan LYU
+     * @extends {React.Component}
+     */
     class AddEdgeDialog extends React.Component {
         state = {
             chosenSource: null as null | string,

@@ -1,5 +1,11 @@
 import { makeAutoObservable } from "mobx";
 
+/**
+ * @description the four interaction modes
+ * @author Zichen XU, Zhiyuan LYU
+ * @export
+ * @enum {number}
+ */
 export enum VisualizationMode {
     Normal = "Normal", // normal state
     ClusterSelection = "Cluster Selection", // selecting the cluster to be Merged
@@ -7,6 +13,13 @@ export enum VisualizationMode {
     ClusterSplitting = "Cluster Splitting", // drawing the line to split the cluster
 }
 
+/**
+ * @description it controls the open/close of dialogs/panels
+ * and the VisualizationMode(Normal/NodeSelection/ClusterSelection/ClusterSplitting) as well
+ * @author Zichen XU
+ * @export
+ * @class PreferencesStore
+ */
 export default class PreferencesStore {
     constructor() {
         makeAutoObservable(this);
@@ -19,8 +32,8 @@ export default class PreferencesStore {
 
     // Dialog
     exportDialogOpen = false;
-    preferenceDialogOpen = false;
-    statisticsDialogOpen = false;
+    private preferenceDialogOpen = false;
+    private statisticsDialogOpen = false;
 
     AddNodeDialogOpen = false;
     AddEdgeDialogOpen = false;
@@ -45,9 +58,6 @@ export default class PreferencesStore {
     }
 
     // 3D Graph
-
-    view = "3D";
-    controlType: "trackball" | "orbit" | "fly" = "trackball";
 
     visualizationMode: VisualizationMode = VisualizationMode.Normal;
 }

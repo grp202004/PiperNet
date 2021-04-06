@@ -8,9 +8,25 @@ import ClusterSplittingPanelStack from "./ClusterSplittingPanelStack";
 import { Tooltip2 } from "@blueprintjs/popover2";
 import NodeSelectionPanel from "./NodeSelectionPanel";
 
+export function getMessage(mode: VisualizationMode): string {
+    switch (mode) {
+        case VisualizationMode.Normal:
+            return "Normal Interaction Mode where mouse interactions on nodes and clusters are both activated";
+
+        case VisualizationMode.NodeSelection:
+            return "Select one or more nodes and interact with them, such as adding/deleting, merge them to a cluster, free them from a cluster";
+
+        case VisualizationMode.ClusterSelection:
+            return "Select one or more clusters and interact with them, such as merging and releasing them";
+
+        case VisualizationMode.ClusterSplitting:
+            return "Select one cluster and draw a line to split into two halfs";
+    }
+}
+
 export default observer(
     class InteractionModePanel extends React.Component {
-        getIntent(mode: VisualizationMode) {
+        getIntent(mode: VisualizationMode): Intent {
             switch (mode) {
                 case VisualizationMode.Normal:
                     return Intent.PRIMARY;
@@ -28,7 +44,7 @@ export default observer(
 
         renderMode(mode: VisualizationMode) {
             return (
-                <Tooltip2 content={mode}>
+                <Tooltip2 content={getMessage(mode)}>
                     <Button
                         className={classnames([
                             Classes.BUTTON,

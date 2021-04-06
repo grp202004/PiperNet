@@ -4,6 +4,7 @@ import CanvasDraw from "react-canvas-draw";
 import ReactDOM from "react-dom";
 import ComponentRef from "../ComponentRef";
 import State from "../../state";
+import { NAVBAR_HEIGHT } from "../../constants";
 
 export default observer(
     class CanvasDrawPanel extends React.Component {
@@ -23,7 +24,12 @@ export default observer(
             return (
                 <div
                     onMouseUp={() => {
-                        this.exportDrawing();
+                        const data = JSON.parse(
+                            this.canvasMethods.getSaveData()
+                        );
+                        if (data.lines[0].points.length > 4) {
+                            this.exportDrawing();
+                        }
                     }}
                 >
                     <CanvasDraw
@@ -45,7 +51,6 @@ export default observer(
 
         exportDrawing() {
             State.helper.clusterSplittingCurrentStep = 3;
-            let hightDiff = 50;
             const data = JSON.parse(this.canvasMethods.getSaveData());
             let drawPoints = data?.lines[0]?.points as {
                 x: number;
@@ -54,8 +59,8 @@ export default observer(
             if (!drawPoints) {
                 return;
             }
-            drawPoints.map((value) => {
-                value.y += hightDiff;
+            drawPoints.forEach((value) => {
+                value.y += NAVBAR_HEIGHT;
             });
 
             // line was drawn left to right
@@ -69,26 +74,6 @@ export default observer(
                 drawPoints.push({ x: this.canvas.width, y: 0 });
                 drawPoints.push({ x: 0, y: 0 });
             }
-
-            // const firstPoint = drawPoints[0];
-            // const x1 = firstPoint.x,
-            //     y1 = firstPoint.y;
-            // const lastPoint = drawPoints[drawPoints.length - 1];
-            // const x2 = lastPoint.x,
-            //     y2 = lastPoint.y;
-            // const slope = (y1 - y2) / (x1 - x2);
-            // const b = (x1 * y2 - x2 * y1) / (x1 - x2);
-
-            // const leftIntersect = { x: 0, y: b };
-            // const rightIntersect = {
-            //     x: this.canvas.width,
-            //     y: slope * this.canvas.width + b,
-            // };
-            // const topIntersect = { x: -b / slope, y: 0 };
-            // const bottomIntersect = {
-            //     x: (this.canvas.height - b) / slope,
-            //     y: this.canvas.height,
-            // };
 
             State.clusterInteraction.lineSegment = drawPoints;
             State.clusterInteraction.computeSplitCluster();
