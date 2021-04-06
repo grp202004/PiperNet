@@ -42,7 +42,10 @@
         "electron-start": "electron .",
         "docs": "typedoc --exclude '**/*+test.ts' src/components src/state",
         "pack-win": "electron-packager . pipernet-win-0.5.0-beta --platform=win32 --arch=x64 --overwrite --ignore=/node_modules",
-        "pack-mac": "electron-packager . pipernet-mac-0.5.0-beta --platform=darwin --arch=x64 --overwrite --ignore=/node_modules"
+        "pack-mac": "electron-packager . pipernet-mac-0.5.0-beta --platform=darwin --arch=x64 --overwrite --ignore=/node_modules",
+        "pack-Win": "electron-builder --win --ia32",
+        "pack-Mac": "electron-builder --mac",
+        "pack-Linux": "electron-builder --linux --ia32"
     },
     "eslintConfig": {
         "extends": [
@@ -73,8 +76,10 @@
         "@types/react-color": "^3.0.4",
         "@types/react-csv": "^1.1.1",
         "@types/react-dom": "^17.0.2",
+        "cross-env": "^7.0.3",
         "@types/three": "^0.126.2",
         "electron": "^11.3.0",
+        "electron-builder": "^22.10.5",
         "electron-packager": "^15.2.0",
         "prettier": "2.2.1",
         "typedoc": "^0.20.32",
@@ -82,6 +87,56 @@
     },
     "prettier": {
         "tabWidth": 4
+    },
+    "build": {
+        "extends": null,
+        "productName": "PiperNet",
+        "appId": "PiperNet_Setup",
+        "asar": true,
+        "directories": {
+            "buildResources": "public",
+            "output": "dist"
+        },
+        "linux": {
+            "icon": "public/111.ico"
+        },
+        "win": {
+            "icon": "public/111.ico",
+            "target": [
+                "nsis"
+            ]
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowElevation": true,
+            "allowToChangeInstallationDirectory": true,
+            "shortcutName": "PiperNet",
+            "installerLanguages": [
+                "en_US"
+            ]
+        },
+        "mac": {
+            "target": [
+                "dmg"
+            ],
+            "icon": "public/111.ico"
+        },
+        "dmg": {
+            "contents": [
+                {
+                    "x": 410,
+                    "y": 190,
+                    "type": "link",
+                    "path": "/Applications"
+                },
+                {
+                    "x": 130,
+                    "y": 190,
+                    "type": "file"
+                }
+            ],
+            "iconSize": 128
+        }
     },
     "jest": {
         "transform": {
