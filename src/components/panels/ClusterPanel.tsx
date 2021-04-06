@@ -1,8 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import { Classes, Slider } from "@blueprintjs/core";
-import classnames from "classnames";
+import { Card, Slider } from "@blueprintjs/core";
 import Collapsable from "../utils/Collapsable";
 import SimpleSelect from "../utils/SimpleSelect";
 
@@ -24,7 +23,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         Cluster Force Distance:
                         <br />
                         <Slider
@@ -38,8 +37,8 @@ export default observer(
                             }}
                             value={State.css.cluster.clusterForce}
                         />
-                    </div>
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    </Card>
+                    <Card className={"sub-option"}>
                         Normal Force Distance:
                         <br />
                         <Slider
@@ -53,7 +52,7 @@ export default observer(
                             }}
                             value={State.css.cluster.normalForce}
                         />
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };
@@ -69,7 +68,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         <p style={{ textAlign: "left" }}>
                             Cluster Shape:
                             <span style={{ float: "right" }}>
@@ -78,14 +77,15 @@ export default observer(
                                     text={State.css.cluster.shape}
                                     onSelect={(it) => {
                                         State.css.cluster.shape = it;
+                                        State.graphDelegate.clusterObject.alterNodePosition();
                                     }}
                                     small={true}
                                 />
                             </span>
                         </p>
-                    </div>
+                    </Card>
                     {State.css.cluster.shape === "sphere" && (
-                        <div className={classnames(Classes.CARD, "sub-option")}>
+                        <Card className={"sub-option"}>
                             Cluster Resolution:
                             <br />
                             <Slider
@@ -99,7 +99,7 @@ export default observer(
                                 }}
                                 value={State.css.cluster.resolution}
                             />
-                        </div>
+                        </Card>
                     )}
                 </Collapsable>
             );
@@ -118,4 +118,3 @@ export default observer(
         }
     }
 );
-// export default EdgesPanel;

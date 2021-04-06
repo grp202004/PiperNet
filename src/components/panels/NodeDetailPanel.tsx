@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Classes } from "@blueprintjs/core";
+import { Card } from "@blueprintjs/core";
 import { Cell, Column, EditableCell, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import State from "../../state/index";
@@ -17,6 +17,11 @@ interface Props {
 }
 
 export default observer(
+    /**
+     * @description Impletementing a table showing the detail in formation of hovered Node， in which the information could be changed by users
+     * @author Zhiyuan LYU Chenghao SHI
+     * @extends {React.Component<Props, {}>}
+     */
     class NodeDetail extends React.Component<Props, {}> {
         cellRenderer_property = (rowIndex: number) => {
             return <Cell>{State.graph.metadata.nodeProperties[rowIndex]}</Cell>;
@@ -68,12 +73,7 @@ export default observer(
                         "transparent-frame"
                     )}
                 >
-                    <div
-                        className={classnames(
-                            Classes.CARD,
-                            "node-details-table"
-                        )}
-                    >
+                    <Card className={"node-details-table"}>
                         <Table
                             numRows={State.graph.metadata.nodeProperties.length}
                             enableRowHeader={false}
@@ -87,7 +87,7 @@ export default observer(
                                 cellRenderer={this.cellRenderer_value}
                             />
                         </Table>
-                    </div>
+                    </Card>
                 </div>
             );
         }

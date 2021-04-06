@@ -3,42 +3,53 @@ import * as THREE from "three";
 import { SphereGeometry } from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry";
 import State from ".";
+import chaser from "chaser";
 
+/**
+ * @description the code in this file basically initialize the corresponding Object3D for each cluster
+ * control the addition/deletion/disposition/accessing/updatePosition/updateMaterial of clusters inside the scene
+ * according to the updated map from ClusterStore
+ * @author Zichen XU
+ * @export
+ * @class Cluster3dObjectStore
+ */
 export default class Cluster3dObjectStore {
     constructor() {
         makeAutoObservable(this);
     }
 
     /**
-     * the THREE.js WebGL Scene of the visualization
-     *
+     * @description the THREE.js WebGL Scene of the visualization
+     * @author Zichen XU
+     * @type {THREE.Scene}
      */
     threeScene!: THREE.Scene;
 
     /**
-     * all the clusters should form a 3D Group to be imported into Scene
+     * @description all the clusters should form a 3D Group to be imported into Scene
      * if no cluster attribute is set, this will be set to null
      *
      * each children is a THREE.Mesh
-     *
-     * @type {THREE.Group}
+     * @author Zichen XU
+     * @type {(THREE.Group | null)}
      */
     fusionClusterObjects: THREE.Group | null = null;
 
     /**
-     * the map between attribute value and its corresponding Mesh Group
+     * @description the map between attribute value and its corresponding Mesh Group
      * if you want to update the geometry, plz update all the children inside which Mesh Group
      * if no cluster attribute is set, this will be set to null
-     *
-     * @type {(Map<string | number, THREE.Group> | null)}
+     * @author Zichen XU
+     * @type {(Map<string | number, THREE.Mesh> | null)}
      */
-    clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
+    private clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
 
     /**
-     * create empty BufferGeometry and mesh with colour
+     * @description create empty BufferGeometry and mesh with colour
      * then initialize $fusionClusterObjects and $clusterObjectsMap with it
      * and then add the THREE.Group to the Scene
-     *
+     * @author Zichen XU
+     * @returns {*}
      */
     initEmptyMapAndFusion() {
         if (this.fusionClusterObjects) {
@@ -66,13 +77,14 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * should be called on each render frame
+     * @description should be called on each render frame
      * will update the geometry inside each cluster object
      *
      * if is the first time (both are null), will run initEmptyMapAndFusion() first
      *
      * if meet with clusterBy == null, will dispose all Object3d
-     *
+     * @author Zichen XU
+     * @returns {*}
      */
     clusterDelegation() {
         if (State.cluster.clusterBy === null) {
@@ -92,6 +104,12 @@ export default class Cluster3dObjectStore {
         }
     }
 
+    /**
+     * @description get the THREE.Mesh object by its uuid
+     * @author Zichen XU
+     * @param {string} uuid
+     * @returns {*}  {(THREE.Mesh | null)}
+     */
     getObjectById(uuid: string): THREE.Mesh | null {
         let res: THREE.Object3D | null = null;
         this.fusionClusterObjects?.children.every((item: THREE.Object3D) => {
@@ -106,11 +124,11 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * dispose the geometries and materials in every clusterObject
+     * @description dispose the geometries and materials in every clusterObject
      * and set these props to be null, which indicates that no additional 3d object is added into Scene
-     *
+     * @author Zichen XU
      */
-    dispose() {
+    private dispose() {
         this.clusterObjectsMap?.forEach((mesh: THREE.Mesh) => {
             let material = mesh.material as THREE.Material;
             material.dispose();
@@ -122,10 +140,10 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * the map between the value of the cluster and the BufferGeometry that this cluster created
-     *
+     * @description the map between the value of the cluster and the BufferGeometry that this cluster created
+     * @author Zichen XU
      * @readonly
-     * @type {(Map<string | number, THREE.Group>)}
+     * @type {(Map<string | number, THREE.BufferGeometry>)}
      */
     get convexHullObjects(): Map<string | number, THREE.BufferGeometry> {
         let newMap = new Map<string | number, THREE.BufferGeometry>();
@@ -136,26 +154,40 @@ export default class Cluster3dObjectStore {
     }
 
     /**
-     * get the computed convexHull BufferGeometry of the specified attribute value
-     *
+     * @description get the computed convexHull BufferGeometry of the specified attribute value
+     * @author Zichen XU
      * @param {(string | number)} key
      * @returns {*}  {THREE.BufferGeometry}
      */
-    convexHullObject(key: string | number): THREE.BufferGeometry {
+    private convexHullObject(key: string | number): THREE.BufferGeometry {
         let points = State.cluster.attributePoints.get(key) as THREE.Vector3[];
-        if (State.css.cluster.shape === "convexHull") {
-            if (!points || points.length < 4) {
-                return new THREE.BufferGeometry();
-            } else {
-                return new ConvexGeometry(Array.from(points));
-            }
-        } else {
-            // State.css.clusterShape === "Sphere"
-            let convexGeometry = new ConvexGeometry(Array.from(points));
-            convexGeometry.computeBoundingSphere();
-            let sphereGeo = convexGeometry.boundingSphere as THREE.Sphere;
+
+        if (!points || points.length === 0) {
+            return new THREE.BufferGeometry();
+        } else if (points.length === 1) {
             let sphere = new SphereGeometry(
-                sphereGeo.radius,
+                State.css.node.size + 5,
+                State.css.cluster.resolution,
+                State.css.cluster.resolution
+            );
+            sphere.translate(points[0].x, points[0].y, points[0].z);
+            return sphere;
+        } else if (points.length < 4) {
+            // there are 2 or 3 points in this cluster
+            let geometry = new THREE.BufferGeometry();
+            let tempArray: number[] = [];
+            points.forEach((vector) => {
+                tempArray.push(vector.x, vector.y, vector.z);
+            });
+            const positions = new Float32Array(tempArray);
+            geometry.setAttribute(
+                "position",
+                new THREE.BufferAttribute(positions, 3)
+            );
+            geometry.computeBoundingSphere();
+            let sphereGeo = geometry.boundingSphere as THREE.Sphere;
+            let sphere = new SphereGeometry(
+                sphereGeo.radius + 5,
                 State.css.cluster.resolution,
                 State.css.cluster.resolution
             );
@@ -165,18 +197,37 @@ export default class Cluster3dObjectStore {
                 sphereGeo.center.z
             );
             return sphere;
+        } else {
+            if (State.css.cluster.shape === "convexHull") {
+                // when there are more than 3 points, simply gnerate a convexgeometry
+                return new ConvexGeometry(Array.from(points));
+            } else {
+                // State.css.clusterShape === "Sphere"
+                let convexGeometry = new ConvexGeometry(Array.from(points));
+                convexGeometry.computeBoundingSphere();
+                let sphereGeo = convexGeometry.boundingSphere as THREE.Sphere;
+                let sphere = new SphereGeometry(
+                    sphereGeo.radius + 5,
+                    State.css.cluster.resolution,
+                    State.css.cluster.resolution
+                );
+                sphere.translate(
+                    sphereGeo.center.x,
+                    sphereGeo.center.y,
+                    sphereGeo.center.z
+                );
+                return sphere;
+            }
         }
     }
 
     /**
-     * create a Three.Group, which contains 2 Three.Mesh, of the input geometry
-     *
+     * @description create a Three.Group, which contains 2 Three.Mesh, of the input geometry
+     * @author Zichen XU
      * @private
      * @param {THREE.BufferGeometry} geom
      * @param {(string | number)} name
-     * @returns {*}  {THREE.Group}
-     *
-     * @see THREE.Mesh
+     * @returns {*}  {THREE.Mesh}
      */
     private createMesh(
         geom: THREE.BufferGeometry,
@@ -196,8 +247,18 @@ export default class Cluster3dObjectStore {
         return mesh;
     }
 
+    /**
+     * @description a map from (the uuid that get from the WebGL) to (the cluster value of this cluster)
+     * @author Zichen XU
+     * @type {(Map<string, string | number>)}
+     */
     UUID2ClusterValueMap!: Map<string, string | number>;
 
+    /**
+     * @description add the mesh material a short highlight
+     * @author Zichen XU
+     * @param {THREE.Mesh} mesh
+     */
     meshSpotlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         const oldOpacity = material.opacity;
@@ -207,21 +268,46 @@ export default class Cluster3dObjectStore {
         }, 100);
     }
 
+    /**
+     * @description set the mesh material to be highlighted
+     * @author Zichen XU
+     * @private
+     * @static
+     * @param {THREE.Mesh} mesh
+     */
     private static meshHighlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.5;
     }
 
+    /**
+     * @description set the mesh material to be as selected
+     * @author Zichen XU
+     * @private
+     * @static
+     * @param {THREE.Mesh} mesh
+     */
     private static meshSelectedMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.3;
     }
 
+    /**
+     * @description set the mesh material back to normal
+     * @author Zichen XU
+     * @private
+     * @static
+     * @param {THREE.Mesh} mesh
+     */
     private static meshNormalMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         material.opacity = 0.15;
     }
 
+    /**
+     * @description update and refresh all materials of all the cluster objects
+     * @author Zichen XU
+     */
     updateAllMaterials() {
         this.fusionClusterObjects?.children.forEach((_object) => {
             let mesh = _object as THREE.Mesh;
@@ -238,5 +324,113 @@ export default class Cluster3dObjectStore {
                 Cluster3dObjectStore.meshNormalMaterial(mesh);
             }
         });
+    }
+
+    /**
+     * @description determine whether at this time can the node to be auto-altered to the surface of the sphere
+     * if the engine reheat, will set this to true.
+     * @author Zichen XU
+     * @type {boolean}
+     */
+    canAlterNodePosition: boolean = false;
+
+    /**
+     * @description alter the nodes onto the surface of the sphere in 1s
+     * using the computeNodeSphereDistribution() to compute the position
+     * @author Zichen XU
+     */
+    alterNodePosition() {
+        interface chaserAndPosition {
+            chaser: any;
+            position: { x: number; y: number; z: number };
+        }
+
+        let chaserListX: chaserAndPosition[] = [];
+        let chaserListY: chaserAndPosition[] = [];
+        let chaserListZ: chaserAndPosition[] = [];
+
+        State.cluster.attributeKeys.forEach((points, cluster) => {
+            const sphereGeometry = this.clusterObjectsMap?.get(
+                cluster
+            ) as THREE.Mesh;
+            const radius = sphereGeometry.geometry.boundingSphere?.radius!;
+            let position = sphereGeometry.geometry.boundingSphere?.center!;
+            let newPositions = this.computeNodeSphereDistribution(
+                radius,
+                points.length
+            );
+
+            newPositions.forEach((value, index) => {
+                let attribute = State.graph.rawGraph.getNodeAttribute(
+                    points[index],
+                    "_visualize"
+                );
+                const chaserX = chaser({
+                    initialValue: attribute.x,
+                    duration: 1000,
+                });
+                chaserX.target = value.x + position.x;
+                chaserListX.push({ chaser: chaserX, position: attribute });
+
+                const chaserY = chaser({
+                    initialValue: attribute.y,
+                    duration: 1000,
+                });
+                chaserY.target = value.y + position.y;
+                chaserListY.push({ chaser: chaserY, position: attribute });
+
+                const chaserZ = chaser({
+                    initialValue: attribute.z,
+                    duration: 1000,
+                });
+                chaserZ.target = value.z + position.z;
+                chaserListZ.push({ chaser: chaserZ, position: attribute });
+            });
+        });
+
+        let interval = setInterval(() => {
+            chaserListX.forEach((value) => {
+                value.position.x = value.chaser.value;
+            });
+            chaserListY.forEach((value) => {
+                value.position.y = value.chaser.value;
+            });
+            chaserListZ.forEach((value) => {
+                value.position.z = value.chaser.value;
+            });
+            State.graphDelegate.graphDelegateMethods.refresh();
+        }, 50);
+        setTimeout(() => clearInterval(interval), 1000);
+    }
+
+    /**
+     * @description using a algorithm to compute a array of points that distribute on the sphere specified by the radius
+     * @author Zichen XU
+     * @private
+     * @param {number} radius
+     * @param {number} [numberOfPoints=45]
+     * @returns {*}  {{ x: number; y: number; z: number }[]}
+     */
+    private computeNodeSphereDistribution(
+        radius: number,
+        numberOfPoints = 45
+    ): { x: number; y: number; z: number }[] {
+        let dlong = Math.PI * (3.0 - Math.sqrt(5.0));
+        let dz = 2.0 / numberOfPoints;
+        let long = 0.0;
+        let z = 1.0 - dz / 2.0;
+        let ptsOnSphere: { x: number; y: number; z: number }[] = [];
+        for (let index = 0; index < numberOfPoints; index++) {
+            let r = Math.sqrt(1.0 - z * z);
+            let ptNew = {
+                x: Math.cos(long) * r * radius,
+                y: Math.sin(long) * r * radius,
+                z: z * radius,
+            };
+            ptsOnSphere.push(ptNew);
+            z = z - dz;
+            long = long + dlong;
+        }
+        return ptsOnSphere;
     }
 }

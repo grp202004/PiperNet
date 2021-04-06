@@ -16,12 +16,19 @@ export default class GraphMutation {
         this.that = _this;
     }
 
+    /**
+     * @description the graph store
+     * @see GraphStore
+     * @author Zichen XU
+     * @private
+     * @type {GraphStore}
+     */
     private that!: GraphStore;
 
     /**
-     * add the node with this attribute to the Graph and refresh the 3d Graph
+     * @description add the node with this attribute to the Graph and refresh the 3d Graph
      * if not specify attributes._visualize , then will add it into the attributes before adding to Graph
-     *
+     * @author Zichen XU
      * @param {NodeKey} node
      * @param {Attributes} [attributes]
      */
@@ -41,8 +48,8 @@ export default class GraphMutation {
     }
 
     /**
-     * delete the node with this nodeId in the Graph and refresh the 3d Graph
-     *
+     * @description delete the node with this nodeId in the Graph and refresh the 3d Graph
+     * @author Zichen XU
      * @param {string} nodeId
      */
     public dropNode(nodeId: string): void {
@@ -51,9 +58,9 @@ export default class GraphMutation {
     }
 
     /**
-     * add the edge with this attribute to the Graph and refresh the 3d Graph
+     * @description add the edge with this attribute to the Graph and refresh the 3d Graph
      * if not specify attributes._visualize , then will add it into the attributes before adding to Graph
-     *
+     * @author Zichen XU
      * @param {NodeKey} source
      * @param {NodeKey} target
      * @param {Attributes} [attributes]
@@ -86,8 +93,8 @@ export default class GraphMutation {
     }
 
     /**
-     * delete the edge with this key in the Graph and refresh the 3d Graph
-     *
+     * @description delete the edge with this key in the Graph and refresh the 3d Graph
+     * @author Zichen XU
      * @param {EdgeKey} edge
      */
     public dropEdge(edge: EdgeKey): void {

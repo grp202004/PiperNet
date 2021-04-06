@@ -22,6 +22,7 @@ export async function fetchSampleGraph(url: string) {
     }
 }
 
+export const NAVBAR_HEIGHT = 50;
 
 export const NODE_AND_EDGE_FILE = "import both nodes and edges file";
 export const ONLY_EDGE_FILE = "only import edges file";

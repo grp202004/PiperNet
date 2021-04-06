@@ -1,11 +1,10 @@
 import React from "react";
-import { Button, Classes } from "@blueprintjs/core";
+import { Button, Card, Elevation } from "@blueprintjs/core";
 import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../state";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
-import SearchPanel from "./panels/SearchPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 import GraphOptionsCard from "./panels/GraphOptionsCard";
 import InteractionModePanel from "./panels/InteractionModePanel/InteractionModePanel";
@@ -33,10 +32,9 @@ export default observer(
             return (
                 <div className="floating-overlay">
                     <div className="left-cards">
-                        <div
+                        <Card
+                            elevation={Elevation.TWO}
                             className={classnames(
-                                Classes.CARD,
-                                Classes.ELEVATION_2,
                                 "overlay-card",
                                 "transparent-frame",
                                 "left-cards"
@@ -55,11 +53,10 @@ export default observer(
                             />
                             <br />
                             <GraphOptionsCard />
-                        </div>
-                        <div
+                        </Card>
+                        <Card
+                            elevation={Elevation.TWO}
                             className={classnames(
-                                Classes.CARD,
-                                Classes.ELEVATION_2,
                                 "overlay-card",
                                 "transparent-frame"
                             )}
@@ -81,7 +78,7 @@ export default observer(
                                         : this.sideButtonVis
                                 }
                             />
-                        </div>
+                        </Card>
                     </div>
 
                     {/* single selected */}
@@ -105,7 +102,6 @@ export default observer(
                         <MultiDetailPanel />
                     )}
 
-                    <SearchPanel />
                     {State.preferences.rightClickPanelOpen &&
                         State.preferences.rightClickOn && (
                             <RightClickPanel

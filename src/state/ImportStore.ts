@@ -5,6 +5,12 @@ import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
 import { IMetaData } from "./GraphStore";
 
+/**
+ * @description interface for the node file being configured
+ * @author Zichen XU
+ * @export
+ * @interface INodeFileConfig
+ */
 export interface INodeFileConfig {
     // the file is successfully parsed and ready for display
     isReady: boolean;
@@ -23,7 +29,12 @@ export interface INodeFileConfig {
     };
     delimiter: string;
 }
-
+/**
+ * @description interface for the edge file being configured
+ * @author Zichen XU
+ * @export
+ * @interface IEdgeFileConfig
+ */
 export interface IEdgeFileConfig {
     isReady: boolean;
     parseError: boolean;
@@ -42,6 +53,16 @@ export interface IEdgeFileConfig {
     delimiter: string;
 }
 
+/**
+ * @description this class defines some necessary configs for the graph-importing procedures
+ * such as the `INodeFileConfig` and `IEdgeFileConfig` for customizing the csv/gexf file parsing procedure
+ * Other functions like `renderImportNode/EdgePreview` renders the preview table in the ImportDialog
+ * and `importGraphFromCSV/GEXF` reads the file input and produce the `graphology` object to be assigned to `GraphStore`
+ * with some basic error handling strategies
+ * These functions are designed to be synchronized to prevent frozen of UI.
+ * @author Zichen XU
+ * @export
+ */
 export default class ImportStore {
     constructor() {
         makeAutoObservable(this);
@@ -108,14 +129,16 @@ export default class ImportStore {
     };
 
     /**
-     * read the CSV file specified by fileObject, with options defined by other paras
+     * @description read the CSV file specified by fileObject, with options defined by other paras
      * and return a list of objects containing the key-value pair of attribute-value
-     *
+     * @author Zichen XU
+     * @private
      * @param {File} fileObject
      * @param {boolean} hasHeader
      * @param {string} delimiter
-     * @return {*}  {Promise<Object[]>}
-     * where Object is of { attribute: number | string, anotherAttribute: number | string, ... } type
+     * @returns {*}  {Promise<any[]>}
+     *      * where Object is of { attribute: number | string, anotherAttribute: number | string, ... } type
+
      */
     private async readCSV(
         fileObject: File,
@@ -167,11 +190,11 @@ export default class ImportStore {
     }
 
     /**
-     * parse the graph from import GEXF file specified in selectedGEXFFileFromInput
+     * @description parse the graph from import GEXF file specified in selectedGEXFFileFromInput
      * and return a Graph object
-     *
+     * @author Zichen XU
      * @private
-     * @return {*}  {Promise<Graph>}
+     * @returns {*}  {Promise<Graph>}
      */
     private async readGEXF(): Promise<Graph> {
         const file = this.selectedGEXFFileFromInput;
@@ -195,6 +218,11 @@ export default class ImportStore {
         });
     }
 
+    /**
+     * @description helper function to read edge csv and call this.readCSV()
+     * @author Zichen XU
+     * @returns {*}  {Promise<any[]>}
+     */
     public readEdgeCSV(): Promise<any[]> {
         return this.readCSV(
             this.selectedEdgeFileFromInput,
@@ -203,6 +231,11 @@ export default class ImportStore {
         );
     }
 
+    /**
+     * @description helper function to read node csv and call this.readCSV()
+     * @author Zichen XU
+     * @returns {*}  {Promise<any[]>}
+     */
     public readNodeCSV(): Promise<any[]> {
         return this.readCSV(
             this.selectedNodeFileFromInput,
@@ -212,11 +245,11 @@ export default class ImportStore {
     }
 
     /**
-     * will create a Graph structure to store the nodes and edges in the imported File
+     * @description will create a Graph structure to store the nodes and edges in the imported File
      * should handle whether or not have the NodeFile, whether or not have the header of each file
      * if successfully imported, change the .isReady to be true
-     *
-     * @return {*}
+     * @author Zichen XU
+     * @returns {*}
      */
     public async importGraphFromCSV() {
         const config = this.importConfig;
@@ -234,7 +267,7 @@ export default class ImportStore {
 
         const graph = new Graph({
             allowSelfLoops: true,
-            multi: true,
+            multi: false,
             type: "undirected",
         });
 
@@ -290,6 +323,12 @@ export default class ImportStore {
         };
     }
 
+    /**
+     * @description will create a Graph structure to store the nodes and edges in the imported File
+     * please use try catch to avoid any invalid GEXF file
+     * @author Zichen XU
+     * @returns {*}
+     */
     public async importGraphFromGEXF() {
         let graph = await this.readGEXF();
         let nodeProperties: string[] = [];
@@ -309,7 +348,7 @@ export default class ImportStore {
     }
 
     /**
-     * change the importConfig.edgeFile.topN to be the top 10 parsed elements in the input edge file
+     * @description change the importConfig.edgeFile.topN to be the top 10 parsed elements in the input edge file
      * change the importConfig.edgeFile.columns to be the attributes of the imported edge file
      * set the .mapping.fromId and .mapping.toId to be the first and second (if have) attribute of the input edge file.
      *
@@ -317,7 +356,8 @@ export default class ImportStore {
      *
      * This function will autorun if user specify the selectedEdgeFileFromInput and the changes that this function will make is to get ready for the rendering of preview Table in the ImportDialog
      *
-     * @return {*}
+     * @author Zichen XU
+     * @returns {*}
      */
     public async renderImportEdgePreview() {
         let file = this.selectedEdgeFileFromInput;
@@ -427,15 +467,16 @@ export default class ImportStore {
     }
 
     /**
-     * change the importConfig.nodeFile.topN to be the top 10 parsed elements in the input node file
+     * @description change the importConfig.nodeFile.topN to be the top 10 parsed elements in the input node file
      * change the importConfig.nodeFile.columns to be the attributes of the imported node file
      * set the .mapping.id .mapping.cluster to be the first and second (if have) attribute of the input edge file.
      *
      * if successfully parsed, set the .isReady to be true, else set the.parseError
      *
      * This function will autorun if user specify the selectedNodeFileFromInput and the changes that this function will make is to get ready for the rendering of preview Table in the ImportDialog
-     *
-     * @return {*}
+
+     * @author Zichen XU
+     * @returns {*} 
      */
     public async renderImportNodePreview() {
         let file = this.selectedNodeFileFromInput;

@@ -1,12 +1,16 @@
 import React from "react";
 import { observer } from "mobx-react";
 import State from "../../state";
-import { Classes, Slider } from "@blueprintjs/core";
-import classnames from "classnames";
+import { Card, Slider } from "@blueprintjs/core";
 import Collapsable from "../utils/Collapsable";
 import ColorPicker from "../utils/ColorPicker";
 
 export default observer(
+    /**
+     * @description This component will be used to change style of nodes. Including color, size,etc
+     * @author Zhiyuan LYU, Zichen XU
+     * @extends {React.Component}
+     */
     class NodesPanel extends React.Component {
         state = {
             timeOutRef: null,
@@ -26,7 +30,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         <section>
                             <p style={{ textAlign: "left" }}>
                                 Default Color:
@@ -49,9 +53,11 @@ export default observer(
                                 Selected Color:
                                 <span style={{ float: "right" }}>
                                     <ColorPicker
-                                        color={State.css.node.selectedColor}
+                                        color={
+                                            State.css.node.multiSelectedColor
+                                        }
                                         onChange={(it) => {
-                                            State.css.node.selectedColor =
+                                            State.css.node.multiSelectedColor =
                                                 it.hex;
 
                                             State.graphDelegate.graphDelegateMethods.refresh();
@@ -77,7 +83,7 @@ export default observer(
                                 </span>
                             </p>
                         </section>
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };
@@ -93,7 +99,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         Node Size:
                         <br />
                         <Slider
@@ -107,7 +113,7 @@ export default observer(
                             }}
                             value={State.css.node.size}
                         />
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };
@@ -123,7 +129,7 @@ export default observer(
                         })
                     }
                 >
-                    <div className={classnames(Classes.CARD, "sub-option")}>
+                    <Card className={"sub-option"}>
                         Node Resolution:
                         <br />
                         <Slider
@@ -136,7 +142,7 @@ export default observer(
                             }}
                             value={State.css.node.resolution}
                         />
-                    </div>
+                    </Card>
                 </Collapsable>
             );
         };
