@@ -25,7 +25,19 @@ jobs:
             - name: Deploy to GitHub Pages🚀
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:
-                  REPOSITORY_NAME: grp202004/pipernet.github.io
+                  REPOSITORY_NAME: grp202004/pipernet.online
                   ACCESS_TOKEN: ${{ secrets.PAGES }}
                   BRANCH: gh-pages
                   FOLDER: build
+
+            - name: Generate TypeDoc
+              run: |
+                  npm run docs
+
+            - name: Deploy to GitHub Pages🚀
+              uses: JamesIves/github-pages-deploy-action@3.6.2
+              with:
+                  REPOSITORY_NAME: grp202004/pipernet.api
+                  ACCESS_TOKEN: ${{ secrets.PAGES }}
+                  BRANCH: gh-pages
+                  FOLDER: docs

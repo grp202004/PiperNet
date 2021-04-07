@@ -22,7 +22,7 @@ jobs:
             - name: Deploy 🚀
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:
-                  REPOSITORY_NAME: Kaby-Lake/pipernetDev.github.io
+                  REPOSITORY_NAME: Kaby-Lake/pipernet.dev.online
                   ACCESS_TOKEN: ${{ secrets.PAGES }}
                   BRANCH: gh-pages
                   FOLDER: build

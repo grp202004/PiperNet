@@ -25,6 +25,12 @@ export function getMessage(mode: VisualizationMode): string {
 }
 
 export default observer(
+    /**
+     * @description the four panels to select from different interaction modes
+     * @author Zichen XU
+     * @class InteractionModePanel
+     * @extends {React.Component}
+     */
     class InteractionModePanel extends React.Component {
         getIntent(mode: VisualizationMode): Intent {
             switch (mode) {

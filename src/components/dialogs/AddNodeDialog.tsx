@@ -5,6 +5,12 @@ import NodeAdder from "../utils/NodeAdder";
 import State from "../../state";
 
 export default observer(
+    /**
+     * @description the dialog for adding nodes with fields for the user to fill in
+     * @author Zichen XU
+     * @class AddNodeDialog
+     * @extends {React.Component}
+     */
     class AddNodeDialog extends React.Component {
         render() {
             return (

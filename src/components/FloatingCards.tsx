@@ -11,6 +11,12 @@ import InteractionModePanel from "./panels/InteractionModePanel/InteractionModeP
 import RightClickPanel from "./panels/RightClickPanel";
 
 export default observer(
+    /**
+     * @description all the floating cards on the screen
+     * @author Zhiyuan LYU
+     * @class FloatingCards
+     * @extends {React.Component}
+     */
     class FloatingCards extends React.Component {
         optionsVisible = {
             left: "0em",

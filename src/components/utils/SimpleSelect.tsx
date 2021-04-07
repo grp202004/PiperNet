@@ -26,6 +26,12 @@ export function CommonItemRenderer(
 }
 
 export default observer(
+    /**
+     * @description provides a interface for choosing between elements
+     * @author Zichen XU
+     * @class SimpleSelect
+     * @extends {React.Component<Props, {}>}
+     */
     class SimpleSelect extends React.Component<Props, {}> {
         static defaultProps = {
             small: false,

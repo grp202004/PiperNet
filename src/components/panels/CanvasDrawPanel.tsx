@@ -7,6 +7,12 @@ import State from "../../state";
 import { NAVBAR_HEIGHT } from "../../constants";
 
 export default observer(
+    /**
+     * @description another canvas to draw free-hand gesture when cluster splitting
+     * @author Zichen XU
+     * @class CanvasDrawPanel
+     * @extends {React.Component}
+     */
     class CanvasDrawPanel extends React.Component {
         //@ts-ignore
         canvasRef: React.MutableRefObject<CanvasDraw> = React.createRef();

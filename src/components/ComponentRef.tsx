@@ -1,6 +1,11 @@
 import { makeAutoObservable, reaction } from "mobx";
 import State from "../state";
 
+/**
+ * @description the React.ref for storing the components that may be used by others
+ * @author Zichen XU
+ * @class ComponentRef
+ */
 class ComponentRef {
     constructor() {
         makeAutoObservable(this);

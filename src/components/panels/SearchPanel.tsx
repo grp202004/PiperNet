@@ -12,6 +12,12 @@ interface IFilterOption {
 }
 
 export default observer(
+    /**
+     * @description the search bar to be placed in the navigation bar
+     * @author Zichen XU
+     * @class SearchPanel
+     * @extends {React.Component}
+     */
     class SearchPanel extends React.Component {
         get FILTER_OPTIONS(): IFilterOption[] {
             let prefix: IFilterOption[] = [

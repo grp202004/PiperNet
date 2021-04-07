@@ -11,6 +11,12 @@ interface Props {
 }
 
 export default observer(
+    /**
+     * @description the wrapper for data sheet dialog, provides a loading state before the data shows
+     * @author Zichen XU
+     * @class DataSheetDialogWrapper
+     * @extends {React.Component<Props, {}>}
+     */
     class DataSheetDialogWrapper extends React.Component<Props, {}> {
         state = {
             loading: true,

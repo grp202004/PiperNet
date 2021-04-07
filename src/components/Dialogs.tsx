@@ -1,18 +1,20 @@
 import React from "react";
-// import PreferencesDialog from "./PreferencesDialog";
+
 import ImportDialog from "./dialogs/importDialog";
 import ExportDialog from "./dialogs/ExportDialog";
-// import ProjectDetailDialog from "./ProjectDetailDialog";
-// import RenameSnapshotDialog from "./RenameSnapshotDialog";
-// import StatisticsDialog from './StatisticsDialog';
-// import HelpDialog from './HelpDialog';
-// import NeighborDialog from './NeighborDialog';
 import NodeDataSheetDialog from "./dialogs/NodeDataSheetDialog";
 import EdgeDataSheetDialog from "./dialogs/EdgeDataSheetDialog";
 import AddNodeDialog from "./dialogs/AddNodeDialog";
 import AddEdgeDialog from "./dialogs/AddEdgeDialog";
 import ImportGEXFDialog from "./dialogs/ImportGEXFDialog";
 
+/**
+ * @description all the dialogs that may appear
+ * @author Zichen XU, Zhiyuan LYU
+ * @export
+ * @class Dialogs
+ * @extends {React.Component}
+ */
 export default class Dialogs extends React.Component {
     render() {
         return (

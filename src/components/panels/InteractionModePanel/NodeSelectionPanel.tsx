@@ -9,6 +9,12 @@ import { observer } from "mobx-react";
 import { getMessage } from "./InteractionModePanel";
 
 export default observer(
+    /**
+     * @description a helper pop-over that user can choose to enter the box-selection mode
+     * @author Zichen XU
+     * @class NodeSelectionPanel
+     * @extends {React.Component}
+     */
     class NodeSelectionPanel extends React.Component {
         private renderPanelStack = () => {
             return (
