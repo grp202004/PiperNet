@@ -1,8 +1,10 @@
 # Changelog
 
-## [1.0.0](https://github.com/grp202004/PiperNet) (2021-04-08)
+## [1.0.0](https://github.com/grp202004/PiperNet/tree/1.0.0) (2021-04-08)
 
-this version has bug fixes and improvements
+[Full Changelog](https://github.com/grp202004/PiperNet/compare/0.6-beta...1.0.0)
+
+this version only includes bug fixes and improvements
 
 **Fixed bugs:**
 
@@ -27,6 +29,18 @@ this version has bug fixes and improvements
 -   Opening DataSheetDialog might experience delay and UI freezing, especially with a large dataset [\#24](https://github.com/grp202004/PiperNet/issues/24)
 -   A cluster with less than 4 nodes might not form a cluster [\#22](https://github.com/grp202004/PiperNet/issues/22)
 -   Hide the edges in 3D convex hull and just display with the hull in translucent color [\#10](https://github.com/grp202004/PiperNet/issues/10)
+
+# <<<<<<< Updated upstream
+
+-   **Merged pull requests:**
+
+-   TypeScript Document -\> master [\#79](https://github.com/grp202004/PiperNet/pull/79) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Electron to typedoc [\#78](https://github.com/grp202004/PiperNet/pull/78) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   add TypeDoc for components [\#77](https://github.com/grp202004/PiperNet/pull/77) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Correction of test scripts [\#75](https://github.com/grp202004/PiperNet/pull/75) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Test [\#74](https://github.com/grp202004/PiperNet/pull/74) ([Kaby-Lake](https://github.com/Kaby-Lake))
+
+> > > > > > > Stashed changes
 
 ## [0.6-beta](https://github.com/grp202004/PiperNet/tree/0.6-beta) (2021-03-12)
 

@@ -11,7 +11,13 @@ interface Props {
 }
 
 export default observer(
-    class SimpleSelect extends React.Component<Props, {}> {
+    /**
+     * @description the Collapsable HOC to wrap the content into a collapsable flip
+     * @author Zichen XU
+     * @class Collapsable
+     * @extends {React.Component<Props, {}>}
+     */
+    class Collapsable extends React.Component<Props, {}> {
         render() {
             return (
                 <Card elevation={Elevation.THREE}>

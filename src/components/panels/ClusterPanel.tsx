@@ -6,6 +6,12 @@ import Collapsable from "../utils/Collapsable";
 import SimpleSelect from "../utils/SimpleSelect";
 
 export default observer(
+    /**
+     * @description the sub-tab to alter the graph options of cluster
+     * @author Zichen XU, Zhiyuan LYU
+     * @class ClusterPanel
+     * @extends {React.Component}
+     */
     class ClusterPanel extends React.Component {
         state = {
             shapeOptionOpen: false,

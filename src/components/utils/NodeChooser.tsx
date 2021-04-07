@@ -33,6 +33,16 @@ interface Props {
  * to use it, you have to specify the text shown above the selectButton as well as the onChange function to call when a candidate is selected
  */
 export default observer(
+    /**
+     * @description this component can be used to choose the node among all the nodes
+     * with basic search filters available
+     *
+     * to use it, you have to specify the text shown above the selectButton
+     * as well as the onChange function to call when a candidate is selected
+     * @author Zichen XU
+     * @class NodeChooser
+     * @extends {React.Component<Props, {}>}
+     */
     class NodeChooser extends React.Component<Props, {}> {
         state = {
             select: "Choose " + this.props.text,

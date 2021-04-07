@@ -15,6 +15,12 @@ import classnames from "classnames";
 import State from "../../state";
 
 export default observer(
+    /**
+     * @description the dialog for GEXF import
+     * @author Zichen XU
+     * @class ImportGEXFDialog
+     * @extends {React.Component}
+     */
     class ImportGEXFDialog extends React.Component {
         state = {
             fileIsSelect: false,

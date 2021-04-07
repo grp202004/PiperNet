@@ -20,6 +20,12 @@ import { Popover2 } from "@blueprintjs/popover2";
 import SearchPanel from "./panels/SearchPanel";
 
 export default observer(
+    /**
+     * @description the navigation bar on the top
+     * @author Zichen XU
+     * @class Navbar
+     * @extends {React.Component}
+     */
     class Navbar extends React.Component {
         render() {
             return (
@@ -127,13 +133,6 @@ export default observer(
                                             State.preferences.edgeDataSheetDialogOpen = true;
                                         }}
                                     />
-                                    {/* <MenuItem
-                                        text="Statistics"
-                                        icon="timeline-bar-chart"
-                                        onClick={() => {
-                                            State.preferences.statisticsDialogOpen = true;
-                                        }}
-                                    /> */}
                                 </Menu>
                             }
                             placement={Position.BOTTOM}

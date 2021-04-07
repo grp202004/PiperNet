@@ -5,6 +5,12 @@ import State from "../../state";
 import ComponentRef from "../ComponentRef";
 
 export default observer(
+    /**
+     * @description the canvas to draw a straight line when splitting the cluster
+     * @author Zichen XU
+     * @class CanvasDrawStraightLinePanel
+     * @extends {React.Component}
+     */
     class CanvasDrawStraightLinePanel extends React.Component {
         startPoint = { x: 0, y: 0 };
         endPoint = { x: 100, y: 100 };
@@ -82,16 +88,12 @@ export default observer(
             );
             this.ctx.lineWidth = 5;
 
-            //开始启动画笔
             this.ctx.beginPath();
 
-            //开始点
             this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
-            //结束点
             this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
 
             this.ctx.strokeStyle = "#F6B26B";
-            //绘制
             this.ctx.stroke();
         }
 

@@ -231,6 +231,12 @@ let GraphNodeTable = observer(
 );
 
 export default observer(
+    /**
+     * @description the node data sheet table
+     * @author Zichen XU
+     * @class NodeDataSheetDialog
+     * @extends {React.Component}
+     */
     class NodeDataSheetDialog extends React.Component {
         render() {
             return (

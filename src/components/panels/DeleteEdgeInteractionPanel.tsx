@@ -22,6 +22,12 @@ interface Props {
 }
 
 export default observer(
+    /**
+     * @description interactively delete or preview edge with a table shown at the right-bottom
+     * @author Zichen XU
+     * @class DeleteEdgeInteractionPanel
+     * @extends {React.Component<Props, {}>}
+     */
     class DeleteEdgeInteractionPanel extends React.Component<Props, {}> {
         state = {
             targetNode: null as string | null,

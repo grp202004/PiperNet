@@ -24,6 +24,12 @@ interface Props {
 }
 
 export default observer(
+    /**
+     * @description the helper pop-over for a step-to-step guidance to user on the way to split cluster
+     * @author Zichen XU
+     * @class ClusterSplittingPanelStack
+     * @extends {React.Component<Props, {}>}
+     */
     class ClusterSplittingPanelStack extends React.Component<Props, {}> {
         titles = ["Select Cluster", "Draw Line", "Confirm?"];
 

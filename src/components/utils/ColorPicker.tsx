@@ -1,12 +1,8 @@
 import React from "react";
-import {
-    Button,
-    Popover,
-    PopoverInteractionKind,
-    Position,
-} from "@blueprintjs/core";
+import { Button, PopoverInteractionKind, Position } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import { ColorResult, SketchPicker } from "react-color";
+import { Popover2 } from "@blueprintjs/popover2";
 
 /**
  *
@@ -29,18 +25,23 @@ interface Props {
     onChange: (color: ColorResult) => void;
 }
 
-/**
- * this component can be used to choose the node among all the nodes, with basic search filters available
- * to use it, you have to specify the text shown above the selectButton as well as the onChange function to call when a candidate is selected
- */
 export default observer(
+    /**
+     * @description this component can be used to choose the node among all the nodes, with basic search filters available
+     *
+     * to use it, you have to specify the text shown above the selectButton
+     * as well as the onChange function to call when a candidate is selected
+     * @author Zichen XU
+     * @class ColorPicker
+     * @extends {React.Component<Props, {}>}
+     */
     class ColorPicker extends React.Component<Props, {}> {
         render() {
             return (
-                <Popover
+                <Popover2
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="bp3-popover-content-sizing"
-                    position={Position.RIGHT}
+                    placement={Position.RIGHT}
                 >
                     <Button
                         text="  "
@@ -57,7 +58,7 @@ export default observer(
                             }}
                         />
                     </div>
-                </Popover>
+                </Popover2>
             );
         }
     }

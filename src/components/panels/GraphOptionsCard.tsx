@@ -7,6 +7,12 @@ import LabelsPanel from "./LabelsPanel";
 import NodesPanel from "./NodesPanel";
 
 export default observer(
+    /**
+     * @description the graph options panel which contains four sub-tabs
+     * @author Zichen XU, Zhiyuan LYU
+     * @class RenderOptionsCard
+     * @extends {React.Component}
+     */
     class RenderOptionsCard extends React.Component {
         render() {
             return (

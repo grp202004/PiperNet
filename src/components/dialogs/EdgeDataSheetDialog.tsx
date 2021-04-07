@@ -284,6 +284,12 @@ let GraphEdgeTable = observer(
 );
 
 export default observer(
+    /**
+     * @description the edge data sheet table
+     * @author Zichen XU
+     * @class EdgeDataSheetDialog
+     * @extends {React.Component}
+     */
     class EdgeDataSheetDialog extends React.Component {
         render() {
             return (

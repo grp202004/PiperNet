@@ -6,7 +6,7 @@ import State from "../../state/index";
 
 export default observer(
     /**
-     * @description This component will be used when mutil-select in the mode 'node selection'.
+     * @description This component will be used when multi-select in the mode 'node selection'.
      * @author Zhiyuan LYU
      * @extends {React.Component}
      */
