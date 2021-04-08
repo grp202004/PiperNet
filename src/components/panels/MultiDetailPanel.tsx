@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Card } from "@blueprintjs/core";
+import { Card, Tag } from "@blueprintjs/core";
 import { Cell, Column, Table } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import ComponentRef from "../ComponentRef";
@@ -22,7 +22,13 @@ export default observer(
                     )}
                 >
                     <Card>
-                        <Table numRows={State.interaction.selectedNodes.length}>
+                        <Table
+                            numRows={
+                                State.interaction.selectedNodes.length > 10
+                                    ? 10
+                                    : State.interaction.selectedNodes.length
+                            }
+                        >
                             {State.graph.metadata.nodeProperties.map((it) => (
                                 <Column
                                     key={it}
@@ -40,6 +46,10 @@ export default observer(
                                 />
                             ))}
                         </Table>
+                        <Tag style={{ marginTop: "3px" }}>
+                            if select more than 10 nodes, only the top 10 nodes
+                            will be displayed
+                        </Tag>
                     </Card>
                 </div>
             );

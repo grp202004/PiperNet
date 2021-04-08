@@ -120,7 +120,7 @@ reaction(
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
-                        { hovered: false },
+                        { hovered: false, chosen: false, multiSelected: false },
                         oldAttributes._visualize
                     );
                 });
