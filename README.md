@@ -8,7 +8,11 @@ An interactive 3D cluster graph visualization system that runs in your browsers 
 
 [**Information and Downloads** - Information of this project, Download Software and Sample Datasets](https://grp202004.github.io/pipernet.info)
 
-[**API Documents** - API documents of the code](https://grp202004.github.io/pipernet.api)
+[**API Documents** - API documents of the codebase](https://grp202004.github.io/pipernet.api)
+
+[**Changelog** - changelog for major version distributions](./CHANGELOG.md)
+
+[**Contribution Guideline** - we are more than welcome to your contribution](./CONTRIBUTING.md)
 
 ## About
 

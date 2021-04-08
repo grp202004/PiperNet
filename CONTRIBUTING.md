@@ -54,7 +54,7 @@ A typical contributor workflow looks like this:
     - Run `npm build` at the repo root to build all libraries.
     - run unit tests with `npm test` in the relevant package directory.
 4. Submit a Pull Request on GitHub and fill out the template.
-    - ⚠️ **DO NOT enable CircleCI for your fork of Blueprint.** When you open a PR, your branch will be checked by `GitHub Actions` automatically. There is no need to enable the CI build for your fork's pipeline. If you do, this may cause problems in the CI build.
+    - ⚠️ **DO NOT enable CircleCI for your fork.** When you open a PR, your branch will be checked by `GitHub Actions` automatically. There is no need to enable the CI build for your fork's pipeline. If you do, this may cause problems in the CI build.
 5. Team members will review your code and merge it after approvals.
     - You may be asked to make modifications to code style or to fix bugs you may have not noticed.
     - Please respond to comments in a timely fashion (even if to tell us you need more time).
