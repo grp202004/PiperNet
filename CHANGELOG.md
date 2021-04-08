@@ -1,10 +1,8 @@
 # Changelog
 
-## [1.0.0](https://github.com/grp202004/PiperNet/tree/1.0.0) (2021-04-08)
+## [1.0.1](https://github.com/grp202004/PiperNet/tree/1.0.1) (2021-04-09)
 
-[Full Changelog](https://github.com/grp202004/PiperNet/compare/0.6-beta...1.0.0)
-
-this version only includes bug fixes and improvements
+This final stable version release only includes bug fixes and improvements
 
 **Fixed bugs:**
 
@@ -30,8 +28,6 @@ this version only includes bug fixes and improvements
 -   A cluster with less than 4 nodes might not form a cluster [\#22](https://github.com/grp202004/PiperNet/issues/22)
 -   Hide the edges in 3D convex hull and just display with the hull in translucent color [\#10](https://github.com/grp202004/PiperNet/issues/10)
 
-# <<<<<<< Updated upstream
-
 -   **Merged pull requests:**
 
 -   TypeScript Document -\> master [\#79](https://github.com/grp202004/PiperNet/pull/79) ([Kaby-Lake](https://github.com/Kaby-Lake))
@@ -39,8 +35,6 @@ this version only includes bug fixes and improvements
 -   add TypeDoc for components [\#77](https://github.com/grp202004/PiperNet/pull/77) ([Kaby-Lake](https://github.com/Kaby-Lake))
 -   Correction of test scripts [\#75](https://github.com/grp202004/PiperNet/pull/75) ([Kaby-Lake](https://github.com/Kaby-Lake))
 -   Test [\#74](https://github.com/grp202004/PiperNet/pull/74) ([Kaby-Lake](https://github.com/Kaby-Lake))
-
-> > > > > > > Stashed changes
 
 ## [0.6-beta](https://github.com/grp202004/PiperNet/tree/0.6-beta) (2021-03-12)
 

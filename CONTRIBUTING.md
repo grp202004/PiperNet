@@ -1,6 +1,6 @@
 # Help Developing PiperNet
 
-Thanks for taking the time to contribute! 🎉 🎊 👍. PiperNet is purely written in front-end without the support of any backend server. However, our overall long time plan is to have a server which hosts sample graph retrieving for convenient demonstration purpose.
+Thanks for taking the time to contribute! 🎉 🎊 👍. PiperNet is purely written in front-end without the support of any backend server. However, our overall long time plan is to have a server which hosts sample graph retrieving for convenient demonstration purpose, if you are interested, feel free to contribute to that.
 
 The technology stack of PiperNet are as follows:
 
@@ -25,14 +25,40 @@ As an external contributor, you will have to fork PiperNet in order to contribut
 Clone your fork onto your machine and then run the following commands to install dependencies:
 
 ```sh
-git clone git@github.com:<username>/PiperNet.git # using ssh
+git clone git@github.com:<username>/PiperNet.git
 cd PiperNet
 npm install
 npm start
 npm run test
 ```
 
-#### Installation
+#### Deployment
+
+A typical contributor workflow looks like this:
+
+1. Create a new feature branch. We use a format like `[your-initials]/[short-name]`:
+   `bd/rename-buttons`.
+2. Write some code. :hammer: **Refer to the code format:**
+
+    - use `Prettier` to prettify your code according to our format preference with a `tabWidth` of `4`
+    - Use more `React.Component` instead of `React.Hook` to enhance readability and maintainability.
+    - Use `arrow function` instead of declaring pure functions to resolve the `this` pointer problem in TypeScript.
+    - Contribute TypeScript code rather than JavaScript code to reduce possible errors.
+    - you should provide `interface` or any component that you build if this can be re-used in other components, and proper use of `Partial<T>` is necessary.
+    - do not use `decorator` in that we did not configure this ES6 feature in our project.
+    - you should add necessary unit testing if you are to develop the basement of this project, a Test Driven Approach is preferred.
+    - you should properly comment your source code according to the TypeDoc specification
+    - Commit messages should be descriptive and useful to anyone at any point in time
+
+3. Ensure your code **compiles properly** and is **tested**, **linted**, and **formatted**.
+    - Run `npm build` at the repo root to build all libraries.
+    - run unit tests with `npm test` in the relevant package directory.
+4. Submit a Pull Request on GitHub and fill out the template.
+    - ⚠️ **DO NOT enable CircleCI for your fork of Blueprint.** When you open a PR, your branch will be checked by `GitHub Actions` automatically. There is no need to enable the CI build for your fork's pipeline. If you do, this may cause problems in the CI build.
+5. Team members will review your code and merge it after approvals.
+    - You may be asked to make modifications to code style or to fix bugs you may have not noticed.
+    - Please respond to comments in a timely fashion (even if to tell us you need more time).
+    - _Do not_ amend commits and `push --force` as they break the PR history. Please add more commits; we squash each PR to a single commit on merge.
 
 We have `GitHub Actions` configured so that any commit to `master` branch will triggers a web-page deployment to our static GitHub Pages.
 
@@ -43,7 +69,57 @@ npm run pack-win
 npm run pack-mac
 ```
 
-to build applications for both Windows and macOS platform.
+to build applications for both Windows and macOS platform (you may need macOS environment to build for macOS Application).
+
+### React Two-way data binding using MobX
+
+It is usually anguished to implement a complex project using only the state management provided by React, especially when a lot of components are referring to the same data field, and a subset of these will to change the state and then need to refresh all of them. One techniques is to provide callback functions from the parent component, but this tends to be complex for a multi-level nesting. We use the `observable` and `observer` technology provided by `MobX` to polyfill the data fields, and automatically refresh the components that displays these values. A general approach is as follows:
+
+-   pack the `React.Component` with `observer()`
+
+```typescript
+export default observer(
+    class UIComponent extends React.Component {
+        render();
+    }
+);
+```
+
+-   use `makeAutoObservable` in the constructor to make the fields observable
+
+```typescript
+export default class DataClass {
+    constructor() {
+        makeAutoObservable(this);
+    }
+    observableField: string; // this field will be watched by MobX
+}
+```
+
+after that, any modifications on the data fields will automatically re-render the React DOM.
+
+### React Component Ref
+
+You may in some situations want to use the `React.Ref` of one component in other components, this can be achieved by:
+
+-   import the singleton `ComponentRef.tsx` in the component class that you want to keep reference to.
+-   create a reference fields inside the component and pass it to the `ComponentRef` in the `ComponentDidMount` stage.
+
+```typescript
+import ComponentRef from "ComponentRef";
+
+export default observer(
+    class UIComponent extends React.Component {
+        ref: React.MutableRefObject<T> = React.createRef();
+
+        render();
+
+        componentDidMount() {
+            ComponentRef.thisUIComponentRef = this;
+        }
+    }
+);
+```
 
 ### Code Hierarchy
 
@@ -83,7 +159,7 @@ The code hierarchy of all `stores` are as follows
     └── MouseEventUtils.ts
 ```
 
-then a brief introduction of the purpose of each store will be presented, you can also refer to the JSDoc inside the source code on top of each class as well as functions / fields
+a brief introduction of the purpose of each store will be presented, you can also refer to the TypeDoc inside the source code on top of each class as well as functions / fields or visit [PiperNet Online Code Documentation](https://grp202004.github.io/pipernet.api/)
 
 ### `index.ts`
 
