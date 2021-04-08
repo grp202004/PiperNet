@@ -115,9 +115,9 @@ export default observer(
                             />
                         )}
                     {State.preferences.deleteEdgePanelOpen &&
-                        State.interaction.selectedNode && (
+                        State.interaction.chosenNode && (
                             <DeleteEdgeInteractionPanel
-                                onNode={State.interaction.selectedNode}
+                                onNode={State.interaction.chosenNode}
                             />
                         )}
                     <InteractionModePanel />

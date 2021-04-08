@@ -3,107 +3,107 @@
   <meta/>
   <graph defaultedgetype="undirected">
     <attributes class="node">
-      <attribute id="1" title="1" type="string"/>
+      <attribute id="City" title="City" type="string"/>
     </attributes>
     <nodes>
       <node id="0">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="1">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="2">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="3">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="4">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="5">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="6">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="7">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="8">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="9">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="10">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="11">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="12">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="13">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="14">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="15">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="16">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="17">
         <attvalues>
-          <attvalue for="1" value="Nottingham"/>
+          <attvalue for="City" value="Nottingham"/>
         </attvalues>
       </node>
       <node id="18">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
       <node id="19">
         <attvalues>
-          <attvalue for="1" value="Birmingham"/>
+          <attvalue for="City" value="Birmingham"/>
         </attvalues>
       </node>
     </nodes>

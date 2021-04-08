@@ -20,6 +20,7 @@ import CanvasDrawPanel from "../panels/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
 import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
+import { debounce } from "../../state/utils/MouseEventUtils";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -85,7 +86,7 @@ export default observer(
             if (!this.state.nodePointerInteraction) {
                 return;
             }
-            State.interaction.selectedNode = node.id as string;
+            State.interaction.chosenNode = node.id as string;
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Node";
@@ -116,8 +117,8 @@ export default observer(
             let node = _node as ICustomNodeObject;
             if (node.hovered) {
                 return State.css.node.highlightColor;
-            } else if (node.selected) {
-                return State.css.node.selectedColor;
+            } else if (node.chosen) {
+                return State.css.node.chosenColor;
             } else if (node.multiSelected) {
                 return State.css.node.multiSelectedColor;
             } else {
@@ -129,7 +130,7 @@ export default observer(
             let edge = _edge as ICustomLinkObject;
             if (edge.hovered) {
                 return State.css.edge.highlightColor;
-            } else if (edge.selected) {
+            } else if (edge.chosen) {
                 return State.css.edge.selectedColor;
             } else {
                 return State.css.edge.defaultColor;
@@ -140,7 +141,7 @@ export default observer(
             let edge = _edge as ICustomLinkObject;
             if (edge.hovered) {
                 return State.css.edge.highlightWidth;
-            } else if (edge.selected) {
+            } else if (edge.chosen) {
                 return State.css.edge.highlightWidth;
             } else {
                 return State.css.edge.defaultWidth;
@@ -261,7 +262,7 @@ export default observer(
             if (set) {
                 document.addEventListener(
                     "mousemove",
-                    CustomMouseEvent.onDocumentMouseMove
+                    debounce(CustomMouseEvent.onDocumentMouseMove)
                 );
                 document.addEventListener(
                     "click",
@@ -293,6 +294,7 @@ export default observer(
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
             this.clusterInteractionListener(true);
             ComponentRef.visualizer = this;
+            this.graphDelegate.updateClusterForce();
         }
     }
 );

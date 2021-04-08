@@ -2,6 +2,7 @@ import { Attributes } from "graphology-types";
 import { makeAutoObservable } from "mobx";
 import State from ".";
 import { NAVBAR_HEIGHT } from "../constants";
+import { ICustomLinkObject, ICustomNodeObject } from "./GraphDelegate";
 export default class InteractionStore {
     constructor() {
         makeAutoObservable(this);
@@ -13,7 +14,7 @@ export default class InteractionStore {
      * @author Zhiyuan LYU
      * @type {(string | null)}
      */
-    selectedNode: string | null = null;
+    chosenNode: string | null = null;
 
     /**
      * @description the currently selected nodes id
@@ -168,7 +169,7 @@ export default class InteractionStore {
      */
     updateNodeVisualizeAttribute(
         id: string,
-        attribute: Attributes,
+        attribute: Partial<ICustomNodeObject>,
         oldAttributeVisualize: Attributes | null = null
     ) {
         if (oldAttributeVisualize === null) {
@@ -193,7 +194,7 @@ export default class InteractionStore {
      */
     updateEdgeVisualizeAttribute(
         key: string,
-        attribute: Attributes,
+        attribute: Partial<ICustomLinkObject>,
         oldAttributeVisualize: Attributes | null = null
     ) {
         if (oldAttributeVisualize === null) {
@@ -221,8 +222,8 @@ export default class InteractionStore {
     ) {
         if (newAttribute.hasOwnProperty("hovered")) {
             oldAttributes.hovered = newAttribute.hovered;
-        } else if (newAttribute.hasOwnProperty("selected")) {
-            oldAttributes.selected = newAttribute.selected;
+        } else if (newAttribute.hasOwnProperty("chosen")) {
+            oldAttributes.chosen = newAttribute.chosen;
         } else if (newAttribute.hasOwnProperty("multiSelected")) {
             oldAttributes.multiSelected = newAttribute.multiSelected;
         }
@@ -234,7 +235,7 @@ export default class InteractionStore {
      * @author Zichen XU
      */
     flush() {
-        this.selectedNode = null;
+        this.chosenNode = null;
         this.selectedNodes = [];
         this.selectedEdge = null;
         this.currentlyHoveredNodeId = null;

@@ -80,7 +80,7 @@ export default observer(
                     <MenuDivider
                         title={
                             ("Node ID: " +
-                                State.interaction.selectedNode) as string
+                                State.interaction.chosenNode) as string
                         }
                     />
                     <MenuItem
@@ -88,7 +88,7 @@ export default observer(
                         text="Delete Node"
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.interaction.selectedNode as string
+                                State.interaction.chosenNode as string
                             );
                             State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;
@@ -168,7 +168,7 @@ export default observer(
                     />
                     <MenuItem
                         icon="group-objects"
-                        text="Release Cluster"
+                        text="Un-Cluster"
                         onClick={() => {
                             State.clusterInteraction.releaseSelectedClusters();
                             State.preferences.rightClickPanelOpen = false;

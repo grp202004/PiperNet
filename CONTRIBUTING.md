@@ -1,12 +1,12 @@
 # Help Developing PiperNet
 
-Thanks for taking the time to contribute! 🎉 🎊 👍. PiperNet is purely written in front-end without the support of any backend server.
+Thanks for taking the time to contribute! 🎉 🎊 👍. PiperNet is purely written in front-end without the support of any backend server. However, our overall long time plan is to have a server which hosts sample graph retrieving for convenient demonstration purpose.
 
 The technology stack of PiperNet are as follows:
 
 -   [Create React App](https://github.com/facebook/create-react-app) for building component-based declarative web-page
 -   [MobX](https://mobx.js.org) for global state management
--   [Blueprint](https://blueprintjs.com/) as React-based UI toolkit
+-   [Blueprint](https://blueprintjs.com/) React-based UI toolkit
 -   [Graphology](https://graphology.github.io/) for graph data structure storage
 -   [three.js](https://threejs.org/) a cross-browser WebGL 3D library
 -   [3d-force-graph](https://github.com/vasturiano/3d-force-graph) representing graph using force-directed layout
@@ -15,7 +15,7 @@ Knowledge of `React`, `MobX`, `Blueprint` and `Three.js` shall be necessary to u
 
 ### Getting started
 
-Looking for places to contribute to the codebase? Check out the [Issues](https://github.com/grp202004/PiperNet/issues) page.
+Looking for places to contribute to the codebase? Check out the [Issues](https://github.com/grp202004/PiperNet/issues) page or purpose any suggestions to the features.
 
 #### Installation
 
@@ -29,8 +29,21 @@ git clone git@github.com:<username>/PiperNet.git # using ssh
 cd PiperNet
 npm install
 npm start
-npm test
+npm run test
 ```
+
+#### Installation
+
+We have `GitHub Actions` configured so that any commit to `master` branch will triggers a web-page deployment to our static GitHub Pages.
+
+For Electron deployment, simply run
+
+```sh
+npm run pack-win
+npm run pack-mac
+```
+
+to build applications for both Windows and macOS platform.
 
 ### Code Hierarchy
 
@@ -39,6 +52,10 @@ npm test
 > **MobX-Defining data stores**
 
 By applying the design philosophy reference above, it is worth demonstrating the structure of our codebase, and should be helpful with the future development/maintenance of this project.
+
+#### Class Diagram
+
+![Class Diagram](https://tva1.sinaimg.cn/large/008eGmZEly1gpchyil336j33cq0u07wh.jpg)
 
 The code hierarchy of all `stores` are as follows
 

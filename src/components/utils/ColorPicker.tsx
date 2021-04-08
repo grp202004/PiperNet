@@ -1,8 +1,12 @@
 import React from "react";
-import { Button, PopoverInteractionKind, Position } from "@blueprintjs/core";
+import {
+    Button,
+    PopoverInteractionKind,
+    Position,
+    Popover,
+} from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import { ColorResult, SketchPicker } from "react-color";
-import { Popover2 } from "@blueprintjs/popover2";
 
 /**
  *
@@ -38,7 +42,7 @@ export default observer(
     class ColorPicker extends React.Component<Props, {}> {
         render() {
             return (
-                <Popover2
+                <Popover
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="bp3-popover-content-sizing"
                     placement={Position.RIGHT}
@@ -58,7 +62,7 @@ export default observer(
                             }}
                         />
                     </div>
-                </Popover2>
+                </Popover>
             );
         }
     }

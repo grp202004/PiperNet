@@ -10,7 +10,7 @@ class NodeGlobalConfig {
         makeAutoObservable(this);
     }
     defaultColor: string = "#808080";
-    selectedColor: string = "#ffffAA";
+    chosenColor: string = "#ffffAA";
     multiSelectedColor: string = "#ffffff";
     highlightColor: string = "#ff6060";
 
@@ -30,7 +30,6 @@ class EdgeGlobalConfig {
     }
 
     defaultColor = "#ffffff";
-
     selectedColor = "#ffff00";
     highlightColor = "#ff8E8E";
 
@@ -64,10 +63,10 @@ class ClusterConfig {
         makeAutoObservable(this);
     }
 
-    clusterForce = 20;
+    clusterForce = 30;
     normalForce = 50;
     resolution = 10;
-    shape: "convexHull" | "sphere" = "convexHull";
+    shape: "convexHull" | "sphere" = "sphere";
 }
 
 /**

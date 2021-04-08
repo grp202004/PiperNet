@@ -72,6 +72,7 @@ export default observer(
                 },
                 mouseDown: false,
             });
+            State.interaction.boxSelectionOpen = false;
             State.interaction.boxSelectNode();
         };
 

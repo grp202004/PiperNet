@@ -48,6 +48,13 @@ export default observer(
                             content={
                                 <Menu>
                                     <MenuItem
+                                        icon="import"
+                                        text="Open GEXF"
+                                        onClick={() => {
+                                            State.import.importGEXFDialogOpen = true;
+                                        }}
+                                    />
+                                    <MenuItem
                                         text="Import from CSV"
                                         icon="import"
                                         onClick={() => {
@@ -93,13 +100,6 @@ export default observer(
                                         )} */}
                                     </MenuItem>
 
-                                    <MenuItem
-                                        icon="import"
-                                        text="Open GEXF"
-                                        onClick={() => {
-                                            State.import.importGEXFDialogOpen = true;
-                                        }}
-                                    />
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
