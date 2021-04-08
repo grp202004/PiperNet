@@ -152,6 +152,12 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      */
     releaseSelectedClusters() {
+        if (
+            this.selectedClusters.length === 0 &&
+            this.currentlyHoveredClusterId
+        ) {
+            this.selectedClusters.push(this.currentlyHoveredClusterId);
+        }
         this.selectedClusters.forEach((uuid) => {
             const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
                 uuid
@@ -254,12 +260,12 @@ export default class ClusterInteractionStore {
 
             if (inside) {
                 State.interaction.updateNodeVisualizeAttribute(point.id, {
-                    selected: true,
+                    hovered: true,
                 });
                 point.value = 1;
             } else {
                 State.interaction.updateNodeVisualizeAttribute(point.id, {
-                    selected: false,
+                    hovered: false,
                 });
                 point.value = 0;
             }

@@ -4,6 +4,17 @@ import * as THREE from "three";
 import { Object3D } from "three";
 import ComponentRef from "../../components/ComponentRef";
 
+export const debounce = (fn: Function): any => {
+    let timer: any = null;
+    return (...args: any[]) => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            fn.apply(this, args);
+            timer = null;
+        }, 50);
+    };
+};
+
 export function onDocumentLeftClick(event: MouseEvent) {
     if (
         State.cluster.clusterBy === null ||

@@ -120,7 +120,7 @@ reaction(
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
-                        { selected: false },
+                        { hovered: false, chosen: false, multiSelected: false },
                         oldAttributes._visualize
                     );
                 });
@@ -200,22 +200,22 @@ reaction(
     }
 );
 
-// auto color the selected node
+// auto color the chosen node (right click on)
 reaction(
-    () => State.interaction.selectedNode,
+    () => State.interaction.chosenNode,
     (selectedNode) => {
-        console.log("selectedNode", selectedNode);
+        console.log("chosenNode", selectedNode);
         State.graph.rawGraph.forEachNode((node, oldAttributes) => {
             if (selectedNode === node) {
                 State.interaction.updateNodeVisualizeAttribute(
                     node,
-                    { selected: true },
+                    { chosen: true },
                     oldAttributes._visualize
                 );
             } else {
                 State.interaction.updateNodeVisualizeAttribute(
                     node,
-                    { selected: false },
+                    { chosen: false },
                     oldAttributes._visualize
                 );
             }
@@ -257,13 +257,13 @@ reaction(
             if (selectedEdge === edge) {
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
-                    { selected: true },
+                    { chosen: true },
                     oldAttributes._visualize
                 );
             } else {
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
-                    { selected: false },
+                    { chosen: false },
                     oldAttributes._visualize
                 );
             }
@@ -274,10 +274,14 @@ reaction(
 
 // auto color the neighbor edges
 reaction(
-    () => State.interaction.currentlyHoveredNodeNeighborEdges,
-    (neighborEdges) => {
+    () => State.interaction.currentlyHoveredNodeId,
+    () => {
         State.graph.rawGraph.forEachEdge((edge, oldAttributes) => {
-            if (neighborEdges?.includes(edge)) {
+            if (
+                State.interaction.currentlyHoveredNodeNeighborEdges?.includes(
+                    edge
+                )
+            ) {
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
                     { hovered: true },
