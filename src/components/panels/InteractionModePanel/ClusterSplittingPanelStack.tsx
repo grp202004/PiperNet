@@ -18,6 +18,7 @@ import { observer } from "mobx-react";
 import ComponentRef from "../../ComponentRef";
 import { getMessage } from "./InteractionModePanel";
 import { handleStringChange } from "../../utils/InputFormUtils";
+import { DrawMode } from "../../../state/ClusterInteractionStore";
 
 interface Props {
     currentStep: 1 | 2 | 3;
@@ -31,7 +32,10 @@ export default observer(
      * @extends {React.Component<Props, {}>}
      */
     class ClusterSplittingPanelStack extends React.Component<Props, {}> {
-        titles = ["Select Cluster", "Draw Line", "Confirm?"];
+        state = {
+            selected: "curve" as string,
+        };
+        titles = ["Select Cluster", "Draw Line or Circle", "Confirm?"];
 
         renderFirstPanel = () => {
             return (
@@ -47,23 +51,38 @@ export default observer(
                     <RadioGroup
                         label="Use the mouse to"
                         onChange={handleStringChange((value) => {
-                            if (value === "straight") {
-                                State.clusterInteraction.drawStraightLine = true;
-                            } else {
-                                State.clusterInteraction.drawStraightLine = false;
+                            this.setState({ selected: value });
+                            switch (value) {
+                                case "curve":
+                                    State.clusterInteraction.drawMode =
+                                        DrawMode.FreeLine;
+                                    break;
+                                case "straight":
+                                    State.clusterInteraction.drawMode =
+                                        DrawMode.StraightLine;
+                                    break;
+                                case "circle":
+                                    State.clusterInteraction.drawMode =
+                                        DrawMode.FreeCircle;
+                                    break;
+                                case "centerCircle":
+                                    State.clusterInteraction.drawMode =
+                                        DrawMode.CenterCircle;
+                                    break;
                             }
                         })}
-                        selectedValue={
-                            State.clusterInteraction.drawStraightLine
-                                ? "straight"
-                                : "curve"
-                        }
+                        selectedValue={this.state.selected}
                     >
                         <Radio
                             label="Draw a Freehand(Curved) Line"
                             value="curve"
                         />
                         <Radio label="Draw a Straight Line" value="straight" />
+                        <Radio label="Draw a Free Circle" value="circle" />
+                        <Radio
+                            label="Draw a Centered Circle"
+                            value="centerCircle"
+                        />
                     </RadioGroup>
                     hold and draw a line to split this Cluster
                 </p>

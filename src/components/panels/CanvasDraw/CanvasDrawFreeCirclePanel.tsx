@@ -1,29 +1,26 @@
 import React from "react";
 import { observer } from "mobx-react";
 import CanvasDraw from "react-canvas-draw";
-import ReactDOM from "react-dom";
-import ComponentRef from "../ComponentRef";
-import State from "../../state";
-import { NAVBAR_HEIGHT } from "../../constants";
+import State from "../../../state";
+import { NAVBAR_HEIGHT } from "../../../constants";
+import { ICanvasDrawProps } from "./CanvasDrawPanel";
 
 export default observer(
     /**
      * @description another canvas to draw free-hand gesture when cluster splitting
      * @author Zichen XU
-     * @class CanvasDrawPanel
+     * @class CanvasDrawFreehandPanel
      * @extends {React.Component}
      */
-    class CanvasDrawPanel extends React.Component {
+    class CanvasDrawFreeCirclePanel extends React.Component<
+        ICanvasDrawProps,
+        {}
+    > {
         //@ts-ignore
         canvasRef: React.MutableRefObject<CanvasDraw> = React.createRef();
 
         get canvasMethods() {
             return this.canvasRef.current;
-        }
-
-        get canvas() {
-            let element = ReactDOM.findDOMNode(ComponentRef.visualizer);
-            return (element as Element)?.getBoundingClientRect();
         }
 
         render() {
@@ -42,10 +39,10 @@ export default observer(
                         ref={this.canvasRef}
                         style={{
                             position: "absolute",
-                            top: this.canvas.y,
+                            top: this.props.boundingRect.y,
                         }}
-                        canvasHeight={this.canvas.height}
-                        canvasWidth={this.canvas.width}
+                        canvasHeight={this.props.boundingRect.height}
+                        canvasWidth={this.props.boundingRect.width}
                         lazyRadius={0}
                         brushRadius={3}
                         brushColor={"#F6B26B"}
@@ -69,17 +66,8 @@ export default observer(
                 value.y += NAVBAR_HEIGHT;
             });
 
-            // line was drawn left to right
-            if (drawPoints[0].x < drawPoints[drawPoints.length - 1].x) {
-                drawPoints.unshift({ x: 0, y: 0 });
-                drawPoints.push({ x: this.canvas.width, y: 0 });
-                drawPoints.push({ x: 0, y: 0 });
-            } else {
-                drawPoints.reverse();
-                drawPoints.unshift({ x: 0, y: 0 });
-                drawPoints.push({ x: this.canvas.width, y: 0 });
-                drawPoints.push({ x: 0, y: 0 });
-            }
+            // form a circle
+            drawPoints.push(drawPoints[0]);
 
             State.clusterInteraction.lineSegment = drawPoints;
             State.clusterInteraction.computeSplitCluster();
@@ -90,7 +78,10 @@ export default observer(
         }
 
         componentDidMount = () => {
-            ComponentRef.canvasDrawPanel = this;
+            this.clearDrawing();
+        };
+
+        componentWillUnmount = () => {
             this.clearDrawing();
         };
     }

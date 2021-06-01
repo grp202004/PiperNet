@@ -10,7 +10,6 @@ import GraphDelegate from "./GraphDelegate";
 import NodeInteractionStore from "./NodeInteractionStore";
 import ClusterInteractionStore from "./ClusterInteractionStore";
 import HelperStackPanelStore from "./HelperStackPanelStore";
-import ComponentRef from "../components/ComponentRef";
 
 /**
  * @description the overall state to store all information of this project
@@ -112,11 +111,11 @@ reaction(
 
             case 2:
                 State.clusterInteraction.drawPanelActivate = true;
-                if (State.clusterInteraction.drawStraightLine) {
-                    ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
-                } else {
-                    ComponentRef?.canvasDrawPanel.clearDrawing();
-                }
+                // if (State.clusterInteraction.drawStraightLine) {
+                //     ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
+                // } else {
+                //     ComponentRef?.canvasDrawPanel.clearDrawing();
+                // }
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,

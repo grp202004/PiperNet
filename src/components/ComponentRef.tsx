@@ -19,9 +19,9 @@ class ComponentRef {
 
     visualizer!: React.Component | any;
 
-    canvasDrawPanel!: React.Component | any;
+    // canvasDrawPanel!: React.Component | any;
 
-    canvasDrawStraightLinePanel!: React.Component | any;
+    // canvasDrawStraightLinePanel!: React.Component | any;
 
     clusterSplittingPanelStack!: React.Component | any;
 

@@ -1,9 +1,9 @@
 import React from "react";
 import { observer } from "mobx-react";
-import State from "../../state";
+import State from "../../../state";
 import { Card, Slider } from "@blueprintjs/core";
-import Collapsable from "../utils/Collapsable";
-import ColorPicker from "../utils/ColorPicker";
+import Collapsable from "../../utils/Collapsable";
+import ColorPicker from "../../utils/ColorPicker";
 
 export default observer(
     /**

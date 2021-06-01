@@ -16,10 +16,9 @@ import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
 import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
-import CanvasDrawPanel from "../panels/CanvasDrawPanel";
+import CanvasDrawPanel from "../panels/CanvasDraw/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
-import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
 import { debounce } from "../../state/utils/MouseEventUtils";
 
 export default observer(
@@ -148,14 +147,6 @@ export default observer(
             }
         }
 
-        renderDrawCanvas = () => {
-            if (State.clusterInteraction.drawStraightLine) {
-                return <CanvasDrawStraightLinePanel />;
-            } else {
-                return <CanvasDrawPanel />;
-            }
-        };
-
         renderGraph = () => {
             return (
                 <div>
@@ -164,8 +155,9 @@ export default observer(
                         State.interaction.boxSelectionOpen && <SelectionBox />}
                     {State.preferences.visualizationMode ===
                         VisualizationMode.ClusterSplitting &&
-                        State.clusterInteraction.drawPanelActivate &&
-                        this.renderDrawCanvas()}
+                        State.clusterInteraction.drawPanelActivate && (
+                            <CanvasDrawPanel />
+                        )}
                     <ForceGraph3D
                         // Data Segment
                         ref={this.graphRef}
@@ -229,23 +221,6 @@ export default observer(
                     />
                 </div>
             );
-            // } else {
-            //     return (
-            //         <ForceGraph2D
-            //             graphData={State.graph.adapterGraph}
-            //             dagMode={"td"}
-            //             // dagLevelDistance={300}
-            //             // backgroundColor="#101020"
-            //             nodeRelSize={1}
-            //             // nodeId="path"
-            //             // nodeVal={(node) => 100 / (node.level + 1)}
-            //             // nodeLabel="path"
-            //             // nodeAutoColorBy="module"
-            //             // linkDirectionalParticles={2}
-            //             // linkDirectionalParticleWidth={2}
-            //             d3VelocityDecay={0.3}
-            //         />
-            //     );
         };
 
         render() {

@@ -3,6 +3,13 @@ import * as THREE from "three";
 import { polygonContains } from "d3-polygon";
 import State from ".";
 
+export enum DrawMode {
+    StraightLine,
+    FreeLine,
+    FreeCircle,
+    CenterCircle,
+}
+
 /**
  * @description the cluster-mouse-interaction related filed and functions are hereby written in this class
  * such as `currentlyHoveredClusterId`, `selectedCluster` and `selectedClusters`,
@@ -175,6 +182,8 @@ export default class ClusterInteractionStore {
         this.flush();
     }
 
+    /* --------------- The below content is for cluster splitting --------------- */
+
     /**
      * @description whether the drawing panel used in ClusterSplit is active
      * @author Zichen XU
@@ -188,7 +197,7 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      * @type {boolean}
      */
-    drawStraightLine: boolean = false;
+    drawMode: DrawMode = DrawMode.FreeLine;
 
     /**
      * @description the line segments returned by drawing a line
@@ -237,7 +246,6 @@ export default class ClusterInteractionStore {
         const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
             State.clusterInteraction.selectedCluster as string
         );
-        console.log(clusterValue);
         let keys = State.cluster.attributeKeys.get(clusterValue!) as string[];
         keys.forEach((node) => {
             let attribute = State.graph.rawGraph.getNodeAttributes(node);
@@ -259,6 +267,54 @@ export default class ClusterInteractionStore {
             let inside = polygonContains(tempLineSegment, [point.x, point.y]);
 
             if (inside) {
+                State.interaction.updateNodeVisualizeAttribute(point.id, {
+                    hovered: true,
+                });
+                point.value = 1;
+            } else {
+                State.interaction.updateNodeVisualizeAttribute(point.id, {
+                    hovered: false,
+                });
+                point.value = 0;
+            }
+        });
+
+        State.graphDelegate.graphDelegateMethods.refresh();
+        this.confirmClusterSplittingTempData = screenCoords;
+    }
+
+    computeSplitClusterInCircle(
+        centerX: number,
+        centerY: number,
+        radius: number
+    ) {
+        let screenCoords = [] as {
+            id: string;
+            x: number;
+            y: number;
+            value: number;
+        }[];
+        const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+            State.clusterInteraction.selectedCluster as string
+        );
+        let keys = State.cluster.attributeKeys.get(clusterValue!) as string[];
+        keys.forEach((node) => {
+            let attribute = State.graph.rawGraph.getNodeAttributes(node);
+            let coord = State.graphDelegate.graphDelegateMethods.graph2ScreenCoords(
+                attribute._visualize.x,
+                attribute._visualize.y,
+                attribute._visualize.z
+            );
+            screenCoords.push({ id: node, x: coord.x, y: coord.y, value: 0 });
+        });
+
+        screenCoords.forEach((point) => {
+            let distance = Math.sqrt(
+                Math.pow(point.x - centerX, 2) + Math.pow(point.y - centerY, 2)
+            );
+
+            if (distance < radius) {
+                // in the drawn area
                 State.interaction.updateNodeVisualizeAttribute(point.id, {
                     hovered: true,
                 });
