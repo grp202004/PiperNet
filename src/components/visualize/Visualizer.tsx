@@ -233,11 +233,22 @@ export default observer(
             });
         }
 
+        nodeInteractionListener(set: boolean) {
+            this.setState({
+                nodePointerInteraction: set,
+            });
+        }
+
+        private debouncedMouseMoveCallback: any;
+
         clusterInteractionListener(set: boolean) {
             if (set) {
+                this.debouncedMouseMoveCallback = debounce(
+                    CustomMouseEvent.onDocumentMouseMove
+                );
                 document.addEventListener(
                     "mousemove",
-                    debounce(CustomMouseEvent.onDocumentMouseMove)
+                    this.debouncedMouseMoveCallback
                 );
                 document.addEventListener(
                     "click",
@@ -247,11 +258,10 @@ export default observer(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
-                console.log("MouseEvent listening");
             } else {
                 document.removeEventListener(
                     "mousemove",
-                    CustomMouseEvent.onDocumentMouseMove
+                    this.debouncedMouseMoveCallback
                 );
                 document.removeEventListener(
                     "click",
@@ -261,7 +271,6 @@ export default observer(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
-                console.log("MouseEvent stop listening");
             }
         }
 
@@ -277,22 +286,16 @@ export default observer(
 reaction(
     () => State.preferences.visualizationMode,
     (visualizationMode) => {
+        State.interaction.flush();
+        State.clusterInteraction.flush();
         switch (visualizationMode) {
             case VisualizationMode.Normal:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: true,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(true);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
             case VisualizationMode.NodeSelection:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: true,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(true);
                 ComponentRef.visualizer?.clusterInteractionListener(false);
                 createToaster(
                     <p>
@@ -305,11 +308,7 @@ reaction(
                 break;
 
             case VisualizationMode.ClusterSelection:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: false,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(false);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 createToaster(
                     <p>
@@ -323,11 +322,7 @@ reaction(
                 break;
 
             case VisualizationMode.ClusterSplitting:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: false,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(false);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 State.helper.clusterSplittingPanelStackOpen = true;
                 break;

@@ -111,11 +111,6 @@ reaction(
 
             case 2:
                 State.clusterInteraction.drawPanelActivate = true;
-                // if (State.clusterInteraction.drawStraightLine) {
-                //     ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
-                // } else {
-                //     ComponentRef?.canvasDrawPanel.clearDrawing();
-                // }
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
@@ -126,7 +121,6 @@ reaction(
                 State.clusterInteraction.confirmClusterSplittingTempData = null;
                 State.interaction.flush();
                 State.graphDelegate.graphDelegateMethods.refresh();
-
                 break;
 
             case 3:
