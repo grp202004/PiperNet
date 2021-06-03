@@ -16,6 +16,7 @@ import State from ".";
  * @author Zichen XU
  * @export
  * @class ClusterInteractionStore
+ * 
  */
 export default class ClusterInteractionStore {
     constructor() {
@@ -27,6 +28,7 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      * @type {(string | null)}
      */
+    
     currentlyHoveredClusterId: string | null = null;
 
     /**
@@ -163,6 +165,53 @@ export default class ClusterInteractionStore {
                     State.cluster.clusterBy as string,
                     ""
                 );
+            });
+        });
+        State.cluster.setCluster(State.cluster.clusterBy, true);
+        this.flush();
+    }
+
+    hasuuid(uuid : string):boolean{
+        let result = false;
+        let i;
+        for (i=0; i<this.selectedClusters.length; i++){
+            if(this.selectedClusters != null && this.selectedClusters[i] === uuid){
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
+    mergeNeighbours() {
+        const clsuterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+            this.selectedCluster as string
+        ) as string | number;
+        let index;
+        const keys = State.cluster.attributeKeys.get(clsuterValue);
+        keys?.forEach((nodeId) => {
+            State.graph.rawGraph.forEachNeighbor(nodeId,(neighbour)=>{
+                State.graphDelegate.clusterObject.UUID2ClusterValueMap.forEach((value, key)=>{
+                    if (value === State.graph.rawGraph.getNodeAttribute(neighbour,State.cluster.clusterBy as string)){
+                        if (index = this.selectedClusters.indexOf(key) === -1){
+                            this.selectedClusters.push(key);
+                        }
+                    }
+                })
+            });
+        });
+
+       this.mergeSelectedClusters();
+    }
+
+    deleteSelectedClusters() {
+        this.selectedClusters.forEach((uuid)=>{
+            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+                uuid
+            ) as string | number;
+            const keys = State.cluster.attributeKeys.get(clusterValue);
+            keys?.forEach((nodeId:string) => {
+                State.graph.rawGraph.dropNode(nodeId);
             });
         });
         State.cluster.setCluster(State.cluster.clusterBy, true);

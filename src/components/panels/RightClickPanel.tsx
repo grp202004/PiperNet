@@ -38,23 +38,36 @@ export default observer(
         formNewCluster() {
             let date = new Date().toLocaleString("en");
             let newClusterAttributeValue: string = `Cluster Generated @ ${date}`;
-            if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
-                State.graph.metadata.nodeProperties.push("new-cluster");
-            }
-            if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
-                State.graph.rawGraph.forEachNode((_, attributes) => {
-                    attributes["new-cluster"] = "";
+            if (State.cluster.clusterBy != null){
+               State.interaction.selectedNodes.forEach((nodeId) => {
+                   State.graph.rawGraph.setNodeAttribute(
+                       nodeId,
+                       State.cluster.clusterBy as string,
+                       newClusterAttributeValue
+                   );
+               });
+               State.preferences.rightClickPanelOpen = false;
+               State.cluster.setCluster(State.cluster.clusterBy, true);
+            }else{
+                if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
+                    State.graph.metadata.nodeProperties.push("new-cluster");
+                }
+                if (!State.graph.metadata.nodeProperties.includes("new-cluster")) {
+                    State.graph.rawGraph.forEachNode((_, attributes) => {
+                        attributes["new-cluster"] = "";
+                    });
+                }
+                State.interaction.selectedNodes.forEach((nodeId) => {
+                    State.graph.rawGraph.setNodeAttribute(
+                        nodeId,
+                        "new-cluster",
+                        newClusterAttributeValue
+                    );
                 });
+                State.preferences.rightClickPanelOpen = false;
+                State.cluster.setCluster("new-cluster");
             }
-            State.interaction.selectedNodes.forEach((nodeId) => {
-                State.graph.rawGraph.setNodeAttribute(
-                    nodeId,
-                    "new-cluster",
-                    newClusterAttributeValue
-                );
-            });
-            State.preferences.rightClickPanelOpen = false;
-            State.cluster.setCluster("new-cluster");
+            
             State.interaction.flush();
         }
 
@@ -171,6 +184,22 @@ export default observer(
                         text="Release Cluster"
                         onClick={() => {
                             State.clusterInteraction.releaseSelectedClusters();
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
+                    />
+                    <MenuItem
+                        icon="group-objects"
+                        text="Merge Neighbours"
+                        onClick={()=>{
+                            State.clusterInteraction.mergeNeighbours();
+                            State.preferences.rightClickPanelOpen = false;
+                        }}
+                    />
+                    <MenuItem
+                        icon="delete"
+                        text="Delete Cluster"
+                        onClick={()=>{
+                            State.clusterInteraction.deleteSelectedClusters();
                             State.preferences.rightClickPanelOpen = false;
                         }}
                     />
