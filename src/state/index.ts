@@ -86,7 +86,7 @@ autorun(() => {
         State.preferences.visualizationMode ===
         VisualizationMode.ClusterSplitting
     ) {
-        if (State.clusterInteraction.selectedCluster) {
+        if (State.clusterInteraction.chosenCluster) {
             State.helper.clusterSplittingCurrentStep = 2;
             console.log("cluster selected");
         }
@@ -156,7 +156,7 @@ reaction(
 
 // auto highlight the selected Cluster
 reaction(
-    () => State.clusterInteraction.selectedCluster,
+    () => State.clusterInteraction.chosenCluster,
     () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }

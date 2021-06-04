@@ -86,6 +86,16 @@ export default observer(
                 return;
             }
             State.interaction.chosenNode = node.id as string;
+            // if selected node is not in the list, then add
+            if (
+                !State.interaction.selectedNodes.includes(
+                    State.interaction.chosenNode
+                )
+            ) {
+                State.interaction.selectedNodes.push(
+                    State.interaction.chosenNode
+                );
+            }
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Node";
