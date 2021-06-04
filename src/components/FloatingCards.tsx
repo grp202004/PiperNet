@@ -8,7 +8,7 @@ import MultiDetailPanel from "./panels/MultiDetailPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
 import GraphOptionsCard from "./panels/GraphOptionsCard";
 import InteractionModePanel from "./panels/InteractionModePanel/InteractionModePanel";
-import RightClickPanel from "./panels/RightClickPanel";
+import RightClickPanel from "./panels/RightClickPanel/RightClickPanel";
 
 export default observer(
     class FloatingCards extends React.Component {

@@ -16,7 +16,7 @@ import State from ".";
  * @author Zichen XU
  * @export
  * @class ClusterInteractionStore
- * 
+ *
  */
 export default class ClusterInteractionStore {
     constructor() {
@@ -28,7 +28,7 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      * @type {(string | null)}
      */
-    
+
     currentlyHoveredClusterId: string | null = null;
 
     /**
@@ -107,7 +107,11 @@ export default class ClusterInteractionStore {
         State.clusterInteraction.selectedCluster = uuid;
         State.preferences.rightClickPositionX = event.x;
         State.preferences.rightClickPositionY = event.y;
+        // if selected cluster is not in the list, then add
         if (uuid) {
+            if (!this.selectedClusters.includes(uuid)) {
+                this.selectedClusters.push(uuid);
+            }
             State.preferences.rightClickOn = "Cluster";
         } else {
             State.preferences.rightClickOn = "Background";
@@ -116,106 +120,19 @@ export default class ClusterInteractionStore {
         State.preferences.closeAllPanel("rightClickPanel");
     }
 
-    /**
-     * @description loop through the selected clusters and set the nodes within that cluster
-     * the newly-formed attribute is named _merge-cluster
-     * and the value to that attribute is the Time() of this time
-     * other nodes unrelated will be set to empty string in this attribute
-     * @author Zichen XU
-     */
-    mergeSelectedClusters() {
-        let date = new Date().toLocaleString("en");
-        let clusterId: string = `Cluster Merged @ ${date}`;
-        if (!State.graph.metadata.nodeProperties.includes("_merge-cluster")) {
-            State.graph.metadata.nodeProperties.push("_merge-cluster");
-        }
-        State.graph.rawGraph.forEachNode((_, attributes) => {
-            attributes["_merge-cluster"] = "";
-        });
-        this.selectedClusters.forEach((uuid) => {
-            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-                uuid
-            ) as string | number;
-            const keys = State.cluster.attributeKeys.get(clusterValue);
-            keys?.forEach((nodeId) => {
-                State.graph.rawGraph.setNodeAttribute(
-                    nodeId,
-                    "_merge-cluster",
-                    clusterId
-                );
-            });
-        });
-        State.cluster.setCluster("_merge-cluster");
-        this.flush();
-    }
-
-    /**
-     * @description loop through the selected clusters and set the nodes within that cluster
-     * @author Zichen XU
-     */
-    releaseSelectedClusters() {
-        this.selectedClusters.forEach((uuid) => {
-            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-                uuid
-            ) as string | number;
-            const keys = State.cluster.attributeKeys.get(clusterValue);
-            keys?.forEach((nodeId) => {
-                State.graph.rawGraph.setNodeAttribute(
-                    nodeId,
-                    State.cluster.clusterBy as string,
-                    ""
-                );
-            });
-        });
-        State.cluster.setCluster(State.cluster.clusterBy, true);
-        this.flush();
-    }
-
-    hasuuid(uuid : string):boolean{
+    hasuuid(uuid: string): boolean {
         let result = false;
         let i;
-        for (i=0; i<this.selectedClusters.length; i++){
-            if(this.selectedClusters != null && this.selectedClusters[i] === uuid){
+        for (i = 0; i < this.selectedClusters.length; i++) {
+            if (
+                this.selectedClusters != null &&
+                this.selectedClusters[i] === uuid
+            ) {
                 result = true;
             }
         }
 
         return result;
-    }
-
-    mergeNeighbours() {
-        const clsuterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-            this.selectedCluster as string
-        ) as string | number;
-        let index;
-        const keys = State.cluster.attributeKeys.get(clsuterValue);
-        keys?.forEach((nodeId) => {
-            State.graph.rawGraph.forEachNeighbor(nodeId,(neighbour)=>{
-                State.graphDelegate.clusterObject.UUID2ClusterValueMap.forEach((value, key)=>{
-                    if (value === State.graph.rawGraph.getNodeAttribute(neighbour,State.cluster.clusterBy as string)){
-                        if (index = this.selectedClusters.indexOf(key) === -1){
-                            this.selectedClusters.push(key);
-                        }
-                    }
-                })
-            });
-        });
-
-       this.mergeSelectedClusters();
-    }
-
-    deleteSelectedClusters() {
-        this.selectedClusters.forEach((uuid)=>{
-            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-                uuid
-            ) as string | number;
-            const keys = State.cluster.attributeKeys.get(clusterValue);
-            keys?.forEach((nodeId:string) => {
-                State.graph.rawGraph.dropNode(nodeId);
-            });
-        });
-        State.cluster.setCluster(State.cluster.clusterBy, true);
-        this.flush();
     }
 
     /**
