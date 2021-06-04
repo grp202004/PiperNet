@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import {
     Button,
     Callout,
@@ -13,10 +13,11 @@ import {
 import { observer } from "mobx-react";
 import State from "../../state";
 import ClusterChooser, { ClusterAdder } from "./ClusterChooser";
-import { handleStringChange } from "./InputFormUtils";
+import { handleStringChange, parseNumberOrString } from "./InputFormUtils";
 
 interface Props {
     callback: (attribute: string, value: number | string) => void;
+    style?: CSSProperties;
 }
 
 export default observer(
@@ -34,14 +35,13 @@ export default observer(
 
         render() {
             return (
-                <Card>
+                <Card style={this.props.style}>
                     <H6>(Optional) You can add node attributes here</H6>
                     <ClusterAdder
                         onCreate={(attribute) => {
                             this.setState({ selectedAttribute: attribute });
                         }}
                     />
-                    <MenuDivider />
                     <div style={{ marginBottom: "20px" }} />
 
                     <Card elevation={Elevation.THREE}>
@@ -66,6 +66,7 @@ export default observer(
                                 >
                                     Choose the Attribute
                                 </div>
+
                                 <ClusterChooser
                                     showNone={false}
                                     onSelect={(cluster) => {
@@ -77,26 +78,29 @@ export default observer(
                                 />
                             </div>
                         </Callout>
-                        <InputGroup
-                            leftElement={<Icon icon="tag" />}
-                            onChange={handleStringChange((value) => {
-                                this.setState({ value: value });
-                            })}
-                            placeholder="Enter Clustering Value"
-                            value={this.state.value}
-                            intent={
-                                this.state.value === ""
-                                    ? Intent.DANGER
-                                    : Intent.SUCCESS
-                            }
-                        />
+                        <div style={{ marginTop: 10 }}>
+                            <InputGroup
+                                leftElement={<Icon icon="tag" />}
+                                onChange={handleStringChange((value) => {
+                                    this.setState({ value: value });
+                                })}
+                                placeholder="Enter Clustering Value"
+                                value={this.state.value}
+                                intent={
+                                    this.state.value === ""
+                                        ? Intent.DANGER
+                                        : Intent.SUCCESS
+                                }
+                            />
+                        </div>
                         <Button
                             onClick={() => {
                                 this.props.callback(
                                     this.state.selectedAttribute as string,
-                                    this.state.value
+                                    parseNumberOrString(this.state.value)
                                 );
                             }}
+                            style={{ marginTop: 10 }}
                             intent={Intent.SUCCESS}
                             disabled={
                                 this.state.selectedAttribute === null ||

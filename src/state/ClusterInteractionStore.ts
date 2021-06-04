@@ -111,6 +111,8 @@ export default class ClusterInteractionStore {
      * @param {MouseEvent} event
      */
     clusterRightClickCallback(uuid: string | null, event: MouseEvent) {
+        State.signal.setIsRightClickingCluster();
+
         State.clusterInteraction.chosenCluster = uuid;
         State.preferences.rightClickPositionX = event.x;
         State.preferences.rightClickPositionY = event.y;

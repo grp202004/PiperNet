@@ -43,7 +43,7 @@ export default observer(
                             alt="PiperNet Logo"
                         />
                         <MenuDivider />
-                        <NavbarHeading>PiperNet</NavbarHeading>
+                        <NavbarHeading>ClusterGrapher</NavbarHeading>
                         <Popover2
                             content={
                                 <Menu>

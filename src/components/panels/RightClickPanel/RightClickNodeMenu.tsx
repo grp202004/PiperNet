@@ -1,19 +1,9 @@
 import React from "react";
-import {
-    Button,
-    Card,
-    H6,
-    Icon,
-    InputGroup,
-    Intent,
-    MenuDivider,
-} from "@blueprintjs/core";
+import { MenuDivider } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import State from "../../../state";
 import { MenuItemWithTooltip } from "../../utils/MenuItemWithTooltip";
 import { Popover2 } from "@blueprintjs/popover2";
-import { handleStringChange } from "../../utils/InputFormUtils";
-import ClusterChooser, { ClusterAdder } from "../../utils/ClusterChooser";
 import FormClusterOptionsCard from "../../utils/FormClusterOptionsCard";
 
 export default observer(
@@ -25,12 +15,9 @@ export default observer(
     class RightClickNodePanel extends React.Component {
         state = {
             formNewClusterOpen: false,
-            formNewClusterFromEmpty: true,
-            formNewClusterAttribute: State.cluster.clusterBy as string,
-            formNewClusterValue: "" as string,
         };
 
-        private formNewCluster(attribute: string, value: number | string) {
+        formNewCluster(attribute: string, value: number | string) {
             State.interaction.selectedNodes.forEach((nodeId) => {
                 State.graph.rawGraph.setNodeAttribute(nodeId, attribute, value);
             });
@@ -114,7 +101,13 @@ export default observer(
                         isOpen={this.state.formNewClusterOpen}
                         content={
                             <FormClusterOptionsCard
-                                callback={this.formNewCluster}
+                                callback={(attribute, value) => {
+                                    this.formNewCluster(attribute, value);
+                                    this.setState({
+                                        formNewClusterOpen: false,
+                                    });
+                                    State.preferences.rightClickPanelOpen = false;
+                                }}
                             />
                         }
                     >
@@ -127,9 +120,9 @@ export default observer(
                                     formNewClusterOpen: true,
                                 })
                             }
-                            // disabled={
-                            //     State.interaction.selectedNodes.length === 0
-                            // }
+                            disabled={
+                                State.interaction.selectedNodes.length === 0
+                            }
                         />
                     </Popover2>
 

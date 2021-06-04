@@ -117,7 +117,10 @@ export default observer(
         };
 
         backgroundRightClickCallback = (event: MouseEvent) => {
-            if (!this.state.nodePointerInteraction) {
+            if (
+                !this.state.nodePointerInteraction ||
+                State.signal.isRightClickingCluster
+            ) {
                 return;
             }
             this.graphMethods.pauseAnimation();

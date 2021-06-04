@@ -10,6 +10,7 @@ import GraphDelegate from "./GraphDelegate";
 import NodeInteractionStore from "./NodeInteractionStore";
 import ClusterInteractionStore from "./ClusterInteractionStore";
 import HelperStackPanelStore from "./HelperStackPanelStore";
+import SignalStore from "./SignalStore";
 
 /**
  * @description the overall state to store all information of this project
@@ -30,6 +31,7 @@ class AppState {
     cluster!: ClusterStore;
     helper!: HelperStackPanelStore;
     css!: CssStore;
+    signal!: SignalStore;
 
     private privateConstructor() {
         this.preferences = new PreferencesStore();
@@ -42,6 +44,7 @@ class AppState {
         this.cluster = new ClusterStore();
         this.helper = new HelperStackPanelStore();
         this.css = new CssStore();
+        this.signal = new SignalStore();
     }
 
     // add singleton to prevent creating multiple instances of the State class

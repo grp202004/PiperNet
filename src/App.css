@@ -332,6 +332,10 @@ div.pt-card.sub-option.legend {
     opacity: 0.9;
 }
 
+.transparent-popover {
+    opacity: 0.7;
+}
+
 .node-details-table {
     overflow-x: auto;
     overflow-y: auto;

@@ -42,7 +42,7 @@ export default class Cluster3dObjectStore {
      * @author Zichen XU
      * @type {(Map<string | number, THREE.Mesh> | null)}
      */
-    private clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
+    clusterObjectsMap: Map<string | number, THREE.Mesh> | null = null;
 
     /**
      * @description create empty BufferGeometry and mesh with colour
@@ -233,15 +233,18 @@ export default class Cluster3dObjectStore {
         geom: THREE.BufferGeometry,
         name: string | number
     ): THREE.Mesh {
+        const color = State.cluster.attributeColor.get(name);
         const meshMaterial = new THREE.MeshBasicMaterial({
-            color: State.cluster.attributeColor.get(name),
+            color: color,
             transparent: true,
             opacity: 0.15,
         });
-        meshMaterial.side = THREE.DoubleSide; //将材质设置成正面反面都可见
+        meshMaterial.side = THREE.DoubleSide;
         meshMaterial.depthWrite = false;
 
         let mesh = new THREE.Mesh(geom, meshMaterial);
+        //@ts-ignore
+        mesh["_color"] = color;
         this.UUID2ClusterValueMap.set(mesh.uuid, name);
         mesh.name = "THREE_CLUSTER_" + name;
         return mesh;
@@ -275,9 +278,13 @@ export default class Cluster3dObjectStore {
      * @static
      * @param {THREE.Mesh} mesh
      */
-    private static meshHighlightMaterial(mesh: THREE.Mesh) {
-        let material = mesh.material as THREE.Material;
-        material.opacity = 0.5;
+    private meshHighlightMaterial(mesh: THREE.Mesh) {
+        mesh.material = new THREE.MeshBasicMaterial({
+            //@ts-ignore
+            color: mesh["_color"],
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+        });
     }
 
     /**
@@ -287,9 +294,15 @@ export default class Cluster3dObjectStore {
      * @static
      * @param {THREE.Mesh} mesh
      */
-    private static meshSelectedMaterial(mesh: THREE.Mesh) {
-        let material = mesh.material as THREE.Material;
-        material.opacity = 0.3;
+    private meshSelectedMaterial(mesh: THREE.Mesh) {
+        mesh.material = new THREE.MeshPhongMaterial({
+            //@ts-ignore
+            color: mesh["_color"],
+            emissive: 0xff0000,
+            shininess: 10,
+            opacity: 0.8,
+            transparent: true,
+        });
     }
 
     /**
@@ -299,9 +312,15 @@ export default class Cluster3dObjectStore {
      * @static
      * @param {THREE.Mesh} mesh
      */
-    private static meshNormalMaterial(mesh: THREE.Mesh) {
-        let material = mesh.material as THREE.Material;
-        material.opacity = 0.15;
+    private meshNormalMaterial(mesh: THREE.Mesh) {
+        mesh.material = new THREE.MeshBasicMaterial({
+            //@ts-ignore
+            color: mesh["_color"],
+            transparent: true,
+            opacity: 0.15,
+        });
+        mesh.material.side = THREE.DoubleSide;
+        mesh.material.depthWrite = false;
     }
 
     /**
@@ -313,15 +332,15 @@ export default class Cluster3dObjectStore {
             let mesh = _object as THREE.Mesh;
             const meshId = mesh.uuid;
             if (State.clusterInteraction.currentlyHoveredClusterId === meshId) {
-                Cluster3dObjectStore.meshHighlightMaterial(mesh);
+                this.meshHighlightMaterial(mesh);
                 return;
             } else if (
                 State.clusterInteraction.selectedClusters.includes(meshId)
             ) {
-                Cluster3dObjectStore.meshSelectedMaterial(mesh);
+                this.meshSelectedMaterial(mesh);
                 return;
             } else {
-                Cluster3dObjectStore.meshNormalMaterial(mesh);
+                this.meshNormalMaterial(mesh);
             }
         });
     }

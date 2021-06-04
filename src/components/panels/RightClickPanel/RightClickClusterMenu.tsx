@@ -3,6 +3,9 @@ import { MenuDivider } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import State from "../../../state";
 import { MenuItemWithTooltip } from "../../utils/MenuItemWithTooltip";
+import { Popover2 } from "@blueprintjs/popover2";
+import FormClusterOptionsCard from "../../utils/FormClusterOptionsCard";
+import { Vector3 } from "three";
 
 export default observer(
     /**
@@ -11,24 +14,17 @@ export default observer(
      * @extends {React.Component}
      */
     class RightClickClusterPanel extends React.Component {
+        state = {
+            mergeSelectedClustersOpen: false,
+            mergeNeighborsOpen: false,
+            mergeNearestClustersOpen: false,
+        };
+
         /**
          * @description loop through the selected clusters and set the nodes within that cluster
-         * the newly-formed attribute is named _merge-cluster
-         * and the value to that attribute is the Time() of this time
-         * other nodes unrelated will be set to empty string in this attribute
          * @author Zichen XU
          */
-        mergeSelectedClusters() {
-            let date = new Date().toLocaleString("en");
-            let clusterId: string = `Cluster Merged @ ${date}`;
-            if (
-                !State.graph.metadata.nodeProperties.includes("_merge-cluster")
-            ) {
-                State.graph.metadata.nodeProperties.push("_merge-cluster");
-            }
-            State.graph.rawGraph.forEachNode((_, attributes) => {
-                attributes["_merge-cluster"] = "";
-            });
+        mergeSelectedClusters(attribute: string, value: string | number) {
             State.clusterInteraction.selectedClusters.forEach((uuid) => {
                 const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
                     uuid
@@ -37,13 +33,91 @@ export default observer(
                 keys?.forEach((nodeId) => {
                     State.graph.rawGraph.setNodeAttribute(
                         nodeId,
-                        "_merge-cluster",
-                        clusterId
+                        attribute,
+                        value
                     );
                 });
             });
-            State.cluster.setCluster("_merge-cluster");
+            State.cluster.setCluster(attribute);
             State.clusterInteraction.flush();
+        }
+
+        /**
+         * @description preview the selected cluster with its neighbors
+         * @author Zichen XU, Chenghao SHI
+         */
+        previewClusterNeighbors(uuid: string) {
+            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+                uuid
+            ) as string | number;
+            const nodeIds = State.cluster.attributeKeys.get(clusterValue);
+            let attributes: (string | number)[] = [];
+            nodeIds?.forEach((nodeId) => {
+                State.graph.rawGraph.forEachNeighbor(nodeId, (neighbor) => {
+                    const attribute = State.cluster.keyAttribute.get(neighbor)!;
+                    if (!attributes.includes(attribute)) {
+                        attributes.push(attribute);
+                    }
+                });
+            });
+            attributes.forEach((attribute) => {
+                State.clusterInteraction.selectedClusters.push(
+                    State.graphDelegate.clusterObject.clusterObjectsMap?.get(
+                        attribute
+                    )?.uuid!
+                );
+            });
+        }
+
+        /**
+         * @description preview the nearest cluster with its neighbors
+         * @author Zichen XU
+         */
+        previewNearestNeighbors(uuid: string) {
+            function computeDistance(from: Vector3) {
+                const current = State.graphDelegate.clusterObject.getObjectById(
+                    uuid
+                )!.position;
+                return current.distanceTo(from);
+            }
+
+            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+                uuid
+            ) as string | number;
+            const nodeIds = State.cluster.attributeKeys.get(clusterValue);
+            let attributes: (string | number)[] = [];
+            nodeIds?.forEach((nodeId) => {
+                State.graph.rawGraph.forEachNeighbor(nodeId, (neighbor) => {
+                    const attribute = State.cluster.keyAttribute.get(neighbor)!;
+                    if (!attributes.includes(attribute)) {
+                        attributes.push(attribute);
+                    }
+                });
+            });
+            const objects = attributes
+                .map((attribute) => {
+                    return State.graphDelegate.clusterObject.clusterObjectsMap?.get(
+                        attribute
+                    )?.uuid!;
+                })
+                .map((uuid) => {
+                    return State.graphDelegate.clusterObject.getObjectById(
+                        uuid
+                    );
+                });
+
+            if (objects.length !== 0) {
+                let shortest = objects[0];
+                objects.map((object) => {
+                    if (
+                        computeDistance(object?.position!) <
+                        computeDistance(shortest?.position!)
+                    ) {
+                        shortest = object;
+                    }
+                });
+                State.clusterInteraction.selectedClusters.push(shortest?.uuid!);
+            }
         }
 
         /**
@@ -62,41 +136,6 @@ export default observer(
             });
             State.cluster.setCluster(null, true);
             State.clusterInteraction.flush();
-        }
-
-        mergeNeighbors() {
-            const clsuterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-                State.clusterInteraction.chosenCluster as string
-            ) as string | number;
-            let index;
-            const keys = State.cluster.attributeKeys.get(clsuterValue);
-            keys?.forEach((nodeId) => {
-                State.graph.rawGraph.forEachNeighbor(nodeId, (neighbour) => {
-                    State.graphDelegate.clusterObject.UUID2ClusterValueMap.forEach(
-                        (value, key) => {
-                            if (
-                                value ===
-                                State.graph.rawGraph.getNodeAttribute(
-                                    neighbour,
-                                    State.cluster.clusterBy as string
-                                )
-                            ) {
-                                if (
-                                    (index =
-                                        State.clusterInteraction.selectedClusters.indexOf(
-                                            key
-                                        ) === -1)
-                                ) {
-                                    State.clusterInteraction.selectedClusters.push(
-                                        key
-                                    );
-                                }
-                            }
-                        }
-                    );
-                });
-            });
-            this.mergeSelectedClusters();
         }
 
         /**
@@ -125,39 +164,112 @@ export default observer(
             return (
                 <>
                     <MenuDivider title="Cluster Operation" />
-                    <MenuItemWithTooltip
-                        tooltipText="Merge selected clusters into a larger cluster"
-                        icon="group-objects"
-                        text="Merge Clusters"
-                        onClick={() => {
-                            this.mergeSelectedClusters();
-                            State.preferences.rightClickPanelOpen = false;
-                        }}
-                        disabled={
-                            State.clusterInteraction.selectedClusters.length ===
-                                0 ||
-                            State.clusterInteraction.selectedClusters.length ===
-                                1
+                    <Popover2
+                        popoverClassName={"transparent-popover"}
+                        isOpen={this.state.mergeSelectedClustersOpen}
+                        content={
+                            <FormClusterOptionsCard
+                                callback={(attribute, value) => {
+                                    this.mergeSelectedClusters(
+                                        attribute,
+                                        value
+                                    );
+                                    this.setState({
+                                        mergeSelectedClustersOpen: false,
+                                    });
+                                    State.preferences.rightClickPanelOpen = false;
+                                }}
+                            />
                         }
-                    />
-                    <MenuItemWithTooltip
-                        tooltipText="Merge this cluster with its neighbors"
-                        icon="group-objects"
-                        text="Merge Neighbors"
-                        onClick={() => {
-                            this.mergeNeighbors();
-                            State.preferences.rightClickPanelOpen = false;
-                        }}
-                    />
-                    <MenuItemWithTooltip
-                        tooltipText="Merge this cluster with its nearest neighbor"
-                        icon="group-objects"
-                        text="Merge Nearest Neighbor"
-                        onClick={() => {
-                            this.mergeNeighbors();
-                            State.preferences.rightClickPanelOpen = false;
-                        }}
-                    />
+                    >
+                        <MenuItemWithTooltip
+                            tooltipText="Merge selected clusters into a larger cluster"
+                            icon="group-objects"
+                            text="Merge Clusters"
+                            onClick={() => {
+                                this.setState({
+                                    mergeSelectedClustersOpen: true,
+                                });
+                            }}
+                            disabled={
+                                State.clusterInteraction.selectedClusters
+                                    .length === 0 ||
+                                State.clusterInteraction.selectedClusters
+                                    .length === 1
+                            }
+                        />
+                    </Popover2>
+
+                    <Popover2
+                        popoverClassName={"transparent-popover"}
+                        isOpen={this.state.mergeNeighborsOpen}
+                        content={
+                            <FormClusterOptionsCard
+                                callback={(attribute, value) => {
+                                    this.mergeSelectedClusters(
+                                        attribute,
+                                        value
+                                    );
+                                    this.setState({
+                                        mergeNeighborsOpen: false,
+                                    });
+                                    State.preferences.rightClickPanelOpen = false;
+                                }}
+                                style={{ opacity: "50%" }}
+                            />
+                        }
+                    >
+                        <MenuItemWithTooltip
+                            tooltipText="Merge this cluster with its neighbors"
+                            icon="group-objects"
+                            text="Merge Neighbors"
+                            onClick={() => {
+                                this.previewClusterNeighbors(
+                                    State.clusterInteraction
+                                        .chosenCluster as string
+                                );
+                                State.graphDelegate.clusterObject.updateAllMaterials();
+                                this.setState({
+                                    mergeNeighborsOpen: true,
+                                });
+                            }}
+                        />
+                    </Popover2>
+
+                    <Popover2
+                        popoverClassName={"transparent-popover"}
+                        isOpen={this.state.mergeNearestClustersOpen}
+                        content={
+                            <FormClusterOptionsCard
+                                callback={(attribute, value) => {
+                                    this.mergeSelectedClusters(
+                                        attribute,
+                                        value
+                                    );
+                                    this.setState({
+                                        mergeNearestClustersOpen: false,
+                                    });
+                                    State.preferences.rightClickPanelOpen = false;
+                                }}
+                            />
+                        }
+                    >
+                        <MenuItemWithTooltip
+                            tooltipText="Merge this cluster with its nearest neighbor"
+                            icon="group-objects"
+                            text="Merge Nearest Neighbor"
+                            onClick={() => {
+                                this.previewNearestNeighbors(
+                                    State.clusterInteraction
+                                        .chosenCluster as string
+                                );
+                                State.graphDelegate.clusterObject.updateAllMaterials();
+                                this.setState({
+                                    mergeNearestClustersOpen: true,
+                                });
+                            }}
+                        />
+                    </Popover2>
                     <MenuDivider />
                     <MenuItemWithTooltip
                         tooltipText="Release selected clusters from the included nodes"

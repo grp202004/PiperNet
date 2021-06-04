@@ -13,7 +13,6 @@ export default class SearchStore {
         makeAutoObservable(this);
     }
 
-    //
     /**
      * @description if is previewing, ignore all mouse hovers detected by NodeDetailPanel
      * because it is showing the detail of selected node
