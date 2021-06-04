@@ -1,11 +1,17 @@
 import React from "react";
 import { observer } from "mobx-react";
-import State from "../../state";
+import State from "../../../state";
 import { Card, Slider } from "@blueprintjs/core";
-import Collapsable from "../utils/Collapsable";
-import SimpleSelect from "../utils/SimpleSelect";
+import Collapsable from "../../utils/Collapsable";
+import SimpleSelect from "../../utils/SimpleSelect";
 
 export default observer(
+    /**
+     * @description the sub-tab to alter the graph options of cluster
+     * @author Zichen XU, Zhiyuan LYU
+     * @class ClusterPanel
+     * @extends {React.Component}
+     */
     class ClusterPanel extends React.Component {
         state = {
             shapeOptionOpen: false,
@@ -77,7 +83,10 @@ export default observer(
                                     text={State.css.cluster.shape}
                                     onSelect={(it) => {
                                         State.css.cluster.shape = it;
-                                        State.graphDelegate.clusterObject.alterNodePosition();
+                                        State.cluster.setCluster(
+                                            State.cluster.clusterBy,
+                                            true
+                                        );
                                     }}
                                     small={true}
                                 />

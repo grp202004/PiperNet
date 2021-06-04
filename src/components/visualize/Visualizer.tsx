@@ -16,10 +16,10 @@ import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
 import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
-import CanvasDrawPanel from "../panels/CanvasDrawPanel";
+import CanvasDrawPanel from "../panels/CanvasDraw/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
-import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
+import { debounce } from "../../state/utils/MouseEventUtils";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -85,15 +85,15 @@ export default observer(
             if (!this.state.nodePointerInteraction) {
                 return;
             }
-            State.interaction.selectedNode = node.id as string;
+            State.interaction.chosenNode = node.id as string;
             // if selected node is not in the list, then add
             if (
                 !State.interaction.selectedNodes.includes(
-                    State.interaction.selectedNode
+                    State.interaction.chosenNode
                 )
             ) {
                 State.interaction.selectedNodes.push(
-                    State.interaction.selectedNode
+                    State.interaction.chosenNode
                 );
             }
             State.preferences.rightClickPositionX = event.x;
@@ -126,8 +126,8 @@ export default observer(
             let node = _node as ICustomNodeObject;
             if (node.hovered) {
                 return State.css.node.highlightColor;
-            } else if (node.selected) {
-                return State.css.node.selectedColor;
+            } else if (node.chosen) {
+                return State.css.node.chosenColor;
             } else if (node.multiSelected) {
                 return State.css.node.multiSelectedColor;
             } else {
@@ -139,7 +139,7 @@ export default observer(
             let edge = _edge as ICustomLinkObject;
             if (edge.hovered) {
                 return State.css.edge.highlightColor;
-            } else if (edge.selected) {
+            } else if (edge.chosen) {
                 return State.css.edge.selectedColor;
             } else {
                 return State.css.edge.defaultColor;
@@ -150,20 +150,12 @@ export default observer(
             let edge = _edge as ICustomLinkObject;
             if (edge.hovered) {
                 return State.css.edge.highlightWidth;
-            } else if (edge.selected) {
+            } else if (edge.chosen) {
                 return State.css.edge.highlightWidth;
             } else {
                 return State.css.edge.defaultWidth;
             }
         }
-
-        renderDrawCanvas = () => {
-            if (State.clusterInteraction.drawStraightLine) {
-                return <CanvasDrawStraightLinePanel />;
-            } else {
-                return <CanvasDrawPanel />;
-            }
-        };
 
         renderGraph = () => {
             return (
@@ -173,8 +165,9 @@ export default observer(
                         State.interaction.boxSelectionOpen && <SelectionBox />}
                     {State.preferences.visualizationMode ===
                         VisualizationMode.ClusterSplitting &&
-                        State.clusterInteraction.drawPanelActivate &&
-                        this.renderDrawCanvas()}
+                        State.clusterInteraction.drawPanelActivate && (
+                            <CanvasDrawPanel />
+                        )}
                     <ForceGraph3D
                         // Data Segment
                         ref={this.graphRef}
@@ -238,23 +231,6 @@ export default observer(
                     />
                 </div>
             );
-            // } else {
-            //     return (
-            //         <ForceGraph2D
-            //             graphData={State.graph.adapterGraph}
-            //             dagMode={"td"}
-            //             // dagLevelDistance={300}
-            //             // backgroundColor="#101020"
-            //             nodeRelSize={1}
-            //             // nodeId="path"
-            //             // nodeVal={(node) => 100 / (node.level + 1)}
-            //             // nodeLabel="path"
-            //             // nodeAutoColorBy="module"
-            //             // linkDirectionalParticles={2}
-            //             // linkDirectionalParticleWidth={2}
-            //             d3VelocityDecay={0.3}
-            //         />
-            //     );
         };
 
         render() {
@@ -267,11 +243,22 @@ export default observer(
             });
         }
 
+        nodeInteractionListener(set: boolean) {
+            this.setState({
+                nodePointerInteraction: set,
+            });
+        }
+
+        private debouncedMouseMoveCallback: any;
+
         clusterInteractionListener(set: boolean) {
             if (set) {
+                this.debouncedMouseMoveCallback = debounce(
+                    CustomMouseEvent.onDocumentMouseMove
+                );
                 document.addEventListener(
                     "mousemove",
-                    CustomMouseEvent.onDocumentMouseMove
+                    this.debouncedMouseMoveCallback
                 );
                 document.addEventListener(
                     "click",
@@ -281,11 +268,10 @@ export default observer(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
-                console.log("MouseEvent listening");
             } else {
                 document.removeEventListener(
                     "mousemove",
-                    CustomMouseEvent.onDocumentMouseMove
+                    this.debouncedMouseMoveCallback
                 );
                 document.removeEventListener(
                     "click",
@@ -295,7 +281,6 @@ export default observer(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
-                console.log("MouseEvent stop listening");
             }
         }
 
@@ -303,6 +288,7 @@ export default observer(
             this.graphDelegate.mountDelegateMethods(this.graphMethods);
             this.clusterInteractionListener(true);
             ComponentRef.visualizer = this;
+            this.graphDelegate.updateClusterForce();
         }
     }
 );
@@ -310,22 +296,16 @@ export default observer(
 reaction(
     () => State.preferences.visualizationMode,
     (visualizationMode) => {
+        State.interaction.flush();
+        State.clusterInteraction.flush();
         switch (visualizationMode) {
             case VisualizationMode.Normal:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: true,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(true);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
             case VisualizationMode.NodeSelection:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: true,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(true);
                 ComponentRef.visualizer?.clusterInteractionListener(false);
                 createToaster(
                     <p>
@@ -338,11 +318,7 @@ reaction(
                 break;
 
             case VisualizationMode.ClusterSelection:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: false,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(false);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 createToaster(
                     <p>
@@ -356,11 +332,7 @@ reaction(
                 break;
 
             case VisualizationMode.ClusterSplitting:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: false,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(false);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 State.helper.clusterSplittingPanelStackOpen = true;
                 break;

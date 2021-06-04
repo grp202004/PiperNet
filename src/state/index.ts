@@ -10,7 +10,6 @@ import GraphDelegate from "./GraphDelegate";
 import NodeInteractionStore from "./NodeInteractionStore";
 import ClusterInteractionStore from "./ClusterInteractionStore";
 import HelperStackPanelStore from "./HelperStackPanelStore";
-import ComponentRef from "../components/ComponentRef";
 
 /**
  * @description the overall state to store all information of this project
@@ -87,7 +86,7 @@ autorun(() => {
         State.preferences.visualizationMode ===
         VisualizationMode.ClusterSplitting
     ) {
-        if (State.clusterInteraction.selectedCluster) {
+        if (State.clusterInteraction.chosenCluster) {
             State.helper.clusterSplittingCurrentStep = 2;
             console.log("cluster selected");
         }
@@ -112,22 +111,16 @@ reaction(
 
             case 2:
                 State.clusterInteraction.drawPanelActivate = true;
-                if (State.clusterInteraction.drawStraightLine) {
-                    ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
-                } else {
-                    ComponentRef?.canvasDrawPanel.clearDrawing();
-                }
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
-                        { selected: false },
+                        { hovered: false, chosen: false, multiSelected: false },
                         oldAttributes._visualize
                     );
                 });
                 State.clusterInteraction.confirmClusterSplittingTempData = null;
                 State.interaction.flush();
                 State.graphDelegate.graphDelegateMethods.refresh();
-
                 break;
 
             case 3:
@@ -163,7 +156,7 @@ reaction(
 
 // auto highlight the selected Cluster
 reaction(
-    () => State.clusterInteraction.selectedCluster,
+    () => State.clusterInteraction.chosenCluster,
     () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }
@@ -200,22 +193,22 @@ reaction(
     }
 );
 
-// auto color the selected node
+// auto color the chosen node (right click on)
 reaction(
-    () => State.interaction.selectedNode,
+    () => State.interaction.chosenNode,
     (selectedNode) => {
-        console.log("selectedNode", selectedNode);
+        console.log("chosenNode", selectedNode);
         State.graph.rawGraph.forEachNode((node, oldAttributes) => {
             if (selectedNode === node) {
                 State.interaction.updateNodeVisualizeAttribute(
                     node,
-                    { selected: true },
+                    { chosen: true },
                     oldAttributes._visualize
                 );
             } else {
                 State.interaction.updateNodeVisualizeAttribute(
                     node,
-                    { selected: false },
+                    { chosen: false },
                     oldAttributes._visualize
                 );
             }
@@ -257,13 +250,13 @@ reaction(
             if (selectedEdge === edge) {
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
-                    { selected: true },
+                    { chosen: true },
                     oldAttributes._visualize
                 );
             } else {
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
-                    { selected: false },
+                    { chosen: false },
                     oldAttributes._visualize
                 );
             }
@@ -274,10 +267,14 @@ reaction(
 
 // auto color the neighbor edges
 reaction(
-    () => State.interaction.currentlyHoveredNodeNeighborEdges,
-    (neighborEdges) => {
+    () => State.interaction.currentlyHoveredNodeId,
+    () => {
         State.graph.rawGraph.forEachEdge((edge, oldAttributes) => {
-            if (neighborEdges?.includes(edge)) {
+            if (
+                State.interaction.currentlyHoveredNodeNeighborEdges?.includes(
+                    edge
+                )
+            ) {
                 State.interaction.updateEdgeVisualizeAttribute(
                     edge,
                     { hovered: true },

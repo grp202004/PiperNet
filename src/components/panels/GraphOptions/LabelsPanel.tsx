@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, Slider, Switch } from "@blueprintjs/core";
 import { observer } from "mobx-react";
-import State from "../../state";
-import ColorPicker from "../utils/ColorPicker";
+import State from "../../../state";
+import ColorPicker from "../../utils/ColorPicker";
 
 export default observer(
     /**

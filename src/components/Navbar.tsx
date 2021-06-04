@@ -20,6 +20,12 @@ import { Popover2 } from "@blueprintjs/popover2";
 import SearchPanel from "./panels/SearchPanel";
 
 export default observer(
+    /**
+     * @description the navigation bar on the top
+     * @author Zichen XU
+     * @class Navbar
+     * @extends {React.Component}
+     */
     class Navbar extends React.Component {
         render() {
             return (
@@ -41,6 +47,13 @@ export default observer(
                         <Popover2
                             content={
                                 <Menu>
+                                    <MenuItem
+                                        icon="import"
+                                        text="Open GEXF"
+                                        onClick={() => {
+                                            State.import.importGEXFDialogOpen = true;
+                                        }}
+                                    />
                                     <MenuItem
                                         text="Import from CSV"
                                         icon="import"
@@ -87,13 +100,6 @@ export default observer(
                                         )} */}
                                     </MenuItem>
 
-                                    <MenuItem
-                                        icon="import"
-                                        text="Open GEXF"
-                                        onClick={() => {
-                                            State.import.importGEXFDialogOpen = true;
-                                        }}
-                                    />
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
@@ -127,13 +133,6 @@ export default observer(
                                             State.preferences.edgeDataSheetDialogOpen = true;
                                         }}
                                     />
-                                    {/* <MenuItem
-                                        text="Statistics"
-                                        icon="timeline-bar-chart"
-                                        onClick={() => {
-                                            State.preferences.statisticsDialogOpen = true;
-                                        }}
-                                    /> */}
                                 </Menu>
                             }
                             placement={Position.BOTTOM}

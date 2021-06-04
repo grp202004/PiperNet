@@ -68,7 +68,7 @@ export default observer(
                     <MenuDivider
                         title={
                             ("Node ID: " +
-                                State.interaction.selectedNode) as string
+                                State.interaction.chosenNode) as string
                         }
                     />
                     <MenuItemWithTooltip
@@ -78,7 +78,7 @@ export default observer(
                         multiline={true}
                         onClick={() => {
                             State.graph.mutating.dropNode(
-                                State.interaction.selectedNode as string
+                                State.interaction.chosenNode as string
                             );
                             State.interaction.flush();
                             State.preferences.rightClickPanelOpen = false;

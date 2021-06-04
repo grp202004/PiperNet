@@ -1,6 +1,11 @@
 import { makeAutoObservable, reaction } from "mobx";
 import State from "../state";
 
+/**
+ * @description the React.ref for storing the components that may be used by others
+ * @author Zichen XU
+ * @class ComponentRef
+ */
 class ComponentRef {
     constructor() {
         makeAutoObservable(this);
@@ -14,9 +19,9 @@ class ComponentRef {
 
     visualizer!: React.Component | any;
 
-    canvasDrawPanel!: React.Component | any;
+    // canvasDrawPanel!: React.Component | any;
 
-    canvasDrawStraightLinePanel!: React.Component | any;
+    // canvasDrawStraightLinePanel!: React.Component | any;
 
     clusterSplittingPanelStack!: React.Component | any;
 

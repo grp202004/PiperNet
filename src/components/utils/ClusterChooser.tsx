@@ -35,11 +35,17 @@ interface CustomIItemRendererProps {
     handleClick: MouseEventHandler<HTMLElement>;
 }
 
-/**
- * this component can be used to choose the attribute among all the attributes, with addition none to choose (can be toggled to off)
- * to use it, you have to specify whether to add additional None to the list and onChange function to call when a candidate is selected
- */
 export default observer(
+    /**
+     * @description this component can be used to choose the attribute among all the attributes
+     * with addition none to choose (can be toggled to off)
+     *
+     * to use it, you have to specify whether to add additional None to the list
+     * and onChange function to call when a candidate is selected
+     * @author Zichen XU
+     * @class ClusterChooser
+     * @extends {React.Component<Props, {}>}
+     */
     class ClusterChooser extends React.Component<Props, {}> {
         static defaultProps = {
             showNone: true,

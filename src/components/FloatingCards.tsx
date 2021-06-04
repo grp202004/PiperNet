@@ -6,11 +6,17 @@ import State from "../state";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
-import GraphOptionsCard from "./panels/GraphOptionsCard";
+import GraphOptionsCard from "./panels/GraphOptions/GraphOptionsCard";
 import InteractionModePanel from "./panels/InteractionModePanel/InteractionModePanel";
 import RightClickPanel from "./panels/RightClickPanel/RightClickPanel";
 
 export default observer(
+    /**
+     * @description all the floating cards on the screen
+     * @author Zhiyuan LYU
+     * @class FloatingCards
+     * @extends {React.Component}
+     */
     class FloatingCards extends React.Component {
         optionsVisible = {
             left: "0em",
@@ -109,9 +115,9 @@ export default observer(
                             />
                         )}
                     {State.preferences.deleteEdgePanelOpen &&
-                        State.interaction.selectedNode && (
+                        State.interaction.chosenNode && (
                             <DeleteEdgeInteractionPanel
-                                onNode={State.interaction.selectedNode}
+                                onNode={State.interaction.chosenNode}
                             />
                         )}
                     <InteractionModePanel />

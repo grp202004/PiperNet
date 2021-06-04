@@ -66,7 +66,7 @@ export default observer(
 
         mergeNeighbors() {
             const clsuterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-                State.clusterInteraction.selectedCluster as string
+                State.clusterInteraction.chosenCluster as string
             ) as string | number;
             let index;
             const keys = State.cluster.attributeKeys.get(clsuterValue);

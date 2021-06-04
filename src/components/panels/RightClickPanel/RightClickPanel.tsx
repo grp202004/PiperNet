@@ -1,5 +1,5 @@
 import React from "react";
-import { Classes, Menu, MenuDivider } from "@blueprintjs/core";
+import { Classes, Menu } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import classnames from "classnames";
 import State from "../../../state";

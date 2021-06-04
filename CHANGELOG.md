@@ -1,8 +1,56 @@
 # Changelog
 
-## [v0.6-beta](https://github.com/grp202004/PiperNet/tree/v0.6-beta) (2021-03-12)
+## [1.0.1](https://github.com/grp202004/PiperNet/tree/1.0.1) (2021-04-09)
 
-To be detailed
+This final stable version release only includes bug fixes and improvements
+
+**Fixed bugs:**
+
+-   size of node details table [\#72](https://github.com/grp202004/PiperNet/issues/72)
+-   nodes in Split Cluster [\#67](https://github.com/grp202004/PiperNet/issues/67)
+-   cluster shape no response in graph option [\#66](https://github.com/grp202004/PiperNet/issues/66)
+-   BoxSelection [\#63](https://github.com/grp202004/PiperNet/issues/63)
+-   Snapshot can not be imported properly when use sample csv file [\#57](https://github.com/grp202004/PiperNet/issues/57)
+-   node color not change when mouse hover in csv file [\#56](https://github.com/grp202004/PiperNet/issues/56)
+-   attribute id in node dsata sheet when only edge file is imported [\#52](https://github.com/grp202004/PiperNet/issues/52)
+-   Node highlight [\#48](https://github.com/grp202004/PiperNet/issues/48)
+-   The multiple node details table at buttom is missing [\#47](https://github.com/grp202004/PiperNet/issues/47)
+-   Hovering a node, part of the display of its edge changed as expected [\#43](https://github.com/grp202004/PiperNet/issues/43)
+-   2D Graph missing [\#13](https://github.com/grp202004/PiperNet/issues/13)
+
+**Closed issues:**
+
+-   \#\#\# UI Modification [\#73](https://github.com/grp202004/PiperNet/issues/73)
+-   Add cancel button in add edge datasheet [\#55](https://github.com/grp202004/PiperNet/issues/55)
+-   Rewrite Search Panel Component [\#37](https://github.com/grp202004/PiperNet/issues/37)
+-   Graph -\> Load Samples is not working, so we temporarily disabled the sample buttons [\#25](https://github.com/grp202004/PiperNet/issues/25)
+-   Opening DataSheetDialog might experience delay and UI freezing, especially with a large dataset [\#24](https://github.com/grp202004/PiperNet/issues/24)
+-   A cluster with less than 4 nodes might not form a cluster [\#22](https://github.com/grp202004/PiperNet/issues/22)
+-   Hide the edges in 3D convex hull and just display with the hull in translucent color [\#10](https://github.com/grp202004/PiperNet/issues/10)
+
+-   **Merged pull requests:**
+
+-   TypeScript Document -\> master [\#79](https://github.com/grp202004/PiperNet/pull/79) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Electron to typedoc [\#78](https://github.com/grp202004/PiperNet/pull/78) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   add TypeDoc for components [\#77](https://github.com/grp202004/PiperNet/pull/77) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Correction of test scripts [\#75](https://github.com/grp202004/PiperNet/pull/75) ([Kaby-Lake](https://github.com/Kaby-Lake))
+-   Test [\#74](https://github.com/grp202004/PiperNet/pull/74) ([Kaby-Lake](https://github.com/Kaby-Lake))
+
+## [0.6-beta](https://github.com/grp202004/PiperNet/tree/0.6-beta) (2021-03-12)
+
+[Full Changelog](https://github.com/grp202004/PiperNet/compare/v0.5.0.1-beta...0.6-beta)
+
+**Features Added**
+
+-   Add four modes for different usage.
+-   Users can multi-select nodes only in Node Selection mode. Both Click selection and Box selection can select nodes and node details will be shown in the bottom table.
+-   Users can import CSV files in a new dialog in a more clear way step by step.
+-   Users can merge clusters in Cluster Selection mode. In this way, users can define new clusters.
+-   Users can select nodes and form a new cluster.
+-   Users can split cluster in Cluster Splitting mode following the given instructions.
+-   The operations on clusters will be recorded in Node Data sheet. The properties in clusters can be exported and stored in GEXF files. The clusters can be the same as that in the previous files.
+
+[Full Changelog](https://github.com/grp202004/PiperNet/compare/v0.5.0.1-beta...0.6-beta)
 
 **Fixed bugs:**
 
@@ -24,7 +72,7 @@ To be detailed
 **Tone**
 Interactions & Operations
 
-**Features Added** (not full yet)
+**Features Added**
 
 -   DataSheetTable can be generated accordingly which shows the nodes data and edges data of the graph, the attributes related
     to nodes and edges can be displayed as well as edited as a cell form inside the table.

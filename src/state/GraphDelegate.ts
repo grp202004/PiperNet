@@ -8,6 +8,10 @@ import {
 } from "react-force-graph-3d";
 import Cluster3dObjectStore from "./Cluster3dObjectStore";
 
+export type Partial<T> = {
+    [P in keyof T]?: T[P];
+};
+
 /**
  * @description
  * hovered: false, selected: false: DefaultColor;
@@ -21,7 +25,7 @@ import Cluster3dObjectStore from "./Cluster3dObjectStore";
  */
 export interface ICustomNodeObject extends NodeObject {
     hovered: boolean;
-    selected: boolean;
+    chosen: boolean;
     multiSelected: boolean;
     isClusterNode?: boolean;
 }
@@ -38,8 +42,8 @@ export interface ICustomNodeObject extends NodeObject {
  * @extends {LinkObject}
  */
 export interface ICustomLinkObject extends LinkObject {
+    chosen: boolean;
     hovered: boolean;
-    selected: boolean;
     isClusterLink?: boolean;
 }
 
@@ -59,7 +63,7 @@ export function createCustomNodeObject(
     return {
         id: _id,
         hovered: false,
-        selected: false,
+        chosen: false,
         multiSelected: false,
         isClusterNode: _cluster,
     };
@@ -84,7 +88,7 @@ export function createCustomLinkObject(
         source: _source,
         target: _target,
         hovered: false,
-        selected: false,
+        chosen: false,
         isClusterLink: _cluster,
     };
 }
