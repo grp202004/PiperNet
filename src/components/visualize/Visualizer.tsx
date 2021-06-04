@@ -28,6 +28,8 @@ export default observer(
             nodePointerInteraction: true,
         };
 
+        clicking = false;
+
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
 
@@ -101,6 +103,9 @@ export default observer(
             State.preferences.rightClickOn = "Node";
             State.preferences.rightClickPanelOpen = true;
             State.preferences.closeAllPanel("rightClickPanel");
+            setTimeout(() => {
+                this.graphMethods.resumeAnimation();
+            }, 200);
         };
 
         backgroundClickCallback = () => {
@@ -115,11 +120,15 @@ export default observer(
             if (!this.state.nodePointerInteraction) {
                 return;
             }
+            this.graphMethods.pauseAnimation();
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Background";
             State.preferences.rightClickPanelOpen = true;
             State.preferences.closeAllPanel("rightClickPanel");
+            setTimeout(() => {
+                this.graphMethods.resumeAnimation();
+            }, 200);
         };
 
         computeNodeColor(_node: NodeObject) {

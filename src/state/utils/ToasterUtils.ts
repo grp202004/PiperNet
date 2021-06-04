@@ -4,13 +4,14 @@ import React from "react";
 export function createToaster(
     message: React.ReactNode,
     position: ToasterPosition = Position.TOP,
-    timeout: number = 5000
+    timeout: number = 5000,
+    intent: Intent = Intent.NONE
 ) {
     Toaster.create({
         position: position,
     }).show({
         message: message,
-        intent: Intent.NONE,
+        intent: intent,
         timeout: timeout,
     });
 }

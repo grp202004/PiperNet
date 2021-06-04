@@ -1,8 +1,20 @@
 import React from "react";
-import { MenuDivider } from "@blueprintjs/core";
+import {
+    Button,
+    Card,
+    H6,
+    Icon,
+    InputGroup,
+    Intent,
+    MenuDivider,
+} from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import State from "../../../state";
 import { MenuItemWithTooltip } from "../../utils/MenuItemWithTooltip";
+import { Popover2 } from "@blueprintjs/popover2";
+import { handleStringChange } from "../../utils/InputFormUtils";
+import ClusterChooser, { ClusterAdder } from "../../utils/ClusterChooser";
+import FormClusterOptionsCard from "../../utils/FormClusterOptionsCard";
 
 export default observer(
     /**
@@ -11,44 +23,19 @@ export default observer(
      * @extends {React.Component}
      */
     class RightClickNodePanel extends React.Component {
-        formNewCluster() {
-            let date = new Date().toLocaleString("en");
-            let newClusterAttributeValue: string = `Cluster Generated @ ${date}`;
-            if (State.cluster.clusterBy != null) {
-                // if now is
-                State.interaction.selectedNodes.forEach((nodeId) => {
-                    State.graph.rawGraph.setNodeAttribute(
-                        nodeId,
-                        State.cluster.clusterBy as string,
-                        newClusterAttributeValue
-                    );
-                });
-                State.preferences.rightClickPanelOpen = false;
-                State.cluster.setCluster(State.cluster.clusterBy, true);
-            } else {
-                if (
-                    !State.graph.metadata.nodeProperties.includes("new-cluster")
-                ) {
-                    State.graph.metadata.nodeProperties.push("new-cluster");
-                }
-                if (
-                    !State.graph.metadata.nodeProperties.includes("new-cluster")
-                ) {
-                    State.graph.rawGraph.forEachNode((_, attributes) => {
-                        attributes["new-cluster"] = "";
-                    });
-                }
-                State.interaction.selectedNodes.forEach((nodeId) => {
-                    State.graph.rawGraph.setNodeAttribute(
-                        nodeId,
-                        "new-cluster",
-                        newClusterAttributeValue
-                    );
-                });
-                State.preferences.rightClickPanelOpen = false;
-                State.cluster.setCluster("new-cluster");
-            }
+        state = {
+            formNewClusterOpen: false,
+            formNewClusterFromEmpty: true,
+            formNewClusterAttribute: State.cluster.clusterBy as string,
+            formNewClusterValue: "" as string,
+        };
 
+        private formNewCluster(attribute: string, value: number | string) {
+            State.interaction.selectedNodes.forEach((nodeId) => {
+                State.graph.rawGraph.setNodeAttribute(nodeId, attribute, value);
+            });
+            State.preferences.rightClickPanelOpen = false;
+            State.cluster.setCluster(attribute);
             State.interaction.flush();
         }
 
@@ -123,13 +110,29 @@ export default observer(
                         }}
                     />
                     <MenuDivider title="Node-Cluster" />
-                    <MenuItemWithTooltip
-                        tooltipText="Use the selected nodes to form a new cluster"
-                        icon="inner-join"
-                        text="Form a New Cluster"
-                        onClick={this.formNewCluster}
-                        disabled={State.interaction.selectedNodes.length === 0}
-                    />
+                    <Popover2
+                        isOpen={this.state.formNewClusterOpen}
+                        content={
+                            <FormClusterOptionsCard
+                                callback={this.formNewCluster}
+                            />
+                        }
+                    >
+                        <MenuItemWithTooltip
+                            tooltipText="Use the selected nodes to form a new cluster"
+                            icon="inner-join"
+                            text="Form a New Cluster"
+                            onClick={() =>
+                                this.setState({
+                                    formNewClusterOpen: true,
+                                })
+                            }
+                            // disabled={
+                            //     State.interaction.selectedNodes.length === 0
+                            // }
+                        />
+                    </Popover2>
+
                     <MenuItemWithTooltip
                         tooltipText="Release the selected nodes from the cluster where they belongs"
                         icon="ungroup-objects"
@@ -140,5 +143,9 @@ export default observer(
                 </>
             );
         }
+
+        componentWillUnmount = () => {
+            this.setState({ formNewClusterOpen: false });
+        };
     }
 );
