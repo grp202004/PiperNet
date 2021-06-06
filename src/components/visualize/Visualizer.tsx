@@ -20,6 +20,7 @@ import CanvasDrawPanel from "../panels/CanvasDraw/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
 import { debounce } from "../../state/utils/MouseEventUtils";
+import ReactDOM from "react-dom";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -264,15 +265,16 @@ export default observer(
         private debouncedMouseMoveCallback: any;
 
         clusterInteractionListener(set: boolean) {
+            const DOM = ReactDOM.findDOMNode(this) as Element;
             if (set) {
                 this.debouncedMouseMoveCallback = debounce(
                     CustomMouseEvent.onDocumentMouseMove
                 );
-                document.addEventListener(
+                DOM.addEventListener(
                     "mousemove",
                     this.debouncedMouseMoveCallback
                 );
-                document.addEventListener(
+                DOM.addEventListener(
                     "click",
                     CustomMouseEvent.onDocumentLeftClick
                 );
@@ -281,15 +283,15 @@ export default observer(
                     CustomMouseEvent.onDocumentRightClick
                 );
             } else {
-                document.removeEventListener(
+                DOM.removeEventListener(
                     "mousemove",
                     this.debouncedMouseMoveCallback
                 );
-                document.removeEventListener(
+                DOM.removeEventListener(
                     "click",
                     CustomMouseEvent.onDocumentLeftClick
                 );
-                document.removeEventListener(
+                DOM.removeEventListener(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
@@ -308,6 +310,8 @@ export default observer(
 reaction(
     () => State.preferences.visualizationMode,
     (visualizationMode) => {
+        State.preferences.closeAllPanel();
+        State.preferences.rightClickPanelOpen = false;
         State.interaction.flush();
         State.clusterInteraction.flush();
         switch (visualizationMode) {

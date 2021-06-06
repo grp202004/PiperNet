@@ -312,12 +312,11 @@ export default class ClusterInteractionStore {
      * and clear the tempData
      * @author Zichen XU
      */
-    splitCluster() {
-        let date = new Date().toLocaleString("en");
-        const clusterId: string = `Cluster Split @ ${date}`;
-        const anotherClusterId: string = `Another Cluster Split @ ${date}`;
-        const thisCluster = State.cluster.clusterBy;
-
+    splitCluster(
+        attribute: string,
+        valueInWhite: number | string,
+        valueInRed: number | string
+    ) {
         const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
             this.chosenCluster as string
         ) as string | number;
@@ -328,12 +327,12 @@ export default class ClusterInteractionStore {
             if (nodesToAlter.includes(node.id)) {
                 State.graph.rawGraph.setNodeAttribute(
                     node.id,
-                    thisCluster as string,
-                    node.value === 1 ? clusterId : anotherClusterId
+                    attribute,
+                    node.value === 1 ? valueInRed : valueInWhite
                 );
             }
         });
         this.confirmClusterSplittingTempData = null;
-        State.cluster.setCluster(thisCluster, true);
+        State.cluster.setCluster(attribute, true);
     }
 }

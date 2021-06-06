@@ -19,6 +19,7 @@ import ComponentRef from "../../ComponentRef";
 import { getMessage } from "./InteractionModePanel";
 import { handleStringChange } from "../../utils/InputFormUtils";
 import { DrawMode } from "../../../state/ClusterInteractionStore";
+import FormTwoClusterOptionsCard from "../../utils/FormTwoClusterOptionsCard";
 
 interface Props {
     currentStep: 1 | 2 | 3;
@@ -74,13 +75,19 @@ export default observer(
                         selectedValue={this.state.selected}
                     >
                         <Radio
-                            label="Draw a Freehand(Curved) Line"
+                            label="Draw a Freehand Line through the cluster"
                             value="curve"
                         />
-                        <Radio label="Draw a Straight Line" value="straight" />
-                        <Radio label="Draw a Free Circle" value="circle" />
                         <Radio
-                            label="Draw a Centered Circle"
+                            label="Draw a Straight Line through the cluster"
+                            value="straight"
+                        />
+                        <Radio
+                            label="Draw a Free Circle within the cluster"
+                            value="circle"
+                        />
+                        <Radio
+                            label="Draw a Centered Circle within the cluster"
                             value="centerCircle"
                         />
                     </RadioGroup>
@@ -91,28 +98,29 @@ export default observer(
 
         renderThirdPanel = () => {
             return (
-                <div>
+                <div style={{ width: "500px" }}>
                     <H4>Confirm Splitting of Cluster? </H4>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
+                    <p>
+                        The two sub-clusters has been specified using the
+                        different node colors.
+                    </p>
+                    <FormTwoClusterOptionsCard
+                        callback={(
+                            attribute: string,
+                            value1: number | string,
+                            value2: number | string
+                        ) => {
+                            State.helper.clusterSplittingPanelStackOpen = false;
+                            State.clusterInteraction.splitCluster(
+                                attribute,
+                                value1,
+                                value2
+                            );
+                            State.preferences.visualizationMode =
+                                VisualizationMode.Normal;
+                            State.helper.clusterSplittingCurrentStep = 1;
                         }}
-                    >
-                        <Button
-                            intent="primary"
-                            small={true}
-                            onClick={() => {
-                                State.helper.clusterSplittingPanelStackOpen = false;
-                                State.clusterInteraction.splitCluster();
-                                State.preferences.visualizationMode =
-                                    VisualizationMode.Normal;
-                                State.helper.clusterSplittingCurrentStep = 1;
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </div>
+                    />
                 </div>
             );
         };
@@ -179,19 +187,6 @@ export default observer(
                         </div>
                         <Card> {this.renderWhichPanel()}</Card>
                     </div>
-                    <Button
-                        icon="cross"
-                        style={{
-                            position: "absolute",
-                            top: -1,
-                            right: -1,
-                            zIndex: 99,
-                        }}
-                        minimal={true}
-                        onClick={() => {
-                            State.helper.clusterSplittingPanelStackOpen = false;
-                        }}
-                    />
                 </div>
             );
         };

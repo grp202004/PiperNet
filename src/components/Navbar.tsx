@@ -35,12 +35,12 @@ export default observer(
                 >
                     <NavbarGroup align={Alignment.LEFT}>
                         <img
-                            title="PiperNet"
-                            id="PiperNet Logo"
+                            title="ClusterGrapher"
+                            id="ClusterGrapher Logo"
                             src={logo}
                             width="35"
                             height="35"
-                            alt="PiperNet Logo"
+                            alt="ClusterGrapher Logo"
                         />
                         <MenuDivider />
                         <NavbarHeading>ClusterGrapher</NavbarHeading>

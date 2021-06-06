@@ -101,7 +101,10 @@ export default observer(
                         isOpen={this.state.formNewClusterOpen}
                         content={
                             <FormClusterOptionsCard
-                                callback={(attribute, value) => {
+                                callback={(
+                                    attribute: string,
+                                    value: string | number
+                                ) => {
                                     this.formNewCluster(attribute, value);
                                     this.setState({
                                         formNewClusterOpen: false,

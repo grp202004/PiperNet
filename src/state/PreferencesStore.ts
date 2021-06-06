@@ -31,6 +31,7 @@ export default class PreferencesStore {
     rightClickPositionY = 30;
 
     // Dialog
+
     exportDialogOpen = false;
     private preferenceDialogOpen = false;
     private statisticsDialogOpen = false;

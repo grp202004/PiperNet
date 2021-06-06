@@ -15,7 +15,8 @@ export const debounce = (fn: Function): any => {
     };
 };
 
-export function onDocumentLeftClick(event: MouseEvent) {
+export const onDocumentLeftClick: EventListener = (evt: Event) => {
+    const event = evt as MouseEvent;
     if (
         State.cluster.clusterBy === null ||
         !State.graphDelegate.graphDelegateMethods
@@ -54,9 +55,10 @@ export function onDocumentLeftClick(event: MouseEvent) {
         );
         console.log("currently Clicked ClusterId", intersects[0].object.uuid);
     }
-}
+};
 
-export function onDocumentRightClick(event: MouseEvent) {
+export const onDocumentRightClick: EventListener = (evt: Event) => {
+    const event = evt as MouseEvent;
     if (
         State.cluster.clusterBy === null ||
         !State.graphDelegate.graphDelegateMethods
@@ -100,9 +102,9 @@ export function onDocumentRightClick(event: MouseEvent) {
         "currently Right-Clicked ClusterId",
         intersects[0]?.object?.uuid ?? null
     );
-}
+};
 
-export function onDocumentMouseMove(event: MouseEvent) {
+export function onDocumentMouseMove(this: Element, event: MouseEvent) {
     if (
         State.cluster.clusterBy === null ||
         !State.graphDelegate.graphDelegateMethods

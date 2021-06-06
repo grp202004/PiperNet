@@ -1,12 +1,5 @@
 import React, { MouseEventHandler } from "react";
-import {
-    Button,
-    FormGroup,
-    Icon,
-    InputGroup,
-    Intent,
-    MenuItem,
-} from "@blueprintjs/core";
+import { Button, Icon, InputGroup, Intent, MenuItem } from "@blueprintjs/core";
 import { Select } from "@blueprintjs/select";
 import { observer } from "mobx-react";
 import State from "../../state";

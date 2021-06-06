@@ -265,10 +265,10 @@ export default class Cluster3dObjectStore {
     meshSpotlightMaterial(mesh: THREE.Mesh) {
         let material = mesh.material as THREE.Material;
         const oldOpacity = material.opacity;
-        material.opacity = 0.7;
+        material.opacity = 1;
         setTimeout(() => {
             material.opacity = oldOpacity;
-        }, 100);
+        }, 50);
     }
 
     /**
@@ -283,6 +283,7 @@ export default class Cluster3dObjectStore {
             //@ts-ignore
             color: mesh["_color"],
             transparent: true,
+            opacity: 0.7,
             blending: THREE.AdditiveBlending,
         });
     }
@@ -298,9 +299,8 @@ export default class Cluster3dObjectStore {
         mesh.material = new THREE.MeshPhongMaterial({
             //@ts-ignore
             color: mesh["_color"],
-            emissive: 0xff0000,
             shininess: 10,
-            opacity: 0.8,
+            opacity: 0.7,
             transparent: true,
         });
     }

@@ -333,7 +333,13 @@ div.pt-card.sub-option.legend {
 }
 
 .transparent-popover {
-    opacity: 0.7;
+    opacity: 0.9;
+}
+
+.horizontal-gap {
+    overflow: hidden;
+    height: 10px;
+    width: 10px;
 }
 
 .node-details-table {

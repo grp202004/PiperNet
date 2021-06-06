@@ -47,6 +47,7 @@ export default observer(
          * @author Zichen XU, Chenghao SHI
          */
         previewClusterNeighbors(uuid: string) {
+            State.clusterInteraction.selectedClusters = [uuid];
             const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
                 uuid
             ) as string | number;
@@ -81,6 +82,7 @@ export default observer(
                 return current.distanceTo(from);
             }
 
+            State.clusterInteraction.selectedClusters = [uuid];
             const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
                 uuid
             ) as string | number;
@@ -108,7 +110,7 @@ export default observer(
 
             if (objects.length !== 0) {
                 let shortest = objects[0];
-                objects.map((object) => {
+                objects.forEach((object) => {
                     if (
                         computeDistance(object?.position!) <
                         computeDistance(shortest?.position!)
@@ -169,7 +171,10 @@ export default observer(
                         isOpen={this.state.mergeSelectedClustersOpen}
                         content={
                             <FormClusterOptionsCard
-                                callback={(attribute, value) => {
+                                callback={(
+                                    attribute: string,
+                                    value: number | string
+                                ) => {
                                     this.mergeSelectedClusters(
                                         attribute,
                                         value
@@ -187,6 +192,7 @@ export default observer(
                             icon="group-objects"
                             text="Merge Clusters"
                             onClick={() => {
+                                this.closeAllPanel();
                                 this.setState({
                                     mergeSelectedClustersOpen: true,
                                 });
@@ -205,7 +211,10 @@ export default observer(
                         isOpen={this.state.mergeNeighborsOpen}
                         content={
                             <FormClusterOptionsCard
-                                callback={(attribute, value) => {
+                                callback={(
+                                    attribute: string,
+                                    value: number | string
+                                ) => {
                                     this.mergeSelectedClusters(
                                         attribute,
                                         value
@@ -229,6 +238,7 @@ export default observer(
                                         .chosenCluster as string
                                 );
                                 State.graphDelegate.clusterObject.updateAllMaterials();
+                                this.closeAllPanel();
                                 this.setState({
                                     mergeNeighborsOpen: true,
                                 });
@@ -241,7 +251,10 @@ export default observer(
                         isOpen={this.state.mergeNearestClustersOpen}
                         content={
                             <FormClusterOptionsCard
-                                callback={(attribute, value) => {
+                                callback={(
+                                    attribute: string,
+                                    value: number | string
+                                ) => {
                                     this.mergeSelectedClusters(
                                         attribute,
                                         value
@@ -264,6 +277,7 @@ export default observer(
                                         .chosenCluster as string
                                 );
                                 State.graphDelegate.clusterObject.updateAllMaterials();
+                                this.closeAllPanel();
                                 this.setState({
                                     mergeNearestClustersOpen: true,
                                 });
@@ -291,6 +305,18 @@ export default observer(
                     />
                 </>
             );
+        }
+
+        componentWillUnmount = () => {
+            this.closeAllPanel();
+        };
+
+        closeAllPanel() {
+            this.setState({
+                mergeSelectedClustersOpen: false,
+                mergeNeighborsOpen: false,
+                mergeNearestClustersOpen: false,
+            });
         }
     }
 );
