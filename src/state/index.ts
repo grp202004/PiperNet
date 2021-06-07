@@ -295,4 +295,27 @@ reaction(
     }
 );
 
+// auto set the signal to be false
+autorun(
+    () => {
+        if (State.signal.isMovingCamera) {
+            State.signal.isMovingCamera = false;
+        }
+    },
+    {
+        delay: 50,
+    }
+);
+
+autorun(
+    () => {
+        if (State.signal.isRightClickingCluster) {
+            State.signal.isRightClickingCluster = false;
+        }
+    },
+    {
+        delay: 50,
+    }
+);
+
 export default State;

@@ -71,6 +71,7 @@ export default class ClusterInteractionStore {
      * @param {MouseEvent} event
      */
     clusterLeftClickCallback(uuid: string, event: MouseEvent) {
+        if (State.signal.isMovingCamera) return;
         State.graphDelegate.clusterObject.meshSpotlightMaterial(
             State.graphDelegate.clusterObject.getObjectById(uuid) as THREE.Mesh
         );
@@ -111,7 +112,7 @@ export default class ClusterInteractionStore {
      * @param {MouseEvent} event
      */
     clusterRightClickCallback(uuid: string | null, event: MouseEvent) {
-        State.signal.setIsRightClickingCluster();
+        State.signal.isRightClickingCluster = true;
 
         State.clusterInteraction.chosenCluster = uuid;
         State.preferences.rightClickPositionX = event.x;

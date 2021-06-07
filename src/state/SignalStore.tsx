@@ -14,8 +14,5 @@ export default class SignalStore {
 
     isRightClickingCluster: boolean = false;
 
-    setIsRightClickingCluster() {
-        this.isRightClickingCluster = true;
-        setTimeout(() => (this.isRightClickingCluster = false), 500);
-    }
+    isMovingCamera: boolean = false;
 }

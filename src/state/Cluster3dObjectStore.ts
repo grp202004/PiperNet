@@ -234,17 +234,11 @@ export default class Cluster3dObjectStore {
         name: string | number
     ): THREE.Mesh {
         const color = State.cluster.attributeColor.get(name);
-        const meshMaterial = new THREE.MeshBasicMaterial({
-            color: color,
-            transparent: true,
-            opacity: 0.15,
-        });
-        meshMaterial.side = THREE.DoubleSide;
-        meshMaterial.depthWrite = false;
-
+        const meshMaterial = new THREE.MeshBasicMaterial();
         let mesh = new THREE.Mesh(geom, meshMaterial);
         //@ts-ignore
         mesh["_color"] = color;
+        this.meshNormalMaterial(mesh);
         this.UUID2ClusterValueMap.set(mesh.uuid, name);
         mesh.name = "THREE_CLUSTER_" + name;
         return mesh;
@@ -283,9 +277,11 @@ export default class Cluster3dObjectStore {
             //@ts-ignore
             color: mesh["_color"],
             transparent: true,
-            opacity: 0.7,
+            opacity: 0.6,
             blending: THREE.AdditiveBlending,
         });
+        mesh.material.side = THREE.DoubleSide;
+        mesh.material.depthWrite = false;
     }
 
     /**
@@ -333,12 +329,10 @@ export default class Cluster3dObjectStore {
             const meshId = mesh.uuid;
             if (State.clusterInteraction.currentlyHoveredClusterId === meshId) {
                 this.meshHighlightMaterial(mesh);
-                return;
             } else if (
                 State.clusterInteraction.selectedClusters.includes(meshId)
             ) {
                 this.meshSelectedMaterial(mesh);
-                return;
             } else {
                 this.meshNormalMaterial(mesh);
             }

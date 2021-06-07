@@ -19,8 +19,9 @@ import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
 import CanvasDrawPanel from "../panels/CanvasDraw/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
-import { debounce } from "../../state/utils/MouseEventUtils";
 import ReactDOM from "react-dom";
+import { TrackballControls } from "three/examples/jsm/controls/TrackballControls";
+import { debounce } from "lodash";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -230,6 +231,7 @@ export default observer(
                         cooldownTicks={100}
                         onEngineStop={() => {
                             if (
+                                State.css.cluster.autoPlot &&
                                 State.css.cluster.shape === "sphere" &&
                                 State.graphDelegate.clusterObject
                                     .canAlterNodePosition
@@ -268,7 +270,8 @@ export default observer(
             const DOM = ReactDOM.findDOMNode(this) as Element;
             if (set) {
                 this.debouncedMouseMoveCallback = debounce(
-                    CustomMouseEvent.onDocumentMouseMove
+                    CustomMouseEvent.onDocumentMouseMove,
+                    25
                 );
                 DOM.addEventListener(
                     "mousemove",
@@ -278,7 +281,7 @@ export default observer(
                     "click",
                     CustomMouseEvent.onDocumentLeftClick
                 );
-                document.addEventListener(
+                DOM.addEventListener(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
@@ -303,6 +306,11 @@ export default observer(
             this.clusterInteractionListener(true);
             ComponentRef.visualizer = this;
             this.graphDelegate.updateClusterForce();
+
+            const control = this.graphMethods.controls() as TrackballControls;
+            control.addEventListener("change", () => {
+                State.signal.isMovingCamera = true;
+            });
         }
     }
 );

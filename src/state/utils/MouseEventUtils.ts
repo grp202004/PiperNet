@@ -4,17 +4,6 @@ import * as THREE from "three";
 import { Object3D } from "three";
 import ComponentRef from "../../components/ComponentRef";
 
-export const debounce = (fn: Function): any => {
-    let timer: any = null;
-    return (...args: any[]) => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => {
-            fn.apply(this, args);
-            timer = null;
-        }, 50);
-    };
-};
-
 export const onDocumentLeftClick: EventListener = (evt: Event) => {
     const event = evt as MouseEvent;
     if (
