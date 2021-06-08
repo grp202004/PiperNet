@@ -1,9 +1,11 @@
 import React, { MouseEventHandler } from "react";
-import { Button, MenuItem } from "@blueprintjs/core";
+import { Button, Icon, InputGroup, Intent, MenuItem } from "@blueprintjs/core";
 import { Select } from "@blueprintjs/select";
 import { observer } from "mobx-react";
 import State from "../../state";
 import { copy } from "copy-anything";
+import { handleStringChange } from "./InputFormUtils";
+import { createToaster } from "../../state/utils/ToasterUtils";
 
 interface Props {
     /**
@@ -95,11 +97,73 @@ export default observer(
                         let selected = item === "None" ? null : item;
                         this.props.onSelect(selected);
                     }}
+                    {...this.props}
                 >
                     <Button
                         text={this.props.syncWith ?? this.fullProperties[0]}
                     />
                 </Select>
+            );
+        }
+    }
+);
+
+interface ClusterAdderProps {
+    onCreate: (attribute: string) => void;
+}
+
+export const ClusterAdder = observer(
+    class ClusterAdder extends React.Component<ClusterAdderProps> {
+        state = {
+            attribute: "",
+        };
+
+        render() {
+            return (
+                <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                    <InputGroup
+                        leftElement={<Icon icon="tag" />}
+                        onChange={handleStringChange((value) => {
+                            this.setState({ attribute: value });
+                        })}
+                        placeholder="New Attribute Name"
+                        fill={true}
+                        value={this.state.attribute}
+                    />
+                    <Button
+                        onClick={() => {
+                            if (
+                                this.state.attribute === "" ||
+                                State.graph.metadata.nodeProperties.includes(
+                                    this.state.attribute
+                                )
+                            ) {
+                                createToaster(
+                                    `Attribute name ${this.state.attribute} already exists`,
+                                    undefined,
+                                    undefined,
+                                    Intent.DANGER
+                                );
+                                return;
+                            }
+                            State.graph.metadata.nodeProperties.push(
+                                this.state.attribute
+                            );
+                            State.graph.rawGraph.forEachNode(
+                                (_, attributes) => {
+                                    attributes[this.state.attribute] = "";
+                                }
+                            );
+                            this.props.onCreate(this.state.attribute);
+                            this.setState({ attributes: "" });
+                        }}
+                        intent={Intent.PRIMARY}
+                    >
+                        Add
+                    </Button>
+                </div>
             );
         }
     }

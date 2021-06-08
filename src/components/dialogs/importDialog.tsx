@@ -8,7 +8,6 @@ import {
     Tag,
     MultistepDialog,
     DialogStep,
-    IButtonProps,
     H4,
     H2,
 } from "@blueprintjs/core";
@@ -79,18 +78,6 @@ export default observer(
             delimiter: ",",
             step: 0,
         };
-
-        // nextButtonProps = {
-        //     disabled:
-        //         (this.state.step === 0 &&
-        //             !State.import.importConfig.edgeFile.isReady) ||
-        //         !(
-        //             this.state.step === 2 &&
-        //             (!State.import.importConfig.hasNodeFile ||
-        //                 (State.import.importConfig.hasNodeFile &&
-        //                     State.import.importConfig.nodeFile.isReady))
-        //         ),
-        // };
 
         canImport = () => {
             if (State.import.importConfig.hasNodeFile) {
@@ -220,39 +207,6 @@ export default observer(
             );
         }
 
-        importedNodes = () => {
-            return <Cell>{State.graph.rawGraph.order}</Cell>;
-        };
-
-        importedEdges = () => {
-            return <Cell>{State.graph.rawGraph.size}</Cell>;
-        };
-
-        closeDialog = () => {
-            State.import.importDialogOpen = false;
-        };
-
-        finalButtonProps: Partial<IButtonProps> = {
-            intent: "primary",
-            // disabled: this.canImport(),
-            onClick: () => {
-                State.import.isLoading = true;
-                State.import.importGraphFromCSV().then((res) => {
-                    State.graph.setGraph(res.graph, res.metadata);
-
-                    if (State.graph.rawGraph.hasAttribute("default")) {
-                        State.cluster.setCluster(
-                            State.graph.rawGraph.getAttribute("default")
-                        );
-                    }
-
-                    State.import.isLoading = false;
-                    State.import.importDialogOpen = false;
-                });
-            },
-            text: "Import",
-        };
-
         render() {
             return (
                 <MultistepDialog
@@ -263,8 +217,32 @@ export default observer(
                     onClose={() => {
                         State.import.importDialogOpen = false;
                     }}
-                    // nextButtonProps={this.nextButtonProps}
-                    finalButtonProps={this.finalButtonProps}
+                    finalButtonProps={{
+                        intent: "primary",
+                        onClick: () => {
+                            State.import.isLoading = true;
+                            State.import.importGraphFromCSV().then((res) => {
+                                State.graph.setGraph(res.graph, res.metadata);
+                                if (
+                                    State.graph.rawGraph.hasAttribute("default")
+                                ) {
+                                    State.cluster.setCluster(
+                                        State.graph.rawGraph.getAttribute(
+                                            "default"
+                                        )
+                                    );
+                                }
+                                State.import.isLoading = false;
+                                State.import.importDialogOpen = false;
+                            });
+                        },
+                        disabled: !(
+                            !State.import.importConfig.hasNodeFile ||
+                            (State.import.importConfig.hasNodeFile &&
+                                State.import.importConfig.nodeFile.isReady)
+                        ),
+                        text: "Import",
+                    }}
                     onChange={(id) => {
                         this.setState({
                             step: id,
@@ -306,10 +284,14 @@ export default observer(
                                 )}
                             </div>
                         }
+                        nextButtonProps={{
+                            disabled: !State.import.importConfig.edgeFile
+                                .isReady,
+                        }}
                     />
                     <DialogStep
                         id="csv_node_need"
-                        title="Do i need to import node file ?"
+                        title="Do I need to import node file ?"
                         panel={
                             <div
                                 className={classnames(
@@ -321,7 +303,7 @@ export default observer(
                                     alignItems: "center",
                                 }}
                             >
-                                <H2>Do i need to import node file?</H2>
+                                <H2>Do I need to import node file?</H2>
                                 <H4>
                                     You can import nodes file to add node
                                     attributes to this graph
@@ -380,37 +362,6 @@ export default observer(
                             </div>
                         }
                     />
-                    {/* <DialogStep
-                        id="Info"
-                        title="Informtion of graph"
-                        panel={
-                            <div>
-                                <Card>
-                                    <Table numRows={1}>
-                                        <Column
-                                            name=" number of Nodes "
-                                            cellRenderer={this.importedNodes}
-                                        />
-                                        <Column
-                                            name=" number of Edges "
-                                            cellRenderer={this.importedEdges}
-                                        />
-                                    </Table>
-                                </Card>
-                                <br />
-                                <Divider />
-                                <div>
-                                    Set an attribute for cluster:
-                                    <ClusterChooser
-                                        onSelect={(cluster) => {
-                                            State.cluster.setCluster(cluster);
-                                        }}
-                                        syncWith={State.cluster.clusterBy}
-                                    />
-                                </div>
-                            </div>
-                        }
-                    /> */}
                 </MultistepDialog>
             );
         }

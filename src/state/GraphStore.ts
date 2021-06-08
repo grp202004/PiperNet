@@ -44,7 +44,7 @@ export default class GraphStore {
      * @type {Graph}
      */
     rawGraph: Graph = new Graph({
-        allowSelfLoops: true,
+        allowSelfLoops: false,
         multi: false,
         type: "undirected",
     });

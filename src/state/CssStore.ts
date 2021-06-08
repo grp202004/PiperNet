@@ -63,6 +63,7 @@ class ClusterConfig {
         makeAutoObservable(this);
     }
 
+    autoPlot = false;
     clusterForce = 30;
     normalForce = 50;
     resolution = 10;

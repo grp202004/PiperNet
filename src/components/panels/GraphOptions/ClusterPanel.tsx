@@ -1,9 +1,9 @@
 import React from "react";
 import { observer } from "mobx-react";
-import State from "../../state";
-import { Card, Slider } from "@blueprintjs/core";
-import Collapsable from "../utils/Collapsable";
-import SimpleSelect from "../utils/SimpleSelect";
+import State from "../../../state";
+import { Card, Checkbox, Slider } from "@blueprintjs/core";
+import Collapsable from "../../utils/Collapsable";
+import SimpleSelect from "../../utils/SimpleSelect";
 
 export default observer(
     /**
@@ -91,6 +91,17 @@ export default observer(
                                     small={true}
                                 />
                             </span>
+                        </p>
+                        <p style={{ display: "flex" }}>
+                            Auto plot nodes onto the surface of clusters
+                            <Checkbox
+                                checked={State.css.cluster.autoPlot}
+                                large={true}
+                                onChange={() => {
+                                    State.css.cluster.autoPlot = !State.css
+                                        .cluster.autoPlot;
+                                }}
+                            />
                         </p>
                     </Card>
                     {State.css.cluster.shape === "sphere" && (

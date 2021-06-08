@@ -16,11 +16,12 @@ import { reaction } from "mobx";
 import { VisualizationMode } from "../../state/PreferencesStore";
 import SelectionBox from "../panels/SelectionBox";
 import * as CustomMouseEvent from "../../state/utils/MouseEventUtils";
-import CanvasDrawPanel from "../panels/CanvasDrawPanel";
+import CanvasDrawPanel from "../panels/CanvasDraw/CanvasDrawPanel";
 import { createToaster } from "../../state/utils/ToasterUtils";
 import { Position } from "@blueprintjs/core";
-import CanvasDrawStraightLinePanel from "../panels/CanvasDrawStraightLinePanel";
-import { debounce } from "../../state/utils/MouseEventUtils";
+import ReactDOM from "react-dom";
+import { TrackballControls } from "three/examples/jsm/controls/TrackballControls";
+import { debounce } from "lodash";
 
 export default observer(
     class ThreeJSVis extends React.Component {
@@ -28,6 +29,8 @@ export default observer(
             visualizationGraph: State.graphDelegate.visualizationGraph(),
             nodePointerInteraction: true,
         };
+
+        clicking = false;
 
         // @ts-ignore
         graphRef: React.MutableRefObject<ForceGraphMethods> = React.createRef();
@@ -87,11 +90,24 @@ export default observer(
                 return;
             }
             State.interaction.chosenNode = node.id as string;
+            // if selected node is not in the list, then add
+            if (
+                !State.interaction.selectedNodes.includes(
+                    State.interaction.chosenNode
+                )
+            ) {
+                State.interaction.selectedNodes.push(
+                    State.interaction.chosenNode
+                );
+            }
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Node";
             State.preferences.rightClickPanelOpen = true;
             State.preferences.closeAllPanel("rightClickPanel");
+            setTimeout(() => {
+                this.graphMethods.resumeAnimation();
+            }, 200);
         };
 
         backgroundClickCallback = () => {
@@ -103,14 +119,21 @@ export default observer(
         };
 
         backgroundRightClickCallback = (event: MouseEvent) => {
-            if (!this.state.nodePointerInteraction) {
+            if (
+                !this.state.nodePointerInteraction ||
+                State.signal.isRightClickingCluster
+            ) {
                 return;
             }
+            this.graphMethods.pauseAnimation();
             State.preferences.rightClickPositionX = event.x;
             State.preferences.rightClickPositionY = event.y;
             State.preferences.rightClickOn = "Background";
             State.preferences.rightClickPanelOpen = true;
             State.preferences.closeAllPanel("rightClickPanel");
+            setTimeout(() => {
+                this.graphMethods.resumeAnimation();
+            }, 200);
         };
 
         computeNodeColor(_node: NodeObject) {
@@ -148,14 +171,6 @@ export default observer(
             }
         }
 
-        renderDrawCanvas = () => {
-            if (State.clusterInteraction.drawStraightLine) {
-                return <CanvasDrawStraightLinePanel />;
-            } else {
-                return <CanvasDrawPanel />;
-            }
-        };
-
         renderGraph = () => {
             return (
                 <div>
@@ -164,8 +179,9 @@ export default observer(
                         State.interaction.boxSelectionOpen && <SelectionBox />}
                     {State.preferences.visualizationMode ===
                         VisualizationMode.ClusterSplitting &&
-                        State.clusterInteraction.drawPanelActivate &&
-                        this.renderDrawCanvas()}
+                        State.clusterInteraction.drawPanelActivate && (
+                            <CanvasDrawPanel />
+                        )}
                     <ForceGraph3D
                         // Data Segment
                         ref={this.graphRef}
@@ -215,6 +231,7 @@ export default observer(
                         cooldownTicks={100}
                         onEngineStop={() => {
                             if (
+                                State.css.cluster.autoPlot &&
                                 State.css.cluster.shape === "sphere" &&
                                 State.graphDelegate.clusterObject
                                     .canAlterNodePosition
@@ -229,23 +246,6 @@ export default observer(
                     />
                 </div>
             );
-            // } else {
-            //     return (
-            //         <ForceGraph2D
-            //             graphData={State.graph.adapterGraph}
-            //             dagMode={"td"}
-            //             // dagLevelDistance={300}
-            //             // backgroundColor="#101020"
-            //             nodeRelSize={1}
-            //             // nodeId="path"
-            //             // nodeVal={(node) => 100 / (node.level + 1)}
-            //             // nodeLabel="path"
-            //             // nodeAutoColorBy="module"
-            //             // linkDirectionalParticles={2}
-            //             // linkDirectionalParticleWidth={2}
-            //             d3VelocityDecay={0.3}
-            //         />
-            //     );
         };
 
         render() {
@@ -258,35 +258,46 @@ export default observer(
             });
         }
 
+        nodeInteractionListener(set: boolean) {
+            this.setState({
+                nodePointerInteraction: set,
+            });
+        }
+
+        private debouncedMouseMoveCallback: any;
+
         clusterInteractionListener(set: boolean) {
+            const DOM = ReactDOM.findDOMNode(this) as Element;
             if (set) {
-                document.addEventListener(
-                    "mousemove",
-                    debounce(CustomMouseEvent.onDocumentMouseMove)
+                this.debouncedMouseMoveCallback = debounce(
+                    CustomMouseEvent.onDocumentMouseMove,
+                    25
                 );
-                document.addEventListener(
+                DOM.addEventListener(
+                    "mousemove",
+                    this.debouncedMouseMoveCallback
+                );
+                DOM.addEventListener(
                     "click",
                     CustomMouseEvent.onDocumentLeftClick
                 );
-                document.addEventListener(
+                DOM.addEventListener(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
-                console.log("MouseEvent listening");
             } else {
-                document.removeEventListener(
+                DOM.removeEventListener(
                     "mousemove",
-                    CustomMouseEvent.onDocumentMouseMove
+                    this.debouncedMouseMoveCallback
                 );
-                document.removeEventListener(
+                DOM.removeEventListener(
                     "click",
                     CustomMouseEvent.onDocumentLeftClick
                 );
-                document.removeEventListener(
+                DOM.removeEventListener(
                     "contextmenu",
                     CustomMouseEvent.onDocumentRightClick
                 );
-                console.log("MouseEvent stop listening");
             }
         }
 
@@ -295,6 +306,11 @@ export default observer(
             this.clusterInteractionListener(true);
             ComponentRef.visualizer = this;
             this.graphDelegate.updateClusterForce();
+
+            const control = this.graphMethods.controls() as TrackballControls;
+            control.addEventListener("change", () => {
+                State.signal.isMovingCamera = true;
+            });
         }
     }
 );
@@ -302,22 +318,18 @@ export default observer(
 reaction(
     () => State.preferences.visualizationMode,
     (visualizationMode) => {
+        State.preferences.closeAllPanel();
+        State.preferences.rightClickPanelOpen = false;
+        State.interaction.flush();
+        State.clusterInteraction.flush();
         switch (visualizationMode) {
             case VisualizationMode.Normal:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: true,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(true);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 break;
 
             case VisualizationMode.NodeSelection:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: true,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(true);
                 ComponentRef.visualizer?.clusterInteractionListener(false);
                 createToaster(
                     <p>
@@ -330,11 +342,7 @@ reaction(
                 break;
 
             case VisualizationMode.ClusterSelection:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: false,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(false);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 createToaster(
                     <p>
@@ -348,11 +356,7 @@ reaction(
                 break;
 
             case VisualizationMode.ClusterSplitting:
-                ComponentRef.visualizer?.setState({
-                    nodePointerInteraction: false,
-                });
-                State.interaction.flush();
-                State.clusterInteraction.flush();
+                ComponentRef.visualizer?.nodeInteractionListener(false);
                 ComponentRef.visualizer?.clusterInteractionListener(true);
                 State.helper.clusterSplittingPanelStackOpen = true;
                 break;

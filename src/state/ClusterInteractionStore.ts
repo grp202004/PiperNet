@@ -3,6 +3,13 @@ import * as THREE from "three";
 import { polygonContains } from "d3-polygon";
 import State from ".";
 
+export enum DrawMode {
+    StraightLine,
+    FreeLine,
+    FreeCircle,
+    CenterCircle,
+}
+
 /**
  * @description the cluster-mouse-interaction related filed and functions are hereby written in this class
  * such as `currentlyHoveredClusterId`, `selectedCluster` and `selectedClusters`,
@@ -16,6 +23,7 @@ import State from ".";
  * @author Zichen XU
  * @export
  * @class ClusterInteractionStore
+ *
  */
 export default class ClusterInteractionStore {
     constructor() {
@@ -27,6 +35,7 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      * @type {(string | null)}
      */
+
     currentlyHoveredClusterId: string | null = null;
 
     /**
@@ -34,7 +43,7 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      * @type {(string | null)}
      */
-    selectedCluster: string | null = null;
+    chosenCluster: string | null = null;
 
     /**
      * @description the selected Clusters UUID used in choosing which clusters to be merged
@@ -50,7 +59,7 @@ export default class ClusterInteractionStore {
      */
     flush() {
         this.currentlyHoveredClusterId = null;
-        this.selectedCluster = null;
+        this.chosenCluster = null;
         this.selectedClusters = [];
     }
 
@@ -62,13 +71,14 @@ export default class ClusterInteractionStore {
      * @param {MouseEvent} event
      */
     clusterLeftClickCallback(uuid: string, event: MouseEvent) {
+        if (State.signal.isMovingCamera) return;
         State.graphDelegate.clusterObject.meshSpotlightMaterial(
             State.graphDelegate.clusterObject.getObjectById(uuid) as THREE.Mesh
         );
         // multi-selection
         let index;
 
-        State.clusterInteraction.selectedCluster = uuid;
+        State.clusterInteraction.chosenCluster = uuid;
 
         // if already in the list of selected, remove
         if (
@@ -102,49 +112,22 @@ export default class ClusterInteractionStore {
      * @param {MouseEvent} event
      */
     clusterRightClickCallback(uuid: string | null, event: MouseEvent) {
-        State.clusterInteraction.selectedCluster = uuid;
+        State.signal.isRightClickingCluster = true;
+
+        State.clusterInteraction.chosenCluster = uuid;
         State.preferences.rightClickPositionX = event.x;
         State.preferences.rightClickPositionY = event.y;
+        // if selected cluster is not in the list, then add
         if (uuid) {
+            if (!this.selectedClusters.includes(uuid)) {
+                this.selectedClusters.push(uuid);
+            }
             State.preferences.rightClickOn = "Cluster";
         } else {
             State.preferences.rightClickOn = "Background";
         }
         State.preferences.rightClickPanelOpen = true;
         State.preferences.closeAllPanel("rightClickPanel");
-    }
-
-    /**
-     * @description loop through the selected clusters and set the nodes within that cluster
-     * the newly-formed attribute is named _merge-cluster
-     * and the value to that attribute is the Time() of this time
-     * other nodes unrelated will be set to empty string in this attribute
-     * @author Zichen XU
-     */
-    mergeSelectedClusters() {
-        let date = new Date().toLocaleString("en");
-        let clusterId: string = `Cluster Merged @ ${date}`;
-        if (!State.graph.metadata.nodeProperties.includes("_merge-cluster")) {
-            State.graph.metadata.nodeProperties.push("_merge-cluster");
-        }
-        State.graph.rawGraph.forEachNode((_, attributes) => {
-            attributes["_merge-cluster"] = "";
-        });
-        this.selectedClusters.forEach((uuid) => {
-            const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-                uuid
-            ) as string | number;
-            const keys = State.cluster.attributeKeys.get(clusterValue);
-            keys?.forEach((nodeId) => {
-                State.graph.rawGraph.setNodeAttribute(
-                    nodeId,
-                    "_merge-cluster",
-                    clusterId
-                );
-            });
-        });
-        State.cluster.setCluster("_merge-cluster");
-        this.flush();
     }
 
     /**
@@ -175,6 +158,8 @@ export default class ClusterInteractionStore {
         this.flush();
     }
 
+    /* --------------- The below content is for cluster splitting --------------- */
+
     /**
      * @description whether the drawing panel used in ClusterSplit is active
      * @author Zichen XU
@@ -188,7 +173,7 @@ export default class ClusterInteractionStore {
      * @author Zichen XU
      * @type {boolean}
      */
-    drawStraightLine: boolean = false;
+    drawMode: DrawMode = DrawMode.FreeLine;
 
     /**
      * @description the line segments returned by drawing a line
@@ -235,9 +220,8 @@ export default class ClusterInteractionStore {
             value: number;
         }[];
         const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-            State.clusterInteraction.selectedCluster as string
+            State.clusterInteraction.chosenCluster as string
         );
-        console.log(clusterValue);
         let keys = State.cluster.attributeKeys.get(clusterValue!) as string[];
         keys.forEach((node) => {
             let attribute = State.graph.rawGraph.getNodeAttributes(node);
@@ -275,20 +259,70 @@ export default class ClusterInteractionStore {
         this.confirmClusterSplittingTempData = screenCoords;
     }
 
+    computeSplitClusterInCircle(
+        centerX: number,
+        centerY: number,
+        radius: number
+    ) {
+        let screenCoords = [] as {
+            id: string;
+            x: number;
+            y: number;
+            value: number;
+        }[];
+        const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
+            State.clusterInteraction.chosenCluster as string
+        );
+        let keys = State.cluster.attributeKeys.get(clusterValue!) as string[];
+        keys.forEach((node) => {
+            let attribute = State.graph.rawGraph.getNodeAttributes(node);
+            let coord = State.graphDelegate.graphDelegateMethods.graph2ScreenCoords(
+                attribute._visualize.x,
+                attribute._visualize.y,
+                attribute._visualize.z
+            );
+            screenCoords.push({ id: node, x: coord.x, y: coord.y, value: 0 });
+        });
+
+        screenCoords.forEach((point) => {
+            let distance = Math.sqrt(
+                Math.pow(point.x - centerX, 2) + Math.pow(point.y - centerY, 2)
+            );
+
+            if (distance < radius) {
+                // in the drawn area
+                State.interaction.updateNodeVisualizeAttribute(point.id, {
+                    hovered: true,
+                });
+                point.value = 1;
+            } else {
+                State.interaction.updateNodeVisualizeAttribute(point.id, {
+                    hovered: false,
+                });
+                point.value = 0;
+            }
+        });
+
+        State.graphDelegate.graphDelegateMethods.refresh();
+        this.confirmClusterSplittingTempData = screenCoords;
+    }
+
     /**
      * @description this will be called when user confirm the cluster split
      * it will set the attribute of these two groups to be different
      * and clear the tempData
      * @author Zichen XU
+     * @param {string} attribute
+     * @param {(number | string)} valueInWhite
+     * @param {(number | string)} valueInRed
      */
-    splitCluster() {
-        let date = new Date().toLocaleString("en");
-        const clusterId: string = `Cluster Split @ ${date}`;
-        const anotherClusterId: string = `Another Cluster Split @ ${date}`;
-        const thisCluster = State.cluster.clusterBy;
-
+    splitCluster(
+        attribute: string,
+        valueInWhite: number | string,
+        valueInRed: number | string
+    ) {
         const clusterValue = State.graphDelegate.clusterObject.UUID2ClusterValueMap.get(
-            this.selectedCluster as string
+            this.chosenCluster as string
         ) as string | number;
         const nodesToAlter = State.cluster.attributeKeys.get(
             clusterValue
@@ -297,12 +331,12 @@ export default class ClusterInteractionStore {
             if (nodesToAlter.includes(node.id)) {
                 State.graph.rawGraph.setNodeAttribute(
                     node.id,
-                    thisCluster as string,
-                    node.value === 1 ? clusterId : anotherClusterId
+                    attribute,
+                    node.value === 1 ? valueInRed : valueInWhite
                 );
             }
         });
         this.confirmClusterSplittingTempData = null;
-        State.cluster.setCluster(thisCluster, true);
+        State.cluster.setCluster(attribute, true);
     }
 }

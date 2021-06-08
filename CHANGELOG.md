@@ -1,8 +1,29 @@
 # Changelog
 
+## [1.1.0](https://github.com/grp202004/PiperNet/tree/1.1.0) (2021-06-10)
+
+This stable version release includes bug fixes and improvements
+
+**Improvements:**
+
+-   allow user to select whether to auto plot the nodes onto the surface, and set default to not
+-   add 4 types of cluster splitting strategies: Freehand Line, Straight Line, Free Circle, Centered Circle
+-   add <FormClusterOptionsCard> and <FormTwoClusterOptionsCard> that allow user to specify values
+-   remove the 'close' button on all the interactionMove cards
+-   add 'Merge cluster with neighbors' and 'Merge cluster with nearest neighbors' to the cluster interaction
+-   add context menu divider title to all context menus
+-   add debounce and throttle to the mouse events listeners
+-   update the cluster visualization options and materials
+
+**Fixed bugs:**
+
+-   fix the bug of accidentally select the wrong cluster
+-   refactor the context menus to multiple sub components
+-   fix the cluster splitting z-index crossover layer problem
+
 ## [1.0.1](https://github.com/grp202004/PiperNet/tree/1.0.1) (2021-04-09)
 
-This final stable version release only includes bug fixes and improvements
+This first stable version release only includes bug fixes and improvements
 
 **Fixed bugs:**
 

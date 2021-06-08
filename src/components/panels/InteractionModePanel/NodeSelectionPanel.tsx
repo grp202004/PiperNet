@@ -48,19 +48,6 @@ export default observer(
                             </Button>
                         </Card>
                     </div>
-                    <Button
-                        icon="cross"
-                        style={{
-                            position: "absolute",
-                            top: -1,
-                            right: -1,
-                            zIndex: 99,
-                        }}
-                        minimal={true}
-                        onClick={() => {
-                            State.helper.NodeSelectionPanelOpen = false;
-                        }}
-                    />
                 </div>
             );
         };

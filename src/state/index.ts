@@ -10,7 +10,7 @@ import GraphDelegate from "./GraphDelegate";
 import NodeInteractionStore from "./NodeInteractionStore";
 import ClusterInteractionStore from "./ClusterInteractionStore";
 import HelperStackPanelStore from "./HelperStackPanelStore";
-import ComponentRef from "../components/ComponentRef";
+import SignalStore from "./SignalStore";
 
 /**
  * @description the overall state to store all information of this project
@@ -31,6 +31,7 @@ class AppState {
     cluster!: ClusterStore;
     helper!: HelperStackPanelStore;
     css!: CssStore;
+    signal!: SignalStore;
 
     private privateConstructor() {
         this.preferences = new PreferencesStore();
@@ -43,6 +44,7 @@ class AppState {
         this.cluster = new ClusterStore();
         this.helper = new HelperStackPanelStore();
         this.css = new CssStore();
+        this.signal = new SignalStore();
     }
 
     // add singleton to prevent creating multiple instances of the State class
@@ -87,7 +89,7 @@ autorun(() => {
         State.preferences.visualizationMode ===
         VisualizationMode.ClusterSplitting
     ) {
-        if (State.clusterInteraction.selectedCluster) {
+        if (State.clusterInteraction.chosenCluster) {
             State.helper.clusterSplittingCurrentStep = 2;
             console.log("cluster selected");
         }
@@ -112,11 +114,6 @@ reaction(
 
             case 2:
                 State.clusterInteraction.drawPanelActivate = true;
-                if (State.clusterInteraction.drawStraightLine) {
-                    ComponentRef?.canvasDrawStraightLinePanel.clearDrawing();
-                } else {
-                    ComponentRef?.canvasDrawPanel.clearDrawing();
-                }
                 State.graph.rawGraph.forEachNode((node, oldAttributes) => {
                     State.interaction.updateNodeVisualizeAttribute(
                         node,
@@ -127,7 +124,6 @@ reaction(
                 State.clusterInteraction.confirmClusterSplittingTempData = null;
                 State.interaction.flush();
                 State.graphDelegate.graphDelegateMethods.refresh();
-
                 break;
 
             case 3:
@@ -163,7 +159,7 @@ reaction(
 
 // auto highlight the selected Cluster
 reaction(
-    () => State.clusterInteraction.selectedCluster,
+    () => State.clusterInteraction.chosenCluster,
     () => {
         State.graphDelegate.clusterObject.updateAllMaterials();
     }
@@ -296,6 +292,29 @@ reaction(
             }
         });
         State.graphDelegate.graphDelegateMethods.refresh();
+    }
+);
+
+// auto set the signal to be false
+autorun(
+    () => {
+        if (State.signal.isMovingCamera) {
+            State.signal.isMovingCamera = false;
+        }
+    },
+    {
+        delay: 50,
+    }
+);
+
+autorun(
+    () => {
+        if (State.signal.isRightClickingCluster) {
+            State.signal.isRightClickingCluster = false;
+        }
+    },
+    {
+        delay: 50,
     }
 );
 

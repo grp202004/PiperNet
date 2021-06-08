@@ -4,18 +4,8 @@ import * as THREE from "three";
 import { Object3D } from "three";
 import ComponentRef from "../../components/ComponentRef";
 
-export const debounce = (fn: Function): any => {
-    let timer: any = null;
-    return (...args: any[]) => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => {
-            fn.apply(this, args);
-            timer = null;
-        }, 50);
-    };
-};
-
-export function onDocumentLeftClick(event: MouseEvent) {
+export const onDocumentLeftClick: EventListener = (evt: Event) => {
+    const event = evt as MouseEvent;
     if (
         State.cluster.clusterBy === null ||
         !State.graphDelegate.graphDelegateMethods
@@ -54,9 +44,10 @@ export function onDocumentLeftClick(event: MouseEvent) {
         );
         console.log("currently Clicked ClusterId", intersects[0].object.uuid);
     }
-}
+};
 
-export function onDocumentRightClick(event: MouseEvent) {
+export const onDocumentRightClick: EventListener = (evt: Event) => {
+    const event = evt as MouseEvent;
     if (
         State.cluster.clusterBy === null ||
         !State.graphDelegate.graphDelegateMethods
@@ -100,9 +91,9 @@ export function onDocumentRightClick(event: MouseEvent) {
         "currently Right-Clicked ClusterId",
         intersects[0]?.object?.uuid ?? null
     );
-}
+};
 
-export function onDocumentMouseMove(event: MouseEvent) {
+export function onDocumentMouseMove(this: Element, event: MouseEvent) {
     if (
         State.cluster.clusterBy === null ||
         !State.graphDelegate.graphDelegateMethods

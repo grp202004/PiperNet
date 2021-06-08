@@ -6,9 +6,9 @@ import State from "../state";
 import NodeDetailPanel from "./panels/NodeDetailPanel";
 import MultiDetailPanel from "./panels/MultiDetailPanel";
 import DeleteEdgeInteractionPanel from "./panels/DeleteEdgeInteractionPanel";
-import GraphOptionsCard from "./panels/GraphOptionsCard";
+import GraphOptionsCard from "./panels/GraphOptions/GraphOptionsCard";
 import InteractionModePanel from "./panels/InteractionModePanel/InteractionModePanel";
-import RightClickPanel from "./panels/RightClickPanel";
+import RightClickPanel from "./panels/RightClickPanel/RightClickPanel";
 
 export default observer(
     /**
