@@ -15,10 +15,9 @@ export interface ICanvasDrawProps {
 
 export default observer(
     /**
-     * @description another canvas to draw free-hand gesture when cluster splitting
+     * @description component that render different canvas drawing
      * @author Zichen XU
      * @class CanvasDrawPanel
-     * @extends {React.Component}
      */
     class CanvasDrawPanel extends React.Component {
         get canvas() {

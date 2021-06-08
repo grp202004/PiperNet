@@ -269,7 +269,6 @@ export default class Cluster3dObjectStore {
      * @description set the mesh material to be highlighted
      * @author Zichen XU
      * @private
-     * @static
      * @param {THREE.Mesh} mesh
      */
     private meshHighlightMaterial(mesh: THREE.Mesh) {
@@ -288,7 +287,6 @@ export default class Cluster3dObjectStore {
      * @description set the mesh material to be as selected
      * @author Zichen XU
      * @private
-     * @static
      * @param {THREE.Mesh} mesh
      */
     private meshSelectedMaterial(mesh: THREE.Mesh) {
@@ -307,7 +305,6 @@ export default class Cluster3dObjectStore {
      * @description set the mesh material back to normal
      * @author Zichen XU
      * @private
-     * @static
      * @param {THREE.Mesh} mesh
      */
     private meshNormalMaterial(mesh: THREE.Mesh) {

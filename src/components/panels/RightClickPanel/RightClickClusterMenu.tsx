@@ -9,9 +9,8 @@ import { Vector3 } from "three";
 
 export default observer(
     /**
-     * @description This component will be used when mouse right-clicked. There will be some operation choices on this panel.
+     * @description sub component to render options for RightClickClusterPanel
      * @author Zichen XU, Zhiyuan LYU
-     * @extends {React.Component}
      */
     class RightClickClusterPanel extends React.Component {
         state = {

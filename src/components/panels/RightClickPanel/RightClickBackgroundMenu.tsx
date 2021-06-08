@@ -6,9 +6,8 @@ import { MenuItemWithTooltip } from "../../utils/MenuItemWithTooltip";
 
 export default observer(
     /**
-     * @description This component will be used when mouse right-clicked. There will be some operation choices on this panel.
+     * @description sub component to render options for RightClickBackgroundPanel
      * @author Zichen XU, Zhiyuan LYU
-     * @extends {React.Component}
      */
     class RightClickBackgroundPanel extends React.Component {
         render() {

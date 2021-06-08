@@ -8,7 +8,6 @@ export default observer(
      * @description the canvas to draw a straight line when splitting the cluster
      * @author Zichen XU
      * @class CanvasDrawStraightLinePanel
-     * @extends {React.Component}
      */
 
     class CanvasDrawStraightLinePanel extends React.Component<ICanvasDrawProps> {

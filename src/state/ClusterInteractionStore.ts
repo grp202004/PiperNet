@@ -312,6 +312,9 @@ export default class ClusterInteractionStore {
      * it will set the attribute of these two groups to be different
      * and clear the tempData
      * @author Zichen XU
+     * @param {string} attribute
+     * @param {(number | string)} valueInWhite
+     * @param {(number | string)} valueInRed
      */
     splitCluster(
         attribute: string,

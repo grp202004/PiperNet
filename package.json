@@ -1,5 +1,5 @@
 {
-    "name": "pipernet",
+    "name": "clustergrapher",
     "version": "1.1.0",
     "discription": "A 3D Data Visualization Software",
     "private": true,
@@ -14,7 +14,7 @@
         "classnames": "^2.3.1",
         "copy-anything": "^2.0.1",
         "csv-parse": "^4.14.2",
-        "d3-polygon": "^2.0.0",
+        "d3-polygon": "^3.0.1",
         "graphology": "^0.19.3",
         "graphology-gexf": "^0.7.5",
         "graphology-types": "^0.19.2",
@@ -29,10 +29,9 @@
         "react-dom": "^17.0.2",
         "react-force-graph-3d": "^1.21.0",
         "react-scripts": "^4.0.2",
-        "three": "^0.127.0",
+        "three": "^0.129.0",
         "three-spritetext": "^1.6.1",
-        "typescript": "^4.2.3",
-        "web-vitals": "^1.1.1",
+        "typescript": "4.2.3",
         "xml-js": "^1.6.11"
     },
     "scripts": {
@@ -42,8 +41,8 @@
         "eject": "react-scripts eject",
         "electron-start": "electron .",
         "docs": "typedoc --exclude '**/*+test.ts' src/components src/state",
-        "pack-win": "electron-builder --win --x64",
-        "pack-mac": "electron-builder --mac"
+        "pack-win": "npm run build && electron-builder --win --x64",
+        "pack-mac": "npm run build && electron-builder --mac"
     },
     "eslintConfig": {
         "extends": [
@@ -75,10 +74,9 @@
         "@types/react-color": "^3.0.4",
         "@types/react-csv": "^1.1.1",
         "@types/react-dom": "^17.0.2",
-        "@types/three": "^0.126.2",
+        "@types/three": "^0.129.1",
         "electron": "^11.3.0",
         "electron-builder": "^22.10.5",
-        "electron-packager": "^15.2.0",
         "prettier": "2.2.1",
         "typedoc": "^0.20.32"
     },
@@ -87,8 +85,8 @@
     },
     "build": {
         "extends": null,
-        "productName": "PiperNet",
-        "appId": "PiperNet_Setup",
+        "productName": "ClusterGrapher",
+        "appId": "ClusterGrapher",
         "asar": true,
         "directories": {
             "buildResources": "public",
@@ -107,7 +105,7 @@
             "oneClick": false,
             "allowElevation": true,
             "allowToChangeInstallationDirectory": true,
-            "shortcutName": "PiperNet",
+            "shortcutName": "ClusterGrapher",
             "installerLanguages": [
                 "en_US"
             ]

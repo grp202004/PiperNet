@@ -6,10 +6,9 @@ import { ICanvasDrawProps } from "./CanvasDrawPanel";
 
 export default observer(
     /**
-     * @description another canvas to draw free-hand gesture when cluster splitting
+     * @description canvas to draw circle gesture when cluster splitting
      * @author Zichen XU
-     * @class CanvasDrawFreehandPanel
-     * @extends {React.Component}
+     * @class CanvasDrawFreeCirclePanel
      */
     class CanvasDrawFreeCirclePanel extends React.Component<
         ICanvasDrawProps,
