@@ -295,10 +295,12 @@ export default class Cluster3dObjectStore {
         mesh.material = new THREE.MeshPhongMaterial({
             //@ts-ignore
             color: mesh["_color"],
-            shininess: 10,
-            opacity: 0.7,
+            shininess: 20,
+            // emissive: "white",
+            opacity: 0.9,
             transparent: true,
         });
+        mesh.material.depthWrite = false;
     }
 
     /**

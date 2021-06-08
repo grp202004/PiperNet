@@ -51,7 +51,7 @@ Source, Target, Weight,   Where first met
 1,      45,     3,        London
 ```
 
-## which specify the simple undirected relationship between `Source` and `Target`, other fields are optional.
+which specify the simple undirected relationship between `Source` and `Target`, other fields are optional.
 
 **- Importing more than labels: nodes and edges attributes**
 
