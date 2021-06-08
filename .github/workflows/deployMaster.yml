@@ -23,7 +23,7 @@ jobs:
                   npm run build
 
             - name: Deploy to GitHub Pages🚀
-              uses: JamesIves/github-pages-deploy-action@3.6.2
+              uses: JamesIves/github-pages-deploy-action@4.1.4
               with:
                   REPOSITORY_NAME: grp202004/pipernet.online
                   ACCESS_TOKEN: ${{ secrets.PAGES }}
