@@ -171,7 +171,13 @@ export default class Cluster3dObjectStore {
                 State.css.cluster.resolution
             );
             sphere.translate(points[0].x, points[0].y, points[0].z);
-            return sphere;
+            let sphere2 = new SphereGeometry(
+                State.css.node.size + 10,
+                State.css.cluster.resolution,
+                State.css.cluster.resolution
+            );
+            sphere2.translate(points[0].x, points[0].y, points[0].z);
+            return sphere2 && sphere;
         } else if (points.length < 4) {
             // there are 2 or 3 points in this cluster
             let geometry = new THREE.BufferGeometry();

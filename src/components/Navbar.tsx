@@ -18,6 +18,8 @@ import logo from "../images/icon.png";
 import State from "../state";
 import { Popover2 } from "@blueprintjs/popover2";
 import SearchPanel from "./panels/SearchPanel";
+import * as THREE from "three";
+import cluster3d from "../state/Cluster3dObjectStore";
 
 export default observer(
     /**
@@ -27,6 +29,7 @@ export default observer(
      * @extends {React.Component}
      */
     class Navbar extends React.Component {
+        threeScene!: THREE.Scene;
         render() {
             return (
                 <BlueprintNavbar
@@ -99,7 +102,33 @@ export default observer(
                                             }
                                         )} */}
                                     </MenuItem>
+                                    <MenuItem
+                                        text="Load Sample"
+                                        icon="import"
+                                        onClick={()=>{
+                                            let material = new THREE.MeshBasicMaterial({
+                                                color:0xFF6060,
+                                                transparent: true,
+                                                opacity: 0.1
+                                            });
 
+                                            let material2 = new THREE.MeshBasicMaterial({
+                                                color:0xFF6060,
+                                                transparent: true,
+                                                opacity: 0.3
+                                            });
+
+                                            let sphere = new THREE.Mesh(new THREE.SphereGeometry(150, 100, 100), material);
+                                            sphere.material.side = THREE.DoubleSide;
+                                            sphere.material.depthWrite = false;
+
+                                            let sphere2 = new THREE.Mesh(new THREE.SphereGeometry(80, 100, 100), material);
+                                            sphere2.material.side = THREE.DoubleSide;
+                                            sphere2.material.depthWrite = false;
+                                            
+                                            State.graphDelegate.clusterObject.threeScene.add(sphere);
+                                        }}
+                                    />
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
@@ -160,6 +189,7 @@ export default observer(
                         />
                         <Divider />
                     </ButtonGroup> */}
+                    
 
                     <NavbarGroup align={Alignment.RIGHT}>
                         <SearchPanel />
