@@ -4,6 +4,8 @@ import Graph from "graphology";
 import gexf from "graphology-gexf";
 import parse from "csv-parse/lib/sync";
 import { IMetaData } from "./GraphStore";
+import * as d3 from "d3";
+import { tree } from "d3";
 
 /**
  * @description interface for the node file being configured
@@ -54,6 +56,33 @@ export interface IEdgeFileConfig {
 }
 
 /**
+ * @description interface for the cluster file being configured
+ * @author Chen YANG
+ * @export
+ * @interface IClusterFileConfig
+ */
+ export interface IClusterFileConfig {
+    isReady: boolean;
+    parseError: boolean;
+
+    // should save the csv to temp for further change the cluster attribute
+    path: string;
+    hasHeader: boolean;
+
+    // array of objects storing the
+    topN: any[];
+    columns: string[];
+    mapping: {
+        name: string;
+        parent: string;
+    };
+    delimiter: string;
+}
+
+
+
+
+/**
  * @description this class defines some necessary configs for the graph-importing procedures
  * such as the `INodeFileConfig` and `IEdgeFileConfig` for customizing the csv/gexf file parsing procedure
  * Other functions like `renderImportNode/EdgePreview` renders the preview table in the ImportDialog
@@ -79,6 +108,9 @@ export default class ImportStore {
     //name of the GEXF file
     gexfFileName = "Choose GEXF File ...";
 
+    //name of the cluster file***
+    clusterFileName = "Choose Cluster File ...";
+
     importDialogOpen = false;
 
     importGEXFDialogOpen = false;
@@ -86,6 +118,7 @@ export default class ImportStore {
     // specific: File object selected via the file input.
     selectedEdgeFileFromInput!: File;
     selectedNodeFileFromInput!: File;
+    selectedClusterFileFromInput!: File;
 
     selectedGEXFFileFromInput!: File;
 
@@ -126,6 +159,24 @@ export default class ImportStore {
             },
             delimiter: ",",
         } as IEdgeFileConfig,
+
+        clusterFile: {
+            isReady: false,
+            parseError: false,
+
+            // should save the csv to temp for further change the cluster attribute
+            path: "",
+            hasHeader: true,
+
+            // array of objects storing the
+            topN: [],
+            columns: [],
+            mapping: {
+                name: "Unknown",
+                parent: "Unknown",
+            },
+            delimiter: ",",
+        } as IClusterFileConfig,
     };
 
     /**
@@ -310,6 +361,35 @@ export default class ImportStore {
 
         config.edgeFile.isReady = true;
 
+        var reader = new FileReader();
+        reader.readAsText(this.selectedClusterFileFromInput);
+        
+
+        reader.onload = function(){
+            var fileResult = reader.result;
+            if(fileResult != null){
+            
+                
+                const clusterLink = d3.csvParse(fileResult.toString());
+                const clusterRoot = d3.stratify()
+                    .id(function(d:any){return d.name})
+                    .parentId(function(d:any){return d.parent})
+                    (clusterLink);
+                const root = tree();
+
+                console.log("test");
+                console.log(".children:"+clusterRoot.children)
+                console.log(".data:"+clusterRoot.data)
+                console.log(".id:"+clusterRoot.id)
+                console.log(".parent:"+clusterRoot.parent)
+                
+
+            }
+        }
+
+
+
+
         let nodeProperties = config.hasNodeFile
             ? Object.keys(tempNodes[0])
             : ["id"];
@@ -321,6 +401,11 @@ export default class ImportStore {
                 nodeProperties: nodeProperties,
             } as IMetaData,
         };
+
+
+
+
+        
     }
 
     /**

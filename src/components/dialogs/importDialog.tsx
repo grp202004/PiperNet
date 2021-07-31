@@ -16,10 +16,10 @@ import classnames from "classnames";
 import { observer } from "mobx-react";
 import State from "../../state";
 import SimpleSelect from "../utils/SimpleSelect";
-import { IEdgeFileConfig, INodeFileConfig } from "../../state/ImportStore";
+import { IEdgeFileConfig, INodeFileConfig ,IClusterFileConfig } from "../../state/ImportStore";
 
 interface PreviewTableProps {
-    file: INodeFileConfig | IEdgeFileConfig;
+    file: INodeFileConfig | IEdgeFileConfig | IClusterFileConfig;
 }
 
 let PreviewTable = observer(
@@ -182,6 +182,47 @@ export default observer(
                 </>
             );
         };
+
+
+        renderClusterSelection = () => {
+            const clusterFile = State.import.importConfig.clusterFile;
+            return (
+                <>
+                    <FileInput
+                        text={State.import.clusterFileName}
+                        onInputChange={(event) => {
+                            let target = event.target as HTMLInputElement;
+                            if (!target.files || target.files.length < 1) {
+                                return;
+                            }
+                            State.import.clusterFileName = target.files[0].name;
+                            State.import.selectedClusterFileFromInput =
+                                target.files[0];
+                        }}
+                    />
+
+                    {clusterFile.isReady && (
+                        <div>
+                            <PreviewTable file={clusterFile} />
+                            <br />
+                            Column for Cluster ID:
+                            <SimpleSelect
+                                items={clusterFile.columns}
+                                text={clusterFile.mapping.name}
+                                onSelect={(it) =>
+                                    (clusterFile.mapping.name = it)
+                                }
+                            />
+                            <br />
+                            
+                        </div>
+                    )}
+                </>
+            );
+        };
+
+
+
 
         renderDelimiterSelection() {
             return (
@@ -362,6 +403,42 @@ export default observer(
                             </div>
                         }
                     />
+
+
+                    <DialogStep
+                        id="csv_cluster"
+                        title="Choose a Cluster file"
+                        panel={
+                            <div
+                                className={classnames(
+                                    Classes.DIALOG_BODY,
+                                    "multistep-dialog-body"
+                                )}
+                                style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    display: "flex",
+                                }}
+                            >
+                                {State.import.isLoading ? (
+                                    <Spinner />
+                                ) : (
+                                    <div>
+                                        <div
+                                            className={classnames(
+                                                Classes.DIALOG_BODY,
+                                                "import-dialog"
+                                            )}
+                                            style={{ maxWidth: "40vw" }}
+                                        >
+                                            {this.renderClusterSelection()}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        }
+                    />
+
                 </MultistepDialog>
             );
         }
