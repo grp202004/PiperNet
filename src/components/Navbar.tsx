@@ -106,27 +106,29 @@ export default observer(
                                         text="Load Sample"
                                         icon="import"
                                         onClick={()=>{
+                                            let points = [] as THREE.Vector3[];
+                                            State.graph.rawGraph.forEachNode((key,attributes)=>{
+                                                if (key === "0" || key === "3"){
+                                                    points.push(
+                                                        new THREE.Vector3(
+                                                            attributes._visualize.x,
+                                                            attributes._visualize.y,
+                                                            attributes._visualize.z
+                                                        )
+                                                    )
+                                                }
+                                            })
+                                            console.log(points);
                                             let material = new THREE.MeshBasicMaterial({
-                                                color:0xFF6060,
+                                                //@ts-ignore
+                                                color: 0xFA5F5F,
                                                 transparent: true,
-                                                opacity: 0.1
+                                                opacity: 0.15,
                                             });
-
-                                            let material2 = new THREE.MeshBasicMaterial({
-                                                color:0xFF6060,
-                                                transparent: true,
-                                                opacity: 0.3
-                                            });
-
-                                            let sphere = new THREE.Mesh(new THREE.SphereGeometry(150, 100, 100), material);
-                                            sphere.material.side = THREE.DoubleSide;
-                                            sphere.material.depthWrite = false;
-
-                                            let sphere2 = new THREE.Mesh(new THREE.SphereGeometry(80, 100, 100), material);
-                                            sphere2.material.side = THREE.DoubleSide;
-                                            sphere2.material.depthWrite = false;
+                                            let sphere = new THREE.Mesh(new THREE.BufferGeometry(), material);
                                             
-                                            State.graphDelegate.clusterObject.threeScene.add(sphere);
+                                            sphere.geometry.copy(State.graphDelegate.clusterObject.convexHullObject2(points)); 
+                                            State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
                                         }}
                                     />
                                     <MenuDivider />
