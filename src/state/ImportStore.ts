@@ -1,4 +1,4 @@
-import { Intent, Position, Toaster } from "@blueprintjs/core";
+import { Intent, Position, Toaster, TreeNode } from "@blueprintjs/core";
 import { makeAutoObservable } from "mobx";
 import Graph from "graphology";
 import gexf from "graphology-gexf";
@@ -96,7 +96,8 @@ export default class ImportStore {
     constructor() {
         makeAutoObservable(this);
     }
-
+    // map between the cluster name and the nodes it contains
+    clusterMap : Map<string,string[]> | null = null;
     // whether the graph is in importing
     isLoading = false;
     //name of the edge file
@@ -295,6 +296,22 @@ export default class ImportStore {
         );
     }
 
+    public buildClusterMap(node:d3.HierarchyNode<unknown>){
+        if(node.children === undefined){
+            return;
+        }
+        let temparr : string[] = [];
+        node.leaves().forEach((leave)=>{
+            if(leave.id != undefined){
+                temparr.push(leave.id);
+            }           
+        })
+        this.clusterMap?.set(node.id as string,temparr);
+        node.children.forEach((child:d3.HierarchyNode<unknown>)=>{
+            this.buildClusterMap(child);
+        })
+    }
+
     /**
      * @description will create a Graph structure to store the nodes and edges in the imported File
      * should handle whether or not have the NodeFile, whether or not have the header of each file
@@ -365,8 +382,8 @@ export default class ImportStore {
         reader.readAsText(this.selectedClusterFileFromInput);
         
 
-        reader.onload = function(){
-            var fileResult = reader.result;
+        reader.onload = ()=>{
+            let fileResult = reader.result;
             if(fileResult != null){
             
                 
@@ -374,21 +391,21 @@ export default class ImportStore {
                 const clusterRoot = d3.stratify()
                     .id(function(d:any){return d.name})
                     .parentId(function(d:any){return d.parent})
-                    (clusterLink);
-                const root = tree();
+                    (clusterLink);               
 
-                console.log("test");
-                console.log(".children:"+clusterRoot.children)
-                console.log(".data:"+clusterRoot.data)
-                console.log(".id:"+clusterRoot.id)
-                console.log(".parent:"+clusterRoot.parent)
-                
-
+                this.clusterMap = new Map<string,string[]>();
+                this.buildClusterMap(clusterRoot);
+                console.log(this.clusterMap);
+                // console.log("test");
+                // console.log(".children:"+clusterRoot.children)
+                // console.log(".data:"+clusterRoot.data)
+                // console.log(".id:"+clusterRoot.id)
+                // console.log(".parent:"+clusterRoot.parent)
             }
+            
         }
 
-
-
+        
 
         let nodeProperties = config.hasNodeFile
             ? Object.keys(tempNodes[0])

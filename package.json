@@ -65,6 +65,7 @@
     },
     "devDependencies": {
         "@types/classnames": "^2.2.11",
+        "@types/d3": "^7.0.0",
         "@types/d3-polygon": "^2.0.0",
         "@types/jest": "^26.0.20",
         "@types/lodash": "^4.14.170",
