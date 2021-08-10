@@ -19,7 +19,14 @@ import State from "../state";
 import { Popover2 } from "@blueprintjs/popover2";
 import SearchPanel from "./panels/SearchPanel";
 import * as THREE from "three";
+<<<<<<< HEAD
 import cluster3d from "../state/Cluster3dObjectStore";
+=======
+import { ARROW_RIGHT } from "@blueprintjs/core/lib/esm/common/keys";
+import { random } from "lodash";
+import { color } from "d3-color";
+
+>>>>>>> ClusterImportCSV
 
 export default observer(
     /**
@@ -103,6 +110,7 @@ export default observer(
                                         )} */}
                                     </MenuItem>
                                     <MenuItem
+<<<<<<< HEAD
                                         text="Load Sample"
                                         icon="import"
                                         onClick={()=>{
@@ -131,6 +139,76 @@ export default observer(
                                             State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
                                         }}
                                     />
+=======
+                                        text="Load Cluster"
+                                        icon="import"
+                                        onClick={()=>{
+                                            State.import.clusterMap?.forEach((value)=>{
+                                                let sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(value), new THREE.MeshBasicMaterial);
+                                                State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                                State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            });
+                                            // let o = [] as string[];
+                                            // let i : number;
+                                            // for (i=0;i<20;i++){
+                                            //     o.push(String(i));
+                                            // }
+                                            // let material = new THREE.MeshBasicMaterial({
+                                            //     //@ts-ignore
+                                            //     color: 0xFFABAB,
+                                            //     transparent: true,
+                                            //     opacity: 0.15,
+                                            // });
+                                                                                       
+                                            // let aa = ["2","3","12","13","14","15", "18"];
+                                            // let ba = ["12","13","14","15","18"];
+                                            // let ca = ["14","15","18"];
+                                            // let ab = ["4","5","6","7","10","11","8","9","16","17","19"];
+                                            // let bb = ["4","10","11","16","17"];
+                                            // let cb = ["10","11","16","17"];
+                                            // let da = ["16","17"];
+                                            // let bc = ["5","6","7"];
+                                            // let bd = ["8","9","19"];
+                                            // let db = ["19"];
+                                            
+                                                                                     
+                                            // let sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(o),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(aa),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(ba),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(ca),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(ab),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(bb),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(cb),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(da),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(bc),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(bd),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            // sphere = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(db),material);
+                                            // State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                            // State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                        }}
+                                    >
+                                    </MenuItem>
+>>>>>>> ClusterImportCSV
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
