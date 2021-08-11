@@ -119,7 +119,7 @@ export default class ImportStore {
     // specific: File object selected via the file input.
     selectedEdgeFileFromInput!: File;
     selectedNodeFileFromInput!: File;
-    selectedClusterFileFromInput!: File;
+    selectedClusterFileFromInput!: Blob;
 
     selectedGEXFFileFromInput!: File;
 
@@ -378,8 +378,37 @@ export default class ImportStore {
 
         config.edgeFile.isReady = true;
 
+        this.importClusterFromCSV(this.selectedClusterFileFromInput);
+
+        
+
+        let nodeProperties = config.hasNodeFile
+            ? Object.keys(tempNodes[0])
+            : ["id"];
+
+        return {
+            graph: graph,
+            metadata: {
+                snapshotName: "Untitled",
+                nodeProperties: nodeProperties,
+            } as IMetaData,
+        };
+
+
+
+
+        
+    }
+
+
+    /**
+     * @description will convert import CSV cluster file into tree structure and use it to build clusterMap
+     * @author Chen YANG
+     * @returns {*}
+     */
+    public async importClusterFromCSV(csvFile:Blob){
         var reader = new FileReader();
-        reader.readAsText(this.selectedClusterFileFromInput);
+        reader.readAsText(csvFile);
         
 
         reader.onload = ()=>{
@@ -401,29 +430,15 @@ export default class ImportStore {
                 // console.log(".data:"+clusterRoot.data)
                 // console.log(".id:"+clusterRoot.id)
                 // console.log(".parent:"+clusterRoot.parent)
+
             }
             
         }
-
-        
-
-        let nodeProperties = config.hasNodeFile
-            ? Object.keys(tempNodes[0])
-            : ["id"];
-
-        return {
-            graph: graph,
-            metadata: {
-                snapshotName: "Untitled",
-                nodeProperties: nodeProperties,
-            } as IMetaData,
-        };
-
-
-
-
-        
     }
+
+
+
+
 
     /**
      * @description will create a Graph structure to store the nodes and edges in the imported File
