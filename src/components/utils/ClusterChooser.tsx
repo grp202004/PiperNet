@@ -108,6 +108,88 @@ export default observer(
     }
 );
 
+interface Props2 {
+    /**
+     * function to call when a candidate is selected, will be called on every selection of candidate
+     * if None is selected, the item props will be set to null
+     *
+     * @memberof Props
+     */
+    onSelect: (item: string | null) => void;
+
+    /**
+     * the selected to display will sync with this props
+     *
+     * @type {(string | null)}
+     * @memberof Props
+     */
+    syncWith: string | null;
+}
+
+export const HierarchyLevelChooser = observer(
+    class HierarchyLevelChooser extends React.Component<Props2,{}>{
+
+        get hierarchylevels() {
+            let arr : string[] = [];
+            let totallevel = State.import.colorMap?.size;
+            if (totallevel != undefined){
+              
+            for (let i : number = 0; i<totallevel-1; i++) {
+                arr.push(i.toString());
+            }
+            return arr;
+
+            }   
+        }
+
+        itemRenderer = (
+            item: any,
+            props: CustomIItemRendererProps
+        ): JSX.Element | null => {
+            if (item === "None") {
+                return (
+                    <MenuItem
+                        intent="primary"
+                        key={item}
+                        onClick={props.handleClick}
+                        text={item}
+                    />
+                );
+            } else {
+                return (
+                    <MenuItem
+                        key={item}
+                        onClick={props.handleClick}
+                        text={item}
+                    />
+                );
+            }
+        };
+
+        render() {
+            return (
+                <Select
+                    items={
+                        this.hierarchylevels? 
+                            this.hierarchylevels : ["None"]
+                    }
+                    itemRenderer={this.itemRenderer}
+                    filterable={false}
+                    onItemSelect={(item: string) => {
+                        let selected = item === "None" ? null : item;
+                        this.props.onSelect(selected);
+                    }}
+                    {...this.props}
+                >
+                    <Button
+                        text={this.props.syncWith}
+                    />
+                </Select>
+            );
+        }
+    }
+);
+
 interface ClusterAdderProps {
     onCreate: (attribute: string) => void;
 }

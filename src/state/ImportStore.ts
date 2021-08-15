@@ -6,6 +6,7 @@ import parse from "csv-parse/lib/sync";
 import { IMetaData } from "./GraphStore";
 import * as d3 from "d3";
 import { tree } from "d3";
+import randomColor from "randomcolor";
 
 /**
  * @description interface for the node file being configured
@@ -97,7 +98,9 @@ export default class ImportStore {
         makeAutoObservable(this);
     }
     // map between the cluster name and the nodes it contains
-    clusterMap : Map<string,string[]> | null = null;
+    clusterMap : Map<d3.HierarchyNode<unknown>,string[]> | null = null;
+    // map between the depth of a cluster defined by cluster file and its color
+    colorMap : Map<number,string> | null = null;
     // whether the graph is in importing
     isLoading = false;
     //name of the edge file
@@ -296,6 +299,12 @@ export default class ImportStore {
         );
     }
 
+    /**
+     * @description a recursion funtion for translating the cluster information within the root node into a map format
+     * @author Chenghao SHI
+     * @param {d3.HierarchyNode<unknown>} node
+     * @return {*} 
+     */
     public buildClusterMap(node:d3.HierarchyNode<unknown>){
         if(node.children === undefined){
             return;
@@ -306,12 +315,32 @@ export default class ImportStore {
                 temparr.push(leave.id);
             }           
         })
-        this.clusterMap?.set(node.id as string,temparr);
+        this.clusterMap?.set(node,temparr);
         node.children.forEach((child:d3.HierarchyNode<unknown>)=>{
             this.buildClusterMap(child);
         })
     }
 
+    /**
+     * @description helper function for building the map between depths of hierarchy and the color of this depth
+     * @author Chenghao SHI
+     * @param {d3.HierarchyNode<unknown>} node
+     * @return {*} 
+     */
+    public buildColorMap(node:d3.HierarchyNode<unknown>){
+        if ( node === undefined){
+            return;
+        }
+        let hierarchylevel = node.height + 1;
+        let colors = randomColor({
+            seed : 1,
+            count : hierarchylevel
+        })
+        let i : number;
+        for(i = 0; i<hierarchylevel; i++){
+            this.colorMap?.set(i,colors[i]);
+        }
+    }
     /**
      * @description will create a Graph structure to store the nodes and edges in the imported File
      * should handle whether or not have the NodeFile, whether or not have the header of each file
@@ -407,7 +436,7 @@ export default class ImportStore {
      * @returns {*}
      */
     public async importClusterFromCSV(csvFile:Blob){
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.readAsText(csvFile);
         
 
@@ -422,9 +451,13 @@ export default class ImportStore {
                     .parentId(function(d:any){return d.parent})
                     (clusterLink);               
 
-                this.clusterMap = new Map<string,string[]>();
+                this.clusterMap = new Map<d3.HierarchyNode<unknown>,string[]>();
                 this.buildClusterMap(clusterRoot);
+                this.colorMap = new Map<number, string>();
+                this.buildColorMap(clusterRoot);
+                
                 console.log(this.clusterMap);
+                console.log(this.colorMap);
                 // console.log("test");
                 // console.log(".children:"+clusterRoot.children)
                 // console.log(".data:"+clusterRoot.data)

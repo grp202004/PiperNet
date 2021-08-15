@@ -29,6 +29,13 @@ export default class ClusterStore {
     clusterBy: string | null = null;
 
     /**
+     * @description specify which level of clusters are shown
+     * @author Chenghao SHI
+     * @type {string}
+     */
+    showlevel: string | null = "None";
+
+    /**
      * @description the setter of clusterBy
      * will update the front-end 3d graph about the cluster changes
      * @author Zichen XU
