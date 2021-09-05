@@ -123,6 +123,14 @@ export default observer(
                                         }}
                                     >
                                     </MenuItem>
+                                    <MenuItem
+                                        text="Load sample"
+                                        icon="import"
+                                        onClick={()=>{
+                                            State.clusterInteraction.hierarchicalMergeCluster(["AA","AB"]);
+                                        }}
+                                        >
+                                    </MenuItem>
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
@@ -173,7 +181,20 @@ export default observer(
                             }
                         />
                     </NavbarGroup>
-                    <HierarchyLevelChooser
+                    
+
+                    {/* <ButtonGroup>
+                        <SimpleSelect
+                            className={classnames([Classes.ALERT_CONTENTS])}
+                            items={["3D", "2D"]}
+                            value={State.preferences.view}
+                            onSelect={(it) => (State.preferences.view = it)}
+                        />
+                        <Divider />
+                    </ButtonGroup> */}
+
+                    <NavbarGroup align={Alignment.RIGHT}>
+                        <HierarchyLevelChooser
                         onSelect ={(show:string|null)=>{
                             State.cluster.showlevel = show;
 
@@ -196,18 +217,7 @@ export default observer(
                         }}
                         syncWith = {State.cluster.showlevel}
                     />
-
-                    {/* <ButtonGroup>
-                        <SimpleSelect
-                            className={classnames([Classes.ALERT_CONTENTS])}
-                            items={["3D", "2D"]}
-                            value={State.preferences.view}
-                            onSelect={(it) => (State.preferences.view = it)}
-                        />
-                        <Divider />
-                    </ButtonGroup> */}
-
-                    <NavbarGroup align={Alignment.RIGHT}>
+                        <NavbarDivider/>
                         <SearchPanel />
                         <NavbarDivider />
                         <div style={{ marginRight: 6 }}>Clustered by</div>
