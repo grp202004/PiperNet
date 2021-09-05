@@ -2,6 +2,9 @@ import { makeAutoObservable } from "mobx";
 import * as THREE from "three";
 import { polygonContains } from "d3-polygon";
 import State from ".";
+import * as d3 from "d3";
+import { Column } from "@blueprintjs/table";
+import { curryRight } from "lodash";
 
 export enum DrawMode {
     StraightLine,
@@ -339,4 +342,96 @@ export default class ClusterInteractionStore {
         this.confirmClusterSplittingTempData = null;
         State.cluster.setCluster(attribute, true);
     }
+
+    hierarchicalMergeCluster(selected : string[]){   
+
+        if(selected === null || undefined){
+            return;
+        }
+        // console.log(State.import.clusterMap);
+        let depth = State.import.clustertree?.find((node:d3.HierarchyNode<unknown>)=>{return node.id === selected[0]})?.depth;
+        let newclustername : string = '';
+        let i : number;
+        let newchildren : d3.HierarchyNode<unknown>[] = [];
+        for(i=0; i<selected.length; i++){
+            newclustername = `${newclustername}-${selected[i]}`;
+        }
+ 
+        let newclusternodes : string[] = [];
+        for(i=0; i<selected.length; i++){
+            let currentNode = State.import.clustertree?.find((node:d3.HierarchyNode<unknown>)=>{return node.id === selected[i]});
+            // console.log(currentNode);
+            if(currentNode===undefined){
+                return;
+            }
+            newclusternodes=newclusternodes.concat(State.import.clusterMap?.get(currentNode) as string[]);
+            console.log(newclusternodes);
+            if(currentNode.children!=undefined){
+                newchildren = newchildren.concat(currentNode.children);
+                // console.log(newchildren);
+            }
+            State.import.clusterMap?.delete(currentNode);
+        }
+
+        let arr = "name,parent\n";
+        for(i=0;i<(depth as number);i++){
+            if(i === 0){
+                arr = arr + i as string +",\n"
+            }else{
+                arr = arr + i as string +"," + (i-1) as string +"\n"
+            }
+        }
+        arr = arr + newclustername +","+ ( i-1) as string 
+             
+        let newroot = d3.stratify()
+        .id(function(d:any){return d.name})
+        .parentId(function(d:any){return d.parent})
+        (d3.csvParse(arr));
+
+        let newcluster = newroot;
+
+        newroot.each((node)=>{
+            if(node.id ===newclustername){
+                node.children = newchildren;
+                newcluster = node;
+            }
+        })
+
+        State.import.clustertree?.each((currentnode)=>{
+            if (currentnode.id === selected[0]){
+                newcluster.data = {
+                    name : newclustername,
+                    parent : currentnode.parent?.id
+                }
+                newcluster.parent = currentnode.parent;
+                currentnode.parent?.children?.push(newcluster);
+            }
+        });
+
+        State.import.clustertree?.each((currentnode)=>{
+            if (currentnode === State.import.clustertree?.find((node:d3.HierarchyNode<unknown>)=>{return node.id === selected[i]})?.parent){
+                // console.log(currentnode);
+                for(i=0;i<selected.length;i++){
+                    let toDelete = State.import.clustertree?.find((node:d3.HierarchyNode<unknown>)=>{return node.id === selected[i]});
+                    if(toDelete != undefined){
+                        let index = currentnode.children?.indexOf(toDelete);
+                        if(index!=undefined && index>-1){
+                            currentnode.children?.splice(index,1);
+                        }
+                        console.log(currentnode);
+                    } 
+                }
+            }
+        });
+            
+        
+        // State.import.clusterMap?.set(newcluster,newclusternodes);
+        if(State.import.clustertree != null){
+            State.import.buildClusterMap(State.import.clustertree);
+        }
+        
+        console.log(State.import.clustertree);
+        console.log(State.import.clusterMap);
+        
+    } 
 }

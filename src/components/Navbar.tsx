@@ -13,11 +13,16 @@ import {
     NavbarHeading,
     NavbarDivider,
 } from "@blueprintjs/core";
-import ClusterChooser from "./utils/ClusterChooser";
+import ClusterChooser, { HierarchyLevelChooser } from "./utils/ClusterChooser";
 import logo from "../images/icon.png";
 import State from "../state";
 import { Popover2 } from "@blueprintjs/popover2";
 import SearchPanel from "./panels/SearchPanel";
+import * as THREE from "three";
+import { ARROW_RIGHT } from "@blueprintjs/core/lib/esm/common/keys";
+import { random } from "lodash";
+import { color } from "d3-color";
+
 
 export default observer(
     /**
@@ -99,7 +104,33 @@ export default observer(
                                             }
                                         )} */}
                                     </MenuItem>
-
+                                    <MenuItem
+                                        text="Load Cluster"
+                                        icon="import"
+                                        onClick={()=>{
+                                            if(State.graphDelegate.clusterObject.fusionClusterObjects){
+                                                State.graphDelegate.clusterObject.initEmptyMapAndFusion();
+                                            }
+                                            State.import.clusterMap?.forEach((value,key)=>{
+                                                // State.import.UUID2PointsMap = new Map<string, string[]>();
+                                                let sphere : THREE.Mesh<THREE.BufferGeometry,THREE.MeshBasicMaterial> = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(value), new THREE.MeshBasicMaterial);
+                                                //@ts-ignore
+                                                sphere["_color"] = State.import.colorMap?.get(key.depth) as string;
+                                                State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                                // State.import.UUID2PointsMap.set(sphere.uuid, value);
+                                                State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                            });
+                                        }}
+                                    >
+                                    </MenuItem>
+                                    <MenuItem
+                                        text="Load sample"
+                                        icon="import"
+                                        onClick={()=>{
+                                            State.clusterInteraction.hierarchicalMergeCluster(["AA","AB"]);
+                                        }}
+                                        >
+                                    </MenuItem>
                                     <MenuDivider />
                                     <MenuItem
                                         icon="download"
@@ -150,6 +181,7 @@ export default observer(
                             }
                         />
                     </NavbarGroup>
+                    
 
                     {/* <ButtonGroup>
                         <SimpleSelect
@@ -162,6 +194,30 @@ export default observer(
                     </ButtonGroup> */}
 
                     <NavbarGroup align={Alignment.RIGHT}>
+                        <HierarchyLevelChooser
+                        onSelect ={(show:string|null)=>{
+                            State.cluster.showlevel = show;
+
+                            if(State.graphDelegate.clusterObject.fusionClusterObjects){
+                                State.graphDelegate.clusterObject.initEmptyMapAndFusion();
+                            }
+                            State.import.clusterMap?.forEach((value,key)=>{
+                                // State.import.UUID2PointsMap = new Map<string, string[]>();
+                                if(key.depth.toString() === show){
+                                    let sphere : THREE.Mesh<THREE.BufferGeometry,THREE.MeshBasicMaterial> = new THREE.Mesh(State.graphDelegate.clusterObject.convexHullObject2(value), new THREE.MeshBasicMaterial);
+                                    //@ts-ignore
+                                    sphere["_color"] = State.import.colorMap?.get(key.depth) as string;
+                                    State.graphDelegate.clusterObject.meshNormalMaterial(sphere);
+                                    // State.import.UUID2PointsMap.set(sphere.uuid, value);
+                                    State.graphDelegate.clusterObject.fusionClusterObjects?.add(sphere);
+                                }
+                                
+                            });
+                            
+                        }}
+                        syncWith = {State.cluster.showlevel}
+                    />
+                        <NavbarDivider/>
                         <SearchPanel />
                         <NavbarDivider />
                         <div style={{ marginRight: 6 }}>Clustered by</div>

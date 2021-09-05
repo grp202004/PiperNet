@@ -14,6 +14,7 @@
         "classnames": "^2.3.1",
         "copy-anything": "^2.0.1",
         "csv-parse": "^4.14.2",
+        "d3": "^7.0.0",
         "d3-polygon": "^3.0.1",
         "graphology": "^0.19.3",
         "graphology-gexf": "^0.7.5",
@@ -64,6 +65,7 @@
     },
     "devDependencies": {
         "@types/classnames": "^2.2.11",
+        "@types/d3": "^7.0.0",
         "@types/d3-polygon": "^2.0.0",
         "@types/jest": "^26.0.20",
         "@types/lodash": "^4.14.170",
